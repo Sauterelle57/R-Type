@@ -1,0 +1,28 @@
+name: RType CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Build the project
+  build:
+    runs-on: ubuntu-latest
+
+    # Install c++ && cmake
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install C++ and CMake
+        uses: actions/setup-cpp@v1
+        with:
+          cmake-version: '3.27.8'
+          compiler: 'clang++-10'
+          packages: 'clang-10'
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
