@@ -29,4 +29,9 @@ jobs:
           cd build
           cmake ..
           make
-          ls
+      
+      - name: Archive the build
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build
