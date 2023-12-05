@@ -22,6 +22,9 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y g++ cmake
+      
+      - name: Build the project
+        run: |
           mkdir build
           cd build
           cmake ..
