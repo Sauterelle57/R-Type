@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feat/*
   pull_request:
     branches:
       - main
@@ -12,19 +13,11 @@ jobs:
   # Build the project
   build:
     runs-on: ubuntu-latest
-    # Install C++ and CMake
+    
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install C++ and CMake
+      
+      - name: Set up C++ environment
         uses: actions/setup-cpp@v1
-        with:
-          cmake-version: '3.27.8'
-          compiler: 'clang++-10'
-          packages: 'clang-10'
-      - name: Build
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-          make
+  
