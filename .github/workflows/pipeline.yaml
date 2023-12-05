@@ -2,18 +2,20 @@ name: RType CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   # Build the project
   build:
     runs-on: ubuntu-latest
-
-    # Install c++ && cmake
+    # Install C++ and CMake
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
       - name: Install C++ and CMake
         uses: actions/setup-cpp@v1
         with:
