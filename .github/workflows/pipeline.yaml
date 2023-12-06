@@ -22,12 +22,8 @@ jobs:
       - name: Set up C++ environment
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y g++
-      
-      - name: Install CMake
-        run: |
-          wget "https://github.com/Kitware/CMake/releases/download/v3.27.7/cmake-3.27.7-linux-x86_64.sh"
-          sudo bash "cmake-3.27.7-linux-x86_64.sh" --skip-license
+          sudo apt-get install -y g++ cmake
+          cmake --version
       
       - name: Build the project
         run: |
