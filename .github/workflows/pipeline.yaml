@@ -18,16 +18,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Get cmake version
-        run: |
-          cmake --version
-      
+
       - name: Set up C++ environment
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y g++ cmake
-          cmake --version
+          sudo apt-get install -y g++
+      
+      - name: Set up CMake
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9-linux-x86_64.sh
+          chmod +x cmake-3.27.0-Linux-x86_64.sh
+          sudo ./cmake-3.27.0-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
       
       - name: Build the project
         run: |
