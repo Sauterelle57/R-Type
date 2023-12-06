@@ -19,6 +19,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
+      - name: Get cmake version
+        run: |
+          cmake --version
+      
       - name: Set up C++ environment
         run: |
           sudo apt-get update -y
