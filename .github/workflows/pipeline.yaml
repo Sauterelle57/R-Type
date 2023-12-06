@@ -27,7 +27,7 @@ jobs:
       - name: Install CMake
         run: |
           wget "https://github.com/Kitware/CMake/releases/download/v3.27.7/cmake-3.27.7-linux-x86_64.sh"
-          sudo bash "cmake-${version}-Linux-x86_64.sh" --skip-license
+          sudo bash "cmake-3.27.7-linux-x86_64.sh" --skip-license
       
       - name: Build the project
         run: |
