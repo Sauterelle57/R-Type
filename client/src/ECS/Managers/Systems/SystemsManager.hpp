@@ -6,7 +6,7 @@
 */
 
 #ifndef SYSTEMSMANAGER_HPP_
-    #define SYSTEMSMANAGER_HPP_
+#define SYSTEMSMANAGER_HPP_
 
 class SystemsManager {
     public:

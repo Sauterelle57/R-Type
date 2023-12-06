@@ -6,7 +6,7 @@
 */
 
 #ifndef COMPONENTSMANAGER_HPP_
-    #define COMPONENTSMANAGER_HPP_
+#define COMPONENTSMANAGER_HPP_
 
 class ComponentsManager {
     public:

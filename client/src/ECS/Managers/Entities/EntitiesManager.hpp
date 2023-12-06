@@ -6,7 +6,7 @@
 */
 
 #ifndef ENTITIESMANAGER_HPP_
-    #define ENTITIESMANAGER_HPP_
+#define ENTITIESMANAGER_HPP_
 
 class EntitiesManager {
     public:
