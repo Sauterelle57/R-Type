@@ -6,3 +6,6 @@ Makefile
 
 ClientExecutable
 ServerExecutable
+
+.idea
+cmake-build-debug
