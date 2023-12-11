@@ -8,6 +8,6 @@ repos:
     hooks:
     -   id: check-commit-format
         name: check-commit-format
-        entry: python3 ./git/hooks/pre-commit
+        entry: python3 ./.git/hooks/pre-commit
         language: system
         types: [commit-msg]
