@@ -8,11 +8,11 @@
 #ifndef SYSTEMSMANAGER_HPP_
 #define SYSTEMSMANAGER_HPP_
 
-#include "Entity.hpp"
-#include "error.hpp"
-#include "System.hpp"
 #include <memory>
 #include <unordered_map>
+#include "Entity.hpp"
+#include "Error.hpp"
+#include "System.hpp"
 
 namespace ECS {
     class SystemManager {

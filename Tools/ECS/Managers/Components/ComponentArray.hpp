@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 #include "Entity.hpp"
-#include "error.hpp"
+#include "Error.hpp"
 
 namespace ECS {
 

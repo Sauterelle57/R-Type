@@ -20,5 +20,4 @@ namespace ECS {
     };
 }
 
-
 #endif //RTYPE_SYSTEM_HPP
