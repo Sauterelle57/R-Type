@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2023
+** RType
+** File description:
+** ComponentsManager
+*/
+
 #include <iostream>
 
 int main() {

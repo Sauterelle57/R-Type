@@ -11,7 +11,9 @@ include_directories(Tools/ECS/Managers/Entities)
 include_directories(Tools/ECS/Managers/Systems)
 include_directories(Tools/ECS/Managers/Coordinator)
 include_directories(Tools/Vec3)
+include_directories(Tools/Vec4)
 include_directories(Tools/Utils)
+include_directories(Tools/error)
 
 add_executable(rtype_server
         Tools/ECS/Managers/Components/ComponentsManager.hpp
@@ -25,6 +27,10 @@ add_executable(rtype_server
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
         server/src/main.cpp
+        Tools/Vec4/Vec4.cpp
+        Tools/error/error.hpp
+        Tools/ECS/Managers/Components/ComponentArray.hpp
+        Tools/ECS/Managers/Systems/System.hpp
 )
 add_executable(rtype_client
         Tools/ECS/Managers/Components/ComponentsManager.hpp
@@ -38,4 +44,8 @@ add_executable(rtype_client
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
         client/src/main.cpp
+        Tools/Vec4/Vec4.cpp
+        Tools/error/error.hpp
+        Tools/ECS/Managers/Components/ComponentArray.hpp
+        Tools/ECS/Managers/Systems/System.hpp
 )

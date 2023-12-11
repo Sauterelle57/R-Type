@@ -8,11 +8,21 @@
 #ifndef RTYPE_COMPONENT_HPP
 #define RTYPE_COMPONENT_HPP
 
-struct Transform
-{
-    Vec3 position;
-    Quat rotation;
-    Vec3 scale;
+#include <cstdint>
+#include "Utils.hpp"
+#include "Vec4.hpp"
+#include "Vec3.hpp"
+
+namespace ECS {
+    struct Transform {
+        tls::Vec3 position;
+        tls::Vec4 rotation;
+        tls::Vec3 scale;
+    };
+
+    using ComponentType = std::uint8_t;
+
+    const ComponentType MAX_COMPONENTS = 128;
 }
 
 #endif //RTYPE_COMPONENT_HPP

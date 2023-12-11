@@ -9,9 +9,15 @@
 #define RTYPE_ENTITY_HPP
 
 #include <cstdint>
+#include <bitset>
+#include "Component.hpp"
 
-using Entity = std::uint32_t;
+namespace ECS {
+    using Entity = std::uint32_t;
 
-const Entity MAX_ENTITIES = 5000;
+    const Entity MAX_ENTITIES = 5000;
+
+    using Signature = std::bitset<MAX_COMPONENTS>;
+}
 
 #endif //RTYPE_ENTITY_HPP
