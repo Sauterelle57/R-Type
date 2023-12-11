@@ -10,8 +10,7 @@
 #include "EntitiesManager.hpp"
 #include "SystemsManager.hpp"
 
-namespace ECS
-{
+namespace ECS {
     class Coordinator {
         public:
             void Init() {
@@ -26,9 +25,7 @@ namespace ECS
 
             void DestroyEntity(Entity entity) {
                 _entityManager->DestroyEntity(entity);
-
                 _componentManager->EntityDestroyed(entity);
-
                 _systemManager->EntityDestroyed(entity);
             }
 
