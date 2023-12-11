@@ -1,0 +1,7 @@
+- repo: local
+  hooks:
+  - id: commit-message-check
+    name: Check Commit Message Format
+    entry: ./scripts/commit-message-check.sh
+    language: script
+    types: [commit-msg]
