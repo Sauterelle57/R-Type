@@ -1,6 +1,9 @@
-//
-// Created by noah on 12/11/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** RType
+** File description:
+** Coordinator
+*/
 
 #ifndef RTYPE_COORDINATOR_HPP
 #define RTYPE_COORDINATOR_HPP

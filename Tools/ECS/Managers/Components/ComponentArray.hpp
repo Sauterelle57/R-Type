@@ -1,6 +1,9 @@
-//
-// Created by noah on 12/11/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** RType
+** File description:
+** ComponentArray
+*/
 
 #ifndef RTYPE_COMPONENTARRAY_HPP
 #define RTYPE_COMPONENTARRAY_HPP

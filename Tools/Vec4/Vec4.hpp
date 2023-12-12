@@ -1,6 +1,9 @@
-//
-// Created by noah on 12/11/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** RType
+** File description:
+** Vec4
+*/
 
 #ifndef RTYPE_VEC4_HPP
 #define RTYPE_VEC4_HPP
