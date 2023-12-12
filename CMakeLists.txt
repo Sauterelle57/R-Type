@@ -22,6 +22,7 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
 endif()
 
 include_directories(client/src)
+include_directories(client/include)
 include_directories(Tools/ECS)
 include_directories(Tools/ECS/Managers)
 include_directories(Tools/ECS/Managers/Components)
