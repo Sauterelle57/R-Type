@@ -173,6 +173,11 @@ namespace tls {
         return *this;
     }
 
+
+    Vec4::operator Vector4() const {
+        return Vector4{static_cast<float>(_x), static_cast<float>(_y), static_cast<float>(_z), static_cast<float>(_a)};
+    }
+
     Vec4 Vec4::normalized() const {
         double len = std::sqrt(dot(*this));
 

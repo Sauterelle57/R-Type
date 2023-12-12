@@ -28,7 +28,7 @@ int main(void)
     camera->setTarget((Vector3){ 0.0f, 8.0f, 0.0f });
     camera->setUp((Vector3){ 0.0f, 1.0f, 0.0f });
     camera->setFovy(45.0f);
-//    camera->setProjection(CAMERA_PERSPECTIVE);
+    camera->setProjection(CAMERA_PERSPECTIVE);
 
     std::shared_ptr<RL::ZMesh> planMesh = std::make_shared<RL::ZMesh>();
     planMesh->genPlane(10.0f, 10.0f, 3, 3);
@@ -79,20 +79,24 @@ int main(void)
     std::default_random_engine generator;
     std::uniform_real_distribution<float> randPosition((ECS::MAX_ENTITIES / 10.0) * -1.0, (ECS::MAX_ENTITIES / 10.0) * 1.0);
 
+    std::shared_ptr<RL::IEvent> event = std::make_shared<RL::ZEvent>();
+    event->setExitKey(KEY_F4);
+
     for (auto& entity : entities) {
         entity = coordinator.createEntity();
         coordinator.addComponent(
-                entity,
-                ECS::Transform{
-                        .position = {randPosition(generator), 0, randPosition(generator)},
-                        .rotation = {0, 0, 0, 0},
-                        .scale = {0, 0, 0}
-                });
+            entity,
+            ECS::Transform{
+                .position = {randPosition(generator), 0, randPosition(generator)},
+                .rotation = {0, 0, 0, 0},
+                .scale = {0, 0, 0}
+            });
     }
 
-    while (!WindowShouldClose())
+    while (!window->shouldClose())
     {
-        camera->update(CAMERA_FIRST_PERSON);
+        if (cursor->isHidden())
+            camera->update(CAMERA_FIRST_PERSON);
 
         float cameraPos[3] = { camera->getPosition().x, camera->getPosition().y, camera->getPosition().z };
         SetShaderValue(*shader->getShader(), shader->getShader()->locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
@@ -101,6 +105,7 @@ int main(void)
         if (IsKeyPressed(KEY_R)) { lights[1].enabled = !lights[1].enabled; }
         if (IsKeyPressed(KEY_G)) { lights[2].enabled = !lights[2].enabled; }
         if (IsKeyPressed(KEY_B)) { lights[3].enabled = !lights[3].enabled; }
+        if (IsKeyPressed(KEY_ESCAPE)) { cursor->isHidden() ? cursor->enable() : cursor->disable(); }
         if (IsKeyDown(KEY_LEFT_SHIFT)) { camera->setPosition((Vector3) { camera->getPosition().x, static_cast<float>(camera->getPosition().y - 1), camera->getPosition().z }); }
         if (IsKeyDown(KEY_SPACE)) { camera->setPosition((Vector3) { camera->getPosition().x, static_cast<float>(camera->getPosition().y + 1), camera->getPosition().z }); }
 

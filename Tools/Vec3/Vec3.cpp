@@ -5,6 +5,7 @@
 #include <complex>
 #include "Vec3.hpp"
 #include "Utils.hpp"
+#include "raylib.h"
 
 namespace tls {
 
@@ -159,6 +160,10 @@ namespace tls {
         return *this;
     }
 
+    Vec3::operator Vector3() const {
+        return Vector3{static_cast<float>(_x), static_cast<float>(_y), static_cast<float>(_z)};
+    }
+
     Vec3 Vec3::normalized() const {
         double len = std::sqrt(dot(*this));
 
@@ -169,5 +174,6 @@ namespace tls {
     bool Vec3::operator==(const Vec3 &vector) const {
         return tls::Utils::equal(_x, vector._x) && tls::Utils::equal(_y, vector._y) && tls::Utils::equal(_z, vector._z);
     }
+
 
 } // tls

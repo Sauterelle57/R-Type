@@ -13,9 +13,9 @@ namespace ECS {
             void update(Coordinator &coo) {
                 for (auto const &entity : _entities) {
                     auto &transform = coo.getComponent<Transform>(entity);
-                    transform.position.y -= 0.1;
-                    if (transform.position.y < 0)
-                        transform.position.y = 20;
+                    transform.position._y -= 0.1;
+                    if (transform.position._y < 0)
+                        transform.position._y = 20;
                 }
             }
     };

@@ -15,14 +15,14 @@
 
 namespace ECS {
     struct Transform {
-        Vector3 position;
+        tls::Vec3 position;
         tls::Vec4 rotation;
         tls::Vec3 scale;
     };
 
     using ComponentType = std::uint8_t;
 
-    const ComponentType MAX_COMPONENTS = 128;
+    constexpr ComponentType MAX_COMPONENTS = 128;
 }
 
 #endif //RTYPE_COMPONENT_HPP

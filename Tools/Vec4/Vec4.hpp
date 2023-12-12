@@ -8,6 +8,8 @@
 #ifndef RTYPE_VEC4_HPP
 #define RTYPE_VEC4_HPP
 
+#include "raylib.h"
+
 namespace tls {
     class Vec4 {
         public:
@@ -42,6 +44,9 @@ namespace tls {
             Vec4 &operator/=(double value);
 
             bool operator==(const Vec4 &vector) const;
+
+            operator Vector4() const;
+
 
             Vec4 normalized() const;
 

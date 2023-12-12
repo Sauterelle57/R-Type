@@ -8,6 +8,8 @@
 #ifndef RTYPE_VEC3_HPP
 #define RTYPE_VEC3_HPP
 
+#include "raylib.h"
+
 namespace tls {
     class Vec3 {
         public:
@@ -40,6 +42,8 @@ namespace tls {
             Vec3 &operator+=(double value);
             Vec3 operator/(double value) const;
             Vec3 &operator/=(double value);
+
+            operator Vector3() const;
 
             bool operator==(const Vec3 &vector) const;
 
