@@ -1,16 +1,16 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** ICursor.hpp
 */
 
-#ifndef ZAPPY_GUI_ICURSOR_HPP
-#define ZAPPY_GUI_ICURSOR_HPP
+#ifndef raylib_ICURSOR_HPP
+#define raylib_ICURSOR_HPP
 
 struct Vector2;
 
-namespace ZappyGui {
+namespace RL {
     class ICursor {
         public:
             virtual ~ICursor() = default;
@@ -32,6 +32,6 @@ namespace ZappyGui {
             virtual void setMouseCursor(int cursor) = 0;
 };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_ICURSOR_HPP
+#endif //raylib_ICURSOR_HPP

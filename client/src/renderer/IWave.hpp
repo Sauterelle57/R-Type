@@ -1,18 +1,18 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IWave.hpp
 */
 
-#ifndef ZAPPY_GUI_IWAVE_HPP
-#define ZAPPY_GUI_IWAVE_HPP
+#ifndef raylib_IWAVE_HPP
+#define raylib_IWAVE_HPP
 
 #include <iostream>
 
 struct Wave;
 
-namespace ZappyGui {
+namespace RL {
 
     class IWave {
         public:
@@ -27,6 +27,6 @@ namespace ZappyGui {
             virtual bool exportAsCode(const std::string &fileName) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IWAVE_HPP
+#endif //raylib_IWAVE_HPP

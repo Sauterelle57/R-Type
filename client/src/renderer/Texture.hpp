@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Cursor.hpp
 */
 
-#ifndef ZAPPY_GUI_TEXTURE_HPP
-#define ZAPPY_GUI_TEXTURE_HPP
+#ifndef raylib_TEXTURE_HPP
+#define raylib_TEXTURE_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -17,7 +17,7 @@
 
 #include "ITexture.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZTexture : public ITexture {
         public:
@@ -162,6 +162,6 @@ namespace ZappyGui {
 
             std::shared_ptr<Texture> _texture;
     };
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_TEXTURE_HPP
+#endif //raylib_TEXTURE_HPP

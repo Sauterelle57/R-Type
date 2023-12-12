@@ -1,14 +1,14 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IModelAnimation.hpp
 */
 
-#ifndef ZAPPY_GUI_IMODELANIMATION_HPP
-#define ZAPPY_GUI_IMODELANIMATION_HPP
+#ifndef raylib_IMODELANIMATION_HPP
+#define raylib_IMODELANIMATION_HPP
 
-namespace ZappyGui {
+namespace RL {
 
     class IModelAnimation {
         public:
@@ -16,6 +16,6 @@ namespace ZappyGui {
             virtual ModelAnimation *getModelAnimation() = 0;
         };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMODELANIMATION_HPP
+#endif //raylib_IMODELANIMATION_HPP

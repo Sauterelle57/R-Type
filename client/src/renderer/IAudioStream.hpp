@@ -1,16 +1,16 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IAudioStream.hpp
 */
 
-#ifndef ZAPPY_GUI_IAUDIOSTREAM_HPP
-#define ZAPPY_GUI_IAUDIOSTREAM_HPP
+#ifndef raylib_IAUDIOSTREAM_HPP
+#define raylib_IAUDIOSTREAM_HPP
 
 typedef void (*AudioCallback)(void *bufferData, unsigned int frames);
 
-namespace ZappyGui {
+namespace RL {
 
     class IAudioStream {
         public:
@@ -34,6 +34,6 @@ namespace ZappyGui {
             virtual void detachAudioMixedProcessor(AudioCallback processor) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IAUDIOSTREAM_HPP
+#endif //raylib_IAUDIOSTREAM_HPP

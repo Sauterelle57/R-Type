@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Music.hpp
 */
 
-#ifndef ZAPPY_GUI_MUSIC_HPP
-#define ZAPPY_GUI_MUSIC_HPP
+#ifndef raylib_MUSIC_HPP
+#define raylib_MUSIC_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IMusic.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZMusic : public IMusic {
         public:
@@ -81,6 +81,6 @@ namespace ZappyGui {
             std::unique_ptr<Music> _music;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_MUSIC_HPP
+#endif //raylib_MUSIC_HPP

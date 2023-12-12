@@ -1,18 +1,18 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Audio.hpp
 */
 
-#ifndef ZAPPY_GUI_AUDIO_HPP
-#define ZAPPY_GUI_AUDIO_HPP
+#ifndef raylib_AUDIO_HPP
+#define raylib_AUDIO_HPP
 
 #include <iostream>
 #include <raylib.h>
 #include "IAudio.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZAudio : public IAudio {
         public:
@@ -32,6 +32,6 @@ namespace ZappyGui {
             };
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_AUDIO_HPP
+#endif //raylib_AUDIO_HPP

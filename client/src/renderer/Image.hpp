@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Image.hpp
 */
 
-#ifndef ZAPPY_GUI_IMAGE_HPP
-#define ZAPPY_GUI_IMAGE_HPP
+#ifndef raylib_IMAGE_HPP
+#define raylib_IMAGE_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IImage.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZImage : public IImage {
         public:
@@ -286,6 +286,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMAGE_HPP
+#endif //raylib_IMAGE_HPP

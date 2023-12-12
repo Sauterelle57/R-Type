@@ -1,19 +1,19 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Mode.hpp
 */
 
-#ifndef ZAPPY_GUI_MODE_HPP
-#define ZAPPY_GUI_MODE_HPP
+#ifndef raylib_MODE_HPP
+#define raylib_MODE_HPP
 
 #include <raylib.h>
 #include <iostream>
 
 #include "IMode.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZMode : public IMode {
         public:
@@ -51,6 +51,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_MODE_HPP
+#endif //raylib_MODE_HPP

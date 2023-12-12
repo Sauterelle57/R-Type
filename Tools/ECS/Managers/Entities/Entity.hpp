@@ -15,7 +15,7 @@
 namespace ECS {
     using Entity = std::uint32_t;
 
-    const Entity MAX_ENTITIES = 5000;
+    const Entity MAX_ENTITIES = 100;
 
     using Signature = std::bitset<MAX_COMPONENTS>;
 }

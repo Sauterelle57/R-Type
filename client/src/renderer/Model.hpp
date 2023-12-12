@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Model.hpp
 */
 
-#ifndef ZAPPY_GUI_MODEL_HPP
-#define ZAPPY_GUI_MODEL_HPP
+#ifndef raylib_MODEL_HPP
+#define raylib_MODEL_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IModel.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZModel : public IModel {
         public:
@@ -74,6 +74,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_MODEL_HPP
+#endif //raylib_MODEL_HPP

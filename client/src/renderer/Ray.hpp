@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Ray.hpp
 */
 
-#ifndef ZAPPY_GUI_RAY_HPP
-#define ZAPPY_GUI_RAY_HPP
+#ifndef raylib_RAY_HPP
+#define raylib_RAY_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IRay.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZRay : public IRay {
         public:
@@ -53,6 +53,6 @@ namespace ZappyGui {
             std::unique_ptr<Ray> _ray;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_RAY_HPP
+#endif //raylib_RAY_HPP

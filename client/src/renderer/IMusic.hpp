@@ -1,14 +1,14 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IMusic.hpp
 */
 
-#ifndef ZAPPY_GUI_IMUSIC_HPP
-#define ZAPPY_GUI_IMUSIC_HPP
+#ifndef raylib_IMUSIC_HPP
+#define raylib_IMUSIC_HPP
 
-namespace ZappyGui {
+namespace RL {
 
     class IMusic {
         public:
@@ -28,6 +28,6 @@ namespace ZappyGui {
             virtual float getTimePlayed() = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMUSIC_HPP
+#endif //raylib_IMUSIC_HPP

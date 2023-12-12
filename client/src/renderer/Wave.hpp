@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Wave.hpp
 */
 
-#ifndef ZAPPY_GUI_WAVE_HPP
-#define ZAPPY_GUI_WAVE_HPP
+#ifndef raylib_WAVE_HPP
+#define raylib_WAVE_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IWave.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZWave : public IWave {
         public:
@@ -60,6 +60,6 @@ namespace ZappyGui {
             std::unique_ptr<Wave> _wave;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_WAVE_HPP
+#endif //raylib_WAVE_HPP

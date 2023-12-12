@@ -1,16 +1,16 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IEvent.hpp
 */
 
-#ifndef ZAPPY_GUI_IEVENT_HPP
-#define ZAPPY_GUI_IEVENT_HPP
+#ifndef raylib_IEVENT_HPP
+#define raylib_IEVENT_HPP
 
 #include <iostream>
 
-namespace ZappyGui {
+namespace RL {
 
     class IEvent {
         public:
@@ -43,6 +43,6 @@ namespace ZappyGui {
             virtual int getTouchY() = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IEVENT_HPP
+#endif //raylib_IEVENT_HPP

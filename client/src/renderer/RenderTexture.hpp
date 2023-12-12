@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** RenderTexture.hpp
 */
 
-#ifndef ZAPPY_GUI_RENDERTEXTURE_HPP
-#define ZAPPY_GUI_RENDERTEXTURE_HPP
+#ifndef raylib_RENDERTEXTURE_HPP
+#define raylib_RENDERTEXTURE_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IRenderTexture.hpp"
 
-namespace ZappyGui {
+namespace RL {
     class ZRenderTexture2D : IRenderTexture {
         public:
             ZRenderTexture2D(int width, int height) {
@@ -32,6 +32,6 @@ namespace ZappyGui {
             std::unique_ptr<RenderTexture2D> _target;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_RENDERTEXTURE_HPP
+#endif //raylib_RENDERTEXTURE_HPP

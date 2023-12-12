@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IRay.hpp
 */
 
-#ifndef ZAPPY_GUI_IRAY_HPP
-#define ZAPPY_GUI_IRAY_HPP
+#ifndef raylib_IRAY_HPP
+#define raylib_IRAY_HPP
 
 struct RayCollision;
 struct Vector3;
@@ -15,7 +15,7 @@ struct Mesh;
 struct Matrix;
 struct Color;
 
-namespace ZappyGui {
+namespace RL {
 
     class IRay {
         public:
@@ -28,6 +28,6 @@ namespace ZappyGui {
             virtual void draw(Color color) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IRAY_HPP
+#endif //raylib_IRAY_HPP

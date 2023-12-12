@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IMaterial.hpp
 */
 
-#ifndef ZAPPY_GUI_IMATERIAL_HPP
-#define ZAPPY_GUI_IMATERIAL_HPP
+#ifndef raylib_IMATERIAL_HPP
+#define raylib_IMATERIAL_HPP
 
 #include <iostream>
 
@@ -14,7 +14,7 @@
 
 struct Texture;
 
-namespace ZappyGui {
+namespace RL {
 
     class IMaterial {
         public:
@@ -24,6 +24,6 @@ namespace ZappyGui {
             virtual std::unique_ptr<Material> &getMaterial() = 0;
             };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMATERIAL_HPP
+#endif //raylib_IMATERIAL_HPP

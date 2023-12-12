@@ -1,19 +1,19 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Camera2D.hpp
 */
 
-#ifndef ZAPPY_GUI_CAMERA2D_HPP
-#define ZAPPY_GUI_CAMERA2D_HPP
+#ifndef raylib_CAMERA2D_HPP
+#define raylib_CAMERA2D_HPP
 
 #include <iostream>
 #include <raylib.h>
 #include <memory>
 #include "ICamera2D.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZCamera2D : public ICamera2D {
         public:
@@ -37,6 +37,6 @@ namespace ZappyGui {
             std::unique_ptr<Camera2D> _camera;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_CAMERA2D_HPP
+#endif //raylib_CAMERA2D_HPP

@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IFont.hpp
 */
 
-#ifndef ZAPPY_GUI_IFONT_HPP
-#define ZAPPY_GUI_IFONT_HPP
+#ifndef raylib_IFONT_HPP
+#define raylib_IFONT_HPP
 
 #include <iostream>
 struct Image;
@@ -15,7 +15,7 @@ struct Rectangle;
 struct Color;
 struct Vector2;
 
-namespace ZappyGui {
+namespace RL {
 
     class IFont {
         public:
@@ -43,6 +43,6 @@ namespace ZappyGui {
             virtual std::string rCodepointToUTF8(int codepoint, int *utf8Size) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IFONT_HPP
+#endif //raylib_IFONT_HPP

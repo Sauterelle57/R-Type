@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Mesh.hpp
 */
 
-#ifndef ZAPPY_GUI_MESH_HPP
-#define ZAPPY_GUI_MESH_HPP
+#ifndef raylib_MESH_HPP
+#define raylib_MESH_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IMesh.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZMesh : public IMesh {
         public:
@@ -122,6 +122,6 @@ namespace ZappyGui {
             bool _canUnload = true;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_MESH_HPP
+#endif //raylib_MESH_HPP

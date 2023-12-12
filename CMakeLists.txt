@@ -111,6 +111,7 @@ add_executable(rtype_client
         client/src/renderer/Utils.hpp
         client/src/renderer/Wave.hpp
         client/src/renderer/Window.hpp
+        Tools/ECS/Managers/Systems/Move.hpp
 )
 
 

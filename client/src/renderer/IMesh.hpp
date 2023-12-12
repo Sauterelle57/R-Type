@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IMesh.hpp
 */
 
-#ifndef ZAPPY_GUI_IMESH_HPP
-#define ZAPPY_GUI_IMESH_HPP
+#ifndef raylib_IMESH_HPP
+#define raylib_IMESH_HPP
 
 #include <iostream>
 
@@ -16,7 +16,7 @@ struct BoundingBox;
 struct Image;
 struct Vector3;
 
-namespace ZappyGui {
+namespace RL {
 
     class IMesh {
         public:
@@ -44,6 +44,6 @@ namespace ZappyGui {
             virtual void setCanUnload(bool canUnload) = 0;
             };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMESH_HPP
+#endif //raylib_IMESH_HPP

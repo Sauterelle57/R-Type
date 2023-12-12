@@ -16,67 +16,70 @@
 namespace ECS {
     class Coordinator {
         public:
-            void Init() {
+            Coordinator() = default;
+            ~Coordinator() = default;
+
+            void init() {
                 _componentManager = std::make_unique<ComponentManager>();
                 _entityManager = std::make_unique<EntityManager>();
                 _systemManager = std::make_unique<SystemManager>();
             }
 
-            Entity CreateEntity() {
-                return _entityManager->CreateEntity();
+            Entity createEntity() {
+                return _entityManager->createEntity();
             }
 
-            void DestroyEntity(Entity entity) {
-                _entityManager->DestroyEntity(entity);
-                _componentManager->EntityDestroyed(entity);
-                _systemManager->EntityDestroyed(entity);
-            }
-
-            template<typename T>
-            void RegisterComponent() {
-                _componentManager->RegisterComponent<T>();
+            void destroyEntity(Entity entity) {
+                _entityManager->destroyEntity(entity);
+                _componentManager->entityDestroyed(entity);
+                _systemManager->entityDestroyed(entity);
             }
 
             template<typename T>
-            void AddComponent(Entity entity, T component) {
-                _componentManager->AddComponent<T>(entity, component);
-
-                auto signature = _entityManager->GetSignature(entity);
-                signature.set(_componentManager->GetComponentType<T>(), true);
-                _entityManager->SetSignature(entity, signature);
-
-                _systemManager->EntitySignatureChanged(entity, signature);
+            void registerComponent() {
+                _componentManager->registerComponent<T>();
             }
 
             template<typename T>
-            void RemoveComponent(Entity entity) {
-                _componentManager->RemoveComponent<T>(entity);
+            void addComponent(Entity entity, T component) {
+                _componentManager->addComponent<T>(entity, component);
 
-                auto signature = _entityManager->GetSignature(entity);
-                signature.set(_componentManager->GetComponentType<T>(), false);
-                _entityManager->SetSignature(entity, signature);
+                auto signature = _entityManager->getSignature(entity);
+                signature.set(_componentManager->getComponentType<T>(), true);
+                _entityManager->setSignature(entity, signature);
 
-                _systemManager->EntitySignatureChanged(entity, signature);
+                _systemManager->entitySignatureChanged(entity, signature);
             }
 
             template<typename T>
-            T& GetComponent(Entity entity) {
-                return _componentManager->GetComponent<T>(entity);
+            void removeComponent(Entity entity) {
+                _componentManager->removeComponent<T>(entity);
+
+                auto signature = _entityManager->getSignature(entity);
+                signature.set(_componentManager->getComponentType<T>(), false);
+                _entityManager->setSignature(entity, signature);
+
+                _systemManager->entitySignatureChanged(entity, signature);
             }
 
             template<typename T>
-            ComponentType GetComponentType() {
-                return _componentManager->GetComponentType<T>();
+            T& getComponent(Entity entity) {
+                return _componentManager->getComponent<T>(entity);
             }
 
             template<typename T>
-            std::shared_ptr<T> RegisterSystem() {
-                return _systemManager->RegisterSystem<T>();
+            ComponentType getComponentType() {
+                return _componentManager->getComponentType<T>();
             }
 
             template<typename T>
-            void SetSystemSignature(Signature signature) {
-                _systemManager->SetSignature<T>(signature);
+            std::shared_ptr<T> registerSystem() {
+                return _systemManager->registerSystem<T>();
+            }
+
+            template<typename T>
+            void setSystemSignature(Signature signature) {
+                _systemManager->setSignature<T>(signature);
             }
 
         private:

@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Window.hpp
 */
 
-#ifndef ZAPPY_GUI_WINDOW_HPP
-#define ZAPPY_GUI_WINDOW_HPP
+#ifndef raylib_WINDOW_HPP
+#define raylib_WINDOW_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 #include "IWindow.hpp"
 #include "rlgl.h"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZWindow : public IWindow {
         public:
@@ -513,6 +513,6 @@ namespace ZappyGui {
             }
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_WINDOW_HPP
+#endif //raylib_WINDOW_HPP

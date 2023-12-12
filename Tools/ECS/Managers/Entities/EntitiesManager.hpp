@@ -25,32 +25,32 @@ namespace ECS {
                 }
             }
 
-            Entity CreateEntity() {
-                if (_livingEntityCount >= MAX_ENTITIES)
-                    throw tls::Error("Too many entities.");
+            Entity createEntity() {
+//                if (_livingEntityCount >= MAX_ENTITIES)
+//                    throw tls::Error("Too many entities.");
                 Entity id = _availableEntities.front();
                 _availableEntities.pop();
                 _livingEntityCount++;
                 return id;
             }
 
-            void DestroyEntity(Entity entity) {
-                if (_signatures[entity].any())
-                    throw tls::Error("Cannot destroy entity.");
+            void destroyEntity(Entity entity) {
+//                if (_signatures[entity].any())
+//                    throw tls::Error("Cannot destroy entity.");
                 _signatures[entity].reset();
                 _availableEntities.push(entity);
                 _livingEntityCount--;
             }
 
-            void SetSignature(Entity entity, Signature signature) {
-                if (_signatures[entity].any())
-                    throw tls::Error("Signature already exists.");
+            void setSignature(Entity entity, Signature signature) {
+//                if (_signatures[entity].any())
+//                    throw tls::Error("Signature already exists.");
                 _signatures[entity] = signature;
             }
 
-            Signature GetSignature(Entity entity) {
-                if (_signatures[entity].none())
-                    throw tls::Error("Signature does not exist.");
+            Signature getSignature(Entity entity) {
+//                if (_signatures[entity].none())
+//                    throw tls::Error("Signature does not exist.");
                 return _signatures[entity];
             }
 

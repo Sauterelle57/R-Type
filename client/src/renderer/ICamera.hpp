@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** ICamera.hpp
 */
 
-#ifndef ZAPPY_GUI_ICAMERA_HPP
-#define ZAPPY_GUI_ICAMERA_HPP
+#ifndef raylib_ICAMERA_HPP
+#define raylib_ICAMERA_HPP
 
 #include <iostream>
 #include <memory>
@@ -19,7 +19,7 @@ struct Texture;
 struct Color;
 struct Rectangle;
 
-namespace ZappyGui {
+namespace RL {
 
     class ICamera {
         public:
@@ -45,6 +45,6 @@ namespace ZappyGui {
             virtual void setProjection(int projection) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_ICAMERA_HPP
+#endif //raylib_ICAMERA_HPP

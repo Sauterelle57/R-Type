@@ -1,19 +1,19 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** ITexture.hpp
 */
 
-#ifndef ZAPPY_GUI_ITEXTURE_HPP
-#define ZAPPY_GUI_ITEXTURE_HPP
+#ifndef raylib_ITEXTURE_HPP
+#define raylib_ITEXTURE_HPP
 
 struct Rectangle;
 struct Color;
 struct Vector2;
 struct NPatchInfo;
 
-namespace ZappyGui {
+namespace RL {
 
     class ITexture {
         public:
@@ -34,6 +34,6 @@ namespace ZappyGui {
             virtual std::shared_ptr<Texture> getTexture() = 0;
         };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_ITEXTURE_HPP
+#endif //raylib_ITEXTURE_HPP

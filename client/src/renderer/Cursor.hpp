@@ -1,17 +1,17 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Cursor.hpp
 */
 
-#ifndef ZAPPY_GUI_CURSOR_HPP
-#define ZAPPY_GUI_CURSOR_HPP
+#ifndef raylib_CURSOR_HPP
+#define raylib_CURSOR_HPP
 
 #include <raylib.h>
 #include "ICursor.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZCursor : public ICursor {
         public:
@@ -83,6 +83,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_CURSOR_HPP
+#endif //raylib_CURSOR_HPP

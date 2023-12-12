@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IImage.hpp
 */
 
-#ifndef ZAPPY_GUI_IIMAGE_HPP
-#define ZAPPY_GUI_IIMAGE_HPP
+#ifndef raylib_IIMAGE_HPP
+#define raylib_IIMAGE_HPP
 
 #include <iostream>
 
@@ -16,7 +16,7 @@ struct Rectangle;
 struct Vector2;
 struct Font;
 
-namespace ZappyGui {
+namespace RL {
 
     class IImage {
         public:
@@ -72,6 +72,6 @@ namespace ZappyGui {
             virtual std::shared_ptr<Image> getImage() const = 0;
             };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IIMAGE_HPP
+#endif //raylib_IIMAGE_HPP

@@ -15,43 +15,43 @@ namespace ECS {
     class ComponentManager {
         public:
             template<typename T>
-            void RegisterComponent() {
+            void registerComponent() {
                 const char* typeName = typeid(T).name();
-                if (_componentTypes.find(typeName) != _componentTypes.end())
-                    throw tls::Error("Registering component more than once.");
+//                if (_componentTypes.find(typeName) != _componentTypes.end())
+//                    throw tls::Error("Registering component more than once.");
                 _componentTypes.insert({typeName, _nextComponentType});
                 _componentArrays.insert({typeName, std::make_shared<ComponentArray<T>>()});
                 _nextComponentType++;
             }
 
             template<typename T>
-            ComponentType GetComponentType() {
+            ComponentType getComponentType() {
                 const char* typeName = typeid(T).name();
 
-                if (_componentTypes.find(typeName) == _componentTypes.end())
-                    throw tls::Error("Component used before registered.");
+//                if (_componentTypes.find(typeName) == _componentTypes.end())
+//                    throw tls::Error("Component used before registered.");
                 return _componentTypes[typeName];
             }
 
             template<typename T>
-            void AddComponent(Entity entity, T component) {
-                GetComponentArray<T>()->InsertData(entity, component);
+            void addComponent(Entity entity, T component) {
+                getComponentArray<T>()->insertData(entity, component);
             }
 
             template<typename T>
-            void RemoveComponent(Entity entity) {
-                GetComponentArray<T>()->RemoveData(entity);
+            void removeComponent(Entity entity) {
+                getComponentArray<T>()->removeData(entity);
             }
 
             template<typename T>
-            T& GetComponent(Entity entity) {
-                return GetComponentArray<T>()->GetData(entity);
+            T& getComponent(Entity entity) {
+                return getComponentArray<T>()->getData(entity);
             }
 
-            void EntityDestroyed(Entity entity) {
+            void entityDestroyed(Entity entity) {
                 for (auto const& pair : _componentArrays) {
                     auto const& component = pair.second;
-                    component->EntityDestroyed(entity);
+                    component->entityDestroyed(entity);
                 }
             }
 
@@ -61,11 +61,11 @@ namespace ECS {
             ComponentType _nextComponentType{};
 
             template<typename T>
-            std::shared_ptr<ComponentArray<T>> GetComponentArray() {
+            std::shared_ptr<ComponentArray<T>> getComponentArray() {
                 const char* typeName = typeid(T).name();
 
-                if (_componentTypes.find(typeName) == _componentTypes.end())
-                    throw tls::Error("Component used before registered.");
+//                if (_componentTypes.find(typeName) == _componentTypes.end())
+//                    throw tls::Error("Component used before registered.");
                 return std::static_pointer_cast<ComponentArray<T>>(_componentArrays[typeName]);
             }
     };

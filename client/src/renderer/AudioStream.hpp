@@ -1,19 +1,19 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** AudioStream.hpp
 */
 
-#ifndef ZAPPY_GUI_AUDIOSTREAM_HPP
-#define ZAPPY_GUI_AUDIOSTREAM_HPP
+#ifndef raylib_AUDIOSTREAM_HPP
+#define raylib_AUDIOSTREAM_HPP
 
 #include "IAudioStream.hpp"
 #include <iostream>
 #include <memory>
 #include "raylib.h"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZAudioStream : public IAudioStream {
         public:
@@ -96,6 +96,6 @@ namespace ZappyGui {
             std::unique_ptr<AudioStream> _audioStream;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_AUDIOSTREAM_HPP
+#endif //raylib_AUDIOSTREAM_HPP

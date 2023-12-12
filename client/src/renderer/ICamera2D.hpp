@@ -1,16 +1,16 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** ICamera2D.hpp
 */
 
-#ifndef ZAPPY_GUI_ICAMERA2D_HPP
-#define ZAPPY_GUI_ICAMERA2D_HPP
+#ifndef raylib_ICAMERA2D_HPP
+#define raylib_ICAMERA2D_HPP
 
 struct Matrix;
 
-namespace ZappyGui {
+namespace RL {
 
     class ICamera2D {
         public:
@@ -20,6 +20,6 @@ namespace ZappyGui {
             virtual void endMode() = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_ICAMERA2D_HPP
+#endif //raylib_ICAMERA2D_HPP

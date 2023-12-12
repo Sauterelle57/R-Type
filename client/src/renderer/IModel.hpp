@@ -1,19 +1,19 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IModel.hpp
 */
 
-#ifndef ZAPPY_GUI_IMODEL_HPP
-#define ZAPPY_GUI_IMODEL_HPP
+#ifndef raylib_IMODEL_HPP
+#define raylib_IMODEL_HPP
 
 struct BoundingBox;
 struct Vector3;
 struct Color;
 struct ModelAnimation;
 
-namespace ZappyGui {
+namespace RL {
 
     class IModel {
         public:
@@ -30,6 +30,6 @@ namespace ZappyGui {
             virtual std::shared_ptr<Model> getModel() = 0;
             };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMODEL_HPP
+#endif //raylib_IMODEL_HPP

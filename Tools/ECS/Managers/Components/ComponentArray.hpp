@@ -17,15 +17,15 @@ namespace ECS {
     class IComponentArray {
         public:
             virtual ~IComponentArray() = default;
-            virtual void EntityDestroyed(Entity entity) = 0;
+            virtual void entityDestroyed(Entity entity) = 0;
     };
 
     template<typename T>
     class ComponentArray : public IComponentArray {
         public:
-            void InsertData(Entity entity, T component) {
-                if (_entityToIndexMap.find(entity) != _entityToIndexMap.end())
-                    throw tls::Error("Component added to same entity more than once.");
+            void insertData(Entity entity, T component) {
+//                if (_entityToIndexMap.find(entity) != _entityToIndexMap.end())
+//                    throw tls::Error("Component added to same entity more than once.");
                 size_t newIndex = _size;
                 _entityToIndexMap[entity] = newIndex;
                 _indexToEntityMap[newIndex] = entity;
@@ -33,9 +33,9 @@ namespace ECS {
                 _size++;
             }
 
-            void RemoveData(Entity entity) {
-                if (_entityToIndexMap.find(entity) == _entityToIndexMap.end())
-                    throw tls::Error("Removing non-existent component.");
+            void removeData(Entity entity) {
+//                if (_entityToIndexMap.find(entity) == _entityToIndexMap.end())
+//                    throw tls::Error("Removing non-existent component.");
                 size_t indexOfRemovedEntity = _entityToIndexMap[entity];
                 size_t indexOfLastElement = _size - 1;
                 _componentArray[indexOfRemovedEntity] = _componentArray[indexOfLastElement];
@@ -50,16 +50,16 @@ namespace ECS {
                 _size--;
             }
 
-            T& GetData(Entity entity) {
-                if (_entityToIndexMap.find(entity) == _entityToIndexMap.end())
-                    throw tls::Error("Retrieving non-existent component.");
+            T& getData(Entity entity) {
+//                if (_entityToIndexMap.find(entity) == _entityToIndexMap.end())
+//                    throw tls::Error("Retrieving non-existent component.");
 
                 return _componentArray[_entityToIndexMap[entity]];
             }
 
-            void EntityDestroyed(Entity entity) override {
+            void entityDestroyed(Entity entity) override {
                 if (_entityToIndexMap.find(entity) != _entityToIndexMap.end()) {
-                    RemoveData(entity);
+                    removeData(entity);
                 }
             }
 

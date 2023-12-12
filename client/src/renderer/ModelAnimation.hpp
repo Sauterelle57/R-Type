@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** ModelAnimation.hpp
 */
 
-#ifndef ZAPPY_GUI_MODELANIMATION_HPP
-#define ZAPPY_GUI_MODELANIMATION_HPP
+#ifndef raylib_MODELANIMATION_HPP
+#define raylib_MODELANIMATION_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,11 +14,11 @@
 
 #include "IModelAnimation.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZModelAnimation : public IModelAnimation {
         public:
-            ZModelAnimation(const std::string &fileName, int *animCount) {
+            ZModelAnimation(const std::string &fileName, unsigned int *animCount) {
                 _modelAnimation = LoadModelAnimations(fileName.c_str(), animCount);
             };
 
@@ -34,6 +34,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_MODELANIMATION_HPP
+#endif //raylib_MODELANIMATION_HPP

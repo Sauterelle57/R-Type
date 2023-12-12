@@ -1,14 +1,14 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IAudio.hpp
 */
 
-#ifndef ZAPPY_GUI_IAUDIO_HPP
-#define ZAPPY_GUI_IAUDIO_HPP
+#ifndef raylib_IAUDIO_HPP
+#define raylib_IAUDIO_HPP
 
-namespace ZappyGui {
+namespace RL {
 
     class IAudio {
         public:
@@ -19,6 +19,6 @@ namespace ZappyGui {
             virtual void setMasterVolume(float volume) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IAUDIO_HPP
+#endif //raylib_IAUDIO_HPP

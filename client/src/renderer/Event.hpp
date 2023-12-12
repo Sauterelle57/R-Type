@@ -1,18 +1,18 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Event.hpp
 */
 
-#ifndef ZAPPY_GUI_EVENT_HPP
-#define ZAPPY_GUI_EVENT_HPP
+#ifndef raylib_EVENT_HPP
+#define raylib_EVENT_HPP
 
 #include <raylib.h>
 #include "IEvent.hpp"
 #include <iostream>
 
-namespace ZappyGui {
+namespace RL {
 
     class ZEvent : public IEvent {
         public:
@@ -121,6 +121,6 @@ namespace ZappyGui {
             };
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_EVENT_HPP
+#endif //raylib_EVENT_HPP

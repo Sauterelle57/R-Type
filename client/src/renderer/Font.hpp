@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Font.hpp
 */
 
-#ifndef ZAPPY_GUI_FONT_HPP
-#define ZAPPY_GUI_FONT_HPP
+#ifndef raylib_FONT_HPP
+#define raylib_FONT_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IFont.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZFont : public IFont {
         public:
@@ -114,6 +114,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_FONT_HPP
+#endif //raylib_FONT_HPP

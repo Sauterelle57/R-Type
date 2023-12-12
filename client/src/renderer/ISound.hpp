@@ -1,14 +1,14 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** ISound.hpp
 */
 
-#ifndef ZAPPY_GUI_ISOUND_HPP
-#define ZAPPY_GUI_ISOUND_HPP
+#ifndef raylib_ISOUND_HPP
+#define raylib_ISOUND_HPP
 
-namespace ZappyGui {
+namespace RL {
 
     class ISound {
         public:
@@ -25,6 +25,6 @@ namespace ZappyGui {
             virtual void setSoundPan(float pan) = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_ISOUND_HPP
+#endif //raylib_ISOUND_HPP

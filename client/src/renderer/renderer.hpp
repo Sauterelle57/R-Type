@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** renderer.hpp
 */
 
-#ifndef ZAPPY_GUI_RENDERER_HPP
-#define ZAPPY_GUI_RENDERER_HPP
+#ifndef raylib_RENDERER_HPP
+#define raylib_RENDERER_HPP
 
 #include "Audio.hpp"
 #include "Ray.hpp"
@@ -31,4 +31,4 @@
 #include "Model.hpp"
 #include "Music.hpp"
 
-#endif //ZAPPY_GUI_RENDERER_HPP
+#endif //raylib_RENDERER_HPP

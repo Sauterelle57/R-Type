@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Sound.hpp
 */
 
-#ifndef ZAPPY_GUI_SOUND_HPP
-#define ZAPPY_GUI_SOUND_HPP
+#ifndef raylib_SOUND_HPP
+#define raylib_SOUND_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "ISound.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZSound : public ISound {
         public:
@@ -73,6 +73,6 @@ namespace ZappyGui {
             std::unique_ptr<Sound> _sound;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_SOUND_HPP
+#endif //raylib_SOUND_HPP

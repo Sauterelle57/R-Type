@@ -18,11 +18,11 @@ namespace ECS {
     class SystemManager {
         public:
             template<typename T>
-            std::shared_ptr<T> RegisterSystem() {
+            std::shared_ptr<T> registerSystem() {
                 const char *typeName = typeid(T).name();
 
-                if (_systems.find(typeName) != _systems.end())
-                    throw tls::Error("Registering system more than once.");
+//                if (_systems.find(typeName) != _systems.end())
+//                    throw tls::Error("Registering system more than once.");
 
                 auto system = std::make_shared<T>();
                 _systems.insert({typeName, system});
@@ -30,16 +30,16 @@ namespace ECS {
             }
 
             template<typename T>
-            void SetSignature(Signature signature) {
+            void setSignature(Signature signature) {
                 const char *typeName = typeid(T).name();
 
-                if (_systems.find(typeName) == _systems.end())
-                    throw tls::Error("System used before registered.");
+//                if (_systems.find(typeName) == _systems.end())
+//                    throw tls::Error("System used before registered.");
 
                 _signatures.insert({typeName, signature});
             }
 
-            void EntityDestroyed(Entity entity) {
+            void entityDestroyed(Entity entity) {
                 for (auto const &pair: _systems) {
                     auto const &system = pair.second;
 
@@ -47,7 +47,7 @@ namespace ECS {
                 }
             }
 
-            void EntitySignatureChanged(Entity entity, Signature entitySignature) {
+            void entitySignatureChanged(Entity entity, Signature entitySignature) {
                 for (auto const &pair: _systems) {
                     auto const &type = pair.first;
                     auto const &system = pair.second;

@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IShader.hpp
 */
 
-#ifndef ZAPPY_GUI_ISHADER_HPP
-#define ZAPPY_GUI_ISHADER_HPP
+#ifndef raylib_ISHADER_HPP
+#define raylib_ISHADER_HPP
 
 #include <iostream>
 #include <memory>
@@ -14,7 +14,7 @@
 struct Matrix;
 struct Texture;
 
-namespace ZappyGui {
+namespace RL {
 
     class IShader {
         public:
@@ -31,6 +31,6 @@ namespace ZappyGui {
             virtual std::unique_ptr<Shader> &getShader() = 0;
         };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_ISHADER_HPP
+#endif //raylib_ISHADER_HPP

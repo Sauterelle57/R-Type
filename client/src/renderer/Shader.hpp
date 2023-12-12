@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Shader.hpp
 */
 
-#ifndef ZAPPY_GUI_SHADER_HPP
-#define ZAPPY_GUI_SHADER_HPP
+#ifndef raylib_SHADER_HPP
+#define raylib_SHADER_HPP
 
 #include <raylib.h>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #include "IShader.hpp"
 
-namespace ZappyGui {
+namespace RL {
 
     class ZShader : public IShader {
         public:
@@ -85,6 +85,6 @@ namespace ZappyGui {
 
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_SHADER_HPP
+#endif //raylib_SHADER_HPP

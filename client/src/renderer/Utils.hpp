@@ -1,18 +1,18 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** Utils.hpp
 */
 
-#ifndef ZAPPY_GUI_UTILS_HPP
-#define ZAPPY_GUI_UTILS_HPP
+#ifndef raylib_UTILS_HPP
+#define raylib_UTILS_HPP
 
 #include <raylib.h>
 #include <iostream>
 #include <raymath.h>
 
-namespace ZappyGui {
+namespace RL {
 
     class Utils {
         public:
@@ -56,7 +56,7 @@ namespace ZappyGui {
                 return SetSaveFileTextCallback(callback);
             };
 
-            static unsigned char *loadFileData(const std::string &fileName, int *bytesRead) {
+            static unsigned char *loadFileData(const std::string &fileName, unsigned int *bytesRead) {
                 return LoadFileData(fileName.c_str(), bytesRead);
             };
 
@@ -347,4 +347,4 @@ namespace ZappyGui {
 
 } // RayGui
 
-#endif //ZAPPY_GUI_UTILS_HPP
+#endif //raylib_UTILS_HPP

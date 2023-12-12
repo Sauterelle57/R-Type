@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IWindow.hpp
 */
 
-#ifndef ZAPPY_GUI_IWINDOW_HPP
-#define ZAPPY_GUI_IWINDOW_HPP
+#ifndef raylib_IWINDOW_HPP
+#define raylib_IWINDOW_HPP
 
 #include <iostream>
 #include "raylib.h"
@@ -20,7 +20,7 @@ struct Color;
 struct Rectangle;
 struct Font;
 
-namespace ZappyGui {
+namespace RL {
 
     class IWindow {
         public:
@@ -139,6 +139,6 @@ namespace ZappyGui {
             virtual void drawCubeTexture(Texture2D texture, Vector3 position, float width, float height, float length, Color color) = 0;
             };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IWINDOW_HPP
+#endif //raylib_IWINDOW_HPP

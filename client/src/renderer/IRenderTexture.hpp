@@ -1,14 +1,14 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IRenderTexture.hpp
 */
 
-#ifndef ZAPPY_GUI_IRENDERTEXTURE_HPP
-#define ZAPPY_GUI_IRENDERTEXTURE_HPP
+#ifndef raylib_IRENDERTEXTURE_HPP
+#define raylib_IRENDERTEXTURE_HPP
 
-namespace ZappyGui {
+namespace RL {
 
     class IRenderTexture {
         public:
@@ -16,6 +16,6 @@ namespace ZappyGui {
             virtual bool isReady() = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IRENDERTEXTURE_HPP
+#endif //raylib_IRENDERTEXTURE_HPP

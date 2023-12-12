@@ -1,17 +1,17 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** raylib
 ** File description:
 ** IMode.hpp
 */
 
-#ifndef ZAPPY_GUI_IMODE_HPP
-#define ZAPPY_GUI_IMODE_HPP
+#ifndef raylib_IMODE_HPP
+#define raylib_IMODE_HPP
 
 struct RenderTexture;
 struct VrStereoConfig;
 
-namespace ZappyGui {
+namespace RL {
 
     class IMode {
         public:
@@ -26,6 +26,6 @@ namespace ZappyGui {
             virtual void endVrStereo() = 0;
     };
 
-} // ZappyGui
+} // RL
 
-#endif //ZAPPY_GUI_IMODE_HPP
+#endif //raylib_IMODE_HPP

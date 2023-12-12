@@ -15,7 +15,7 @@
 
 namespace ECS {
     struct Transform {
-        tls::Vec3 position;
+        Vector3 position;
         tls::Vec4 rotation;
         tls::Vec3 scale;
     };
