@@ -13,15 +13,15 @@
 
 int main(void)
 {
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
 
     ZappyGui::Utils::setConfigFlags(FLAG_MSAA_4X_HINT);
     std::shared_ptr<ZappyGui::IWindow> window = std::make_shared<ZappyGui::ZWindow>(screenWidth, screenHeight, "R TYPE test light");
 
     std::shared_ptr<ZappyGui::ICamera> camera = std::make_shared<ZappyGui::ZCamera>();
-    camera->setPosition((Vector3){ 2.0f, 4.0f, 6.0f });
-    camera->setTarget((Vector3){ 0.0f, 0.0f, 0.0f });
+    camera->setPosition((Vector3){ 25.0f, 10.0f, 6.0f });
+    camera->setTarget((Vector3){ 0.0f, 8.0f, 0.0f });
     camera->setUp((Vector3){ 0.0f, 1.0f, 0.0f });
     camera->setFovy(45.0f);
     camera->setProjection(CAMERA_PERSPECTIVE);
@@ -30,7 +30,7 @@ int main(void)
     planMesh->genPlane(10.0f, 10.0f, 3, 3);
     planMesh->setCanUnload(false);
     std::shared_ptr<ZappyGui::ZMesh> cubeMesh = std::make_shared<ZappyGui::ZMesh>();
-    cubeMesh->genCube(2.0f, 4.0f, 2.0f);
+    cubeMesh->genCube(2.0f, 2.0f, 2.0f);
     cubeMesh->setCanUnload(false);
     std::shared_ptr<ZappyGui::ZModel> planModel = std::make_shared<ZappyGui::ZModel>(planMesh->getMesh());
     std::shared_ptr<ZappyGui::ZModel> cubeModel = std::make_shared<ZappyGui::ZModel>(cubeMesh->getMesh());
@@ -53,9 +53,14 @@ int main(void)
 
     SetTargetFPS(60);
 
+    Vector3 cubePos = { 0.0f, 20.0f, 0.0f };
+
+    std::shared_ptr<ZappyGui::ICursor> cursor = std::make_shared<ZappyGui::ZCursor>();
+    cursor->disable();
+
     while (!WindowShouldClose())
     {
-        camera->update(CAMERA_ORBITAL);
+        camera->update(CAMERA_FIRST_PERSON);
 
         float cameraPos[3] = { camera->getPosition().x, camera->getPosition().y, camera->getPosition().z };
         SetShaderValue(*shader->getShader(), shader->getShader()->locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
@@ -69,8 +74,9 @@ int main(void)
         window->beginDrawing();
         window->clearBackground(RAYWHITE);
         camera->beginMode();
+
         planModel->draw(Vector3Zero(), 1.0f, WHITE);
-        cubeModel->draw(Vector3Zero(), 1.0f, WHITE);
+        cubeModel->draw(cubePos, 1.0f, WHITE);
 
         for (int i = 0; i < MAX_LIGHTS; i++) {
             if (lights[i].enabled) DrawSphereEx(lights[i].position, 0.2f, 8, 8, lights[i].color);
@@ -82,6 +88,8 @@ int main(void)
         window->drawFPS(10, 10);
         window->drawText("Use keys [Y][R][G][B] to toggle lights", 10, 40, 20, DARKGRAY);
         window->endDrawing();
+        if (cubePos.y > 0.0f) cubePos.y -= 0.1f;
+        else cubePos.y = 20.0f;
     }
     return 0;
 }
