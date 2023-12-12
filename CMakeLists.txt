@@ -3,7 +3,10 @@ project(rtype)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# Find and link Boost
+# Find and link Boost Asio
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.83 REQUIRED COMPONENTS system date_time)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
