@@ -5,7 +5,10 @@ cmake_install.cmake
 Makefile
 
 ClientExecutable
+rtype_client
 ServerExecutable
+rtype_server
 
 .idea
 cmake-build-debug
+.vscode

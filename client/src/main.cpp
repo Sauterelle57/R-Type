@@ -56,7 +56,7 @@ int main(void)
     Vector3 cubePos = { 0.0f, 20.0f, 0.0f };
 
     std::shared_ptr<ZappyGui::ICursor> cursor = std::make_shared<ZappyGui::ZCursor>();
-    cursor->disable();
+    // cursor->disable();
 
     while (!WindowShouldClose())
     {

@@ -240,13 +240,13 @@ namespace ZappyGui {
                 return DrawLineBezier(startPos, endPos, thick, color);
             };
 
-            void drawLineBezierQuad(Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color) {
-                return DrawLineBezierQuad(startPos, endPos, controlPos, thick, color);
-            };
+            // void drawLineBezierQuad(Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color) {
+            //     return DrawLineBezierQuad(startPos, endPos, controlPos, thick, color);
+            // };
 
-            void drawLineBezierCubic(Vector2 startPos, Vector2 endPos, Vector2 startControlPos, Vector2 endControlPos, float thick, Color color) {
-                return DrawLineBezierCubic(startPos,  endPos,  startControlPos,  endControlPos, thick, color);
-            };
+            // void drawLineBezierCubic(Vector2 startPos, Vector2 endPos, Vector2 startControlPos, Vector2 endControlPos, float thick, Color color) {
+            //     return DrawLineBezierCubic(startPos,  endPos,  startControlPos,  endControlPos, thick, color);
+            // };
 
             void drawLineStrip(Vector2 *points, int pointCount, Color color) {
                 return DrawLineStrip(points, pointCount, color);

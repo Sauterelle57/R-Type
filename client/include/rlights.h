@@ -36,6 +36,7 @@
 //----------------------------------------------------------------------------------
 // Defines and Macros
 //----------------------------------------------------------------------------------
+#include <raylib.h>
 #define MAX_LIGHTS  4         // Max dynamic lights supported by shader
 
 //----------------------------------------------------------------------------------
@@ -43,14 +44,14 @@
 //----------------------------------------------------------------------------------
 
 // Light data
-typedef struct {   
+typedef struct {
     int type;
     bool enabled;
     Vector3 position;
     Vector3 target;
     Color color;
     float attenuation;
-    
+
     // Shader locations
     int enabledLoc;
     int typeLoc;
@@ -138,7 +139,7 @@ Light CreateLight(int type, Vector3 position, Vector3 target, Color color, Shade
         light.colorLoc = GetShaderLocation(shader, TextFormat("lights[%i].color", lightsCount));
 
         UpdateLightValues(shader, light);
-        
+
         lightsCount++;
     }
 
@@ -146,7 +147,7 @@ Light CreateLight(int type, Vector3 position, Vector3 target, Color color, Shade
 }
 
 // Send light properties to shader
-// NOTE: Light shader locations should be available 
+// NOTE: Light shader locations should be available
 void UpdateLightValues(Shader shader, Light light)
 {
     // Send to shader light enabled state and type

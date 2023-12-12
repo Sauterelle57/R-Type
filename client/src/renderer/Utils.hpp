@@ -56,7 +56,7 @@ namespace ZappyGui {
                 return SetSaveFileTextCallback(callback);
             };
 
-            static unsigned char *loadFileData(const std::string &fileName, unsigned int *bytesRead) {
+            static unsigned char *loadFileData(const std::string &fileName, int *bytesRead) {
                 return LoadFileData(fileName.c_str(), bytesRead);
             };
 

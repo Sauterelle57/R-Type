@@ -79,8 +79,8 @@ namespace ZappyGui {
             virtual void drawLineV(Vector2 startPos, Vector2 endPos, Color color) = 0;
             virtual void drawLineEx(Vector2 startPos, Vector2 endPos, float thick, Color color) = 0;
             virtual void drawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color) = 0;
-            virtual void drawLineBezierQuad(Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color) = 0;
-            virtual void drawLineBezierCubic(Vector2 startPos, Vector2 endPos, Vector2 startControlPos, Vector2 endControlPos, float thick, Color color) = 0;
+            // virtual void drawLineBezierQuad(Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color) = 0;
+            // virtual void drawLineBezierCubic(Vector2 startPos, Vector2 endPos, Vector2 startControlPos, Vector2 endControlPos, float thick, Color color) = 0;
             virtual void drawLineStrip(Vector2 *points, int pointCount, Color color) = 0;
             virtual void drawCircle(int centerX, int centerY, float radius, Color color) = 0;
             virtual void drawCircleSector(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color) = 0;
