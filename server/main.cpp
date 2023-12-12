@@ -1,6 +1,18 @@
+/*
+** EPITECH PROJECT, 2023
+** rtype
+** File description:
+** main.cpp
+*/
+
 #include <iostream>
 
+#include "ServerController.hpp"
+
 int main() {
-    std::cout << "Hello from Server!" << std::endl;
+    std::unique_ptr<rt::IServerController> serverCtrl = std::make_unique<rt::ServerController>(1234);
+
+    serverCtrl->run();
+
     return 0;
 }
