@@ -117,7 +117,7 @@ add_executable(rtype_client
 target_link_libraries(rtype_client raylib)
 
 # Web Configurations
-if (${PLATFORM} STREQUAL "Web")
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Tell Emscripten to build an example.html file.
     set_target_properties(rtype_client PROPERTIES SUFFIX ".html")
 endif()
