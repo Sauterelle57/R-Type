@@ -1,6 +1,6 @@
 #include "raylib.h"
 
-#define MAX_PARTICLES 100
+#define MAX_PARTICLES 10000
 
 typedef struct Particle {
     Vector3 position;
@@ -11,11 +11,11 @@ typedef struct Particle {
 
 Particle particles[MAX_PARTICLES];
 Texture2D particleTexture;
-Vector3 cubePosition = { 0.0f, 1.0f, 0.0f };
+Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
 void InitParticle(int index, Vector3 position) {
     particles[index].position = position;
-    particles[index].speed = (Vector3){ GetRandomValue(-10, 10)/300.0f, GetRandomValue(100, 200)/1000.0f, GetRandomValue(-10, 10)/300.0f };
+    particles[index].speed = (Vector3){ GetRandomValue(-10, 10)/300.0f, GetRandomValue(100, 200)/2000.0f, GetRandomValue(-10, 10)/300.0f };
     particles[index].alpha = 1.0f;
     particles[index].active = true;
 }
@@ -27,7 +27,7 @@ void UpdateParticles() {
             particles[i].position.x += particles[i].speed.x;
             particles[i].position.y += particles[i].speed.y;
             particles[i].position.z += particles[i].speed.z;
-            particles[i].alpha -= 0.025f;
+            particles[i].alpha -= 0.02f;
 
             if (particles[i].alpha <= 0.0f) particles[i].active = false;
         }
@@ -45,15 +45,18 @@ void EmitParticlesFromCube() {
 }
 
 
-void DrawParticles(Camera3D camera) {
+void DrawParticles(Camera3D camera, Shader shader) {
+    BeginShaderMode(shader);
     BeginBlendMode(BLEND_ADDITIVE);
     for (int i = 0; i < MAX_PARTICLES; i++) {
         if (particles[i].active) {
-            DrawBillboard(camera, particleTexture, particles[i].position, 0.2f, Fade(WHITE, particles[i].alpha));
+            DrawBillboard(camera, particleTexture, particles[i].position, 0.1f, Fade(WHITE, particles[i].alpha));
         }
     }
     EndBlendMode();
+    EndShaderMode();
 }
+
 
 int main(void) {
     InitWindow(1920, 1080, "rtype");
@@ -66,6 +69,11 @@ int main(void) {
     camera.projection = CAMERA_PERSPECTIVE;
 
     particleTexture = LoadTexture("./client/resources/particle.png");
+
+    Shader shader = LoadShader("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
+    int glowIntensityLoc = GetShaderLocation(shader, "glowIntensity");
+    float glowIntensity = 3.0f;
+    SetShaderValue(shader, glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
     SetTargetFPS(60);
 
@@ -80,8 +88,8 @@ int main(void) {
         ClearBackground(BLACK);
         BeginMode3D(camera);
         DrawGrid(10, 1.0f);
-        DrawCube(cubePosition, 2.0f, 2.0f, 2.0f, RED);
-        DrawParticles(camera);
+        DrawCylinder(cubePosition, 0.4f, 0.4f, 1.0f, 50, {200, 200, 200, 255});
+        DrawParticles(camera, shader);
         EndMode3D();
         EndDrawing();
     }
