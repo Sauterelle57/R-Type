@@ -36,6 +36,10 @@ namespace ECS {
                 _systemManager->entityDestroyed(entity);
             }
 
+            uint32_t getLivingEntityCount() {
+                return _entityManager->getLivingEntityCount();
+            }
+
             template<typename T>
             void registerComponent() {
                 _componentManager->registerComponent<T>();

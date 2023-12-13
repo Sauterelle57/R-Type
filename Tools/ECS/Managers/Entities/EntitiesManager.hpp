@@ -54,6 +54,10 @@ namespace ECS {
                 return _signatures[entity];
             }
 
+            uint32_t getLivingEntityCount() const {
+                return _livingEntityCount;
+            }
+
         private:
             std::queue<Entity> _availableEntities{};
             std::array<Signature, MAX_ENTITIES> _signatures{};

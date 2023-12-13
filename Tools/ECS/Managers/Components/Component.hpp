@@ -12,12 +12,17 @@
 #include "Utils.hpp"
 #include "Vec4.hpp"
 #include "Vec3.hpp"
+#include "renderer/Model.hpp"
 
 namespace ECS {
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
         tls::Vec3 scale;
+    };
+
+    struct Model {
+        std::shared_ptr<RL::IModel> model;
     };
 
     using ComponentType = std::uint8_t;

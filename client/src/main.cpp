@@ -1,4 +1,3 @@
-
 #include "raylib.h"
 #include "renderer/Window.hpp"
 #include "renderer/ICamera.hpp"
@@ -13,6 +12,7 @@
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 #include "Move.hpp"
+#include "DrawModel.hpp"
 #include <memory>
 
 int main(void)
@@ -66,13 +66,19 @@ int main(void)
     coordinator->init();
 
     coordinator->registerComponent<ECS::Transform>();
+    coordinator->registerComponent<ECS::Model>();
 
-    auto system = coordinator->registerSystem<ECS::Move>();
+    auto cubeSystemTest = coordinator->registerSystem<ECS::Move>();
+    auto playerSystemTest = coordinator->registerSystem<ECS::DrawModel>();
 
     ECS::Signature signature;
-
-    signature.set(coordinator->getComponentType<ECS::Move>());
+    signature.set(coordinator->getComponentType<ECS::Transform>());
     coordinator->setSystemSignature<ECS::Move>(signature);
+
+    ECS::Signature signature2;
+    signature2.set(coordinator->getComponentType<ECS::Transform>());
+    signature2.set(coordinator->getComponentType<ECS::DrawModel>());
+    coordinator->setSystemSignature<ECS::DrawModel>(signature2);
 
     std::vector<Entity> entities(ECS::MAX_ENTITIES);
 
@@ -82,21 +88,37 @@ int main(void)
     std::shared_ptr<RL::IEvent> event = std::make_shared<RL::ZEvent>();
     event->setExitKey(KEY_F4);
 
-    for (auto& entity : entities) {
-        entity = coordinator->createEntity();
+//    for (auto& entity : entities) {
+        entities[0] = coordinator->createEntity();
         coordinator->addComponent(
-            entity,
+            entities[0],
             ECS::Transform{
-                .position = {randPosition(generator), 0, randPosition(generator)},
+                .position = {100, 0, 100},
                 .rotation = {0, 0, 0, 0},
                 .scale = {0, 0, 0}
-            });
-    }
+            }
+        );
+//    }
 
-    while (!window->shouldClose())
-    {
+    entities[1] = coordinator->createEntity();
+    coordinator->addComponent(
+            entities[1],
+            ECS::Transform{
+                    .position = {0, 0, 0},
+                    .rotation = {0, 0, 0, 0},
+                    .scale = {0, 0, 0}
+            }
+    );
+    coordinator->addComponent(
+            entities[1],
+            ECS::Model{
+                .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb")
+            }
+    );
+
+    while (!window->shouldClose()) {
         if (cursor->isHidden())
-            camera->update(CAMERA_FIRST_PERSON);
+            camera->update(CAMERA_CUSTOM);
 
         float cameraPos[3] = { camera->getPosition().x, camera->getPosition().y, camera->getPosition().z };
         SetShaderValue(*shader->getShader(), shader->getShader()->locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
@@ -116,13 +138,20 @@ int main(void)
 
         planModel->draw(Vector3Zero(), 1.0f, WHITE);
 
-        for (auto& entity : entities) {
-            cubeModel->draw(coordinator->getComponent<ECS::Transform>(entity).position, 1.0f, WHITE);
-        }
+        int32_t entityCount = coordinator->getLivingEntityCount();
+        int32_t count = 0;
+//        for (auto& entity : entities) {
+//            if (count++ >= entityCount)
+//                break;
+//            cubeModel->draw(coordinator->getComponent<ECS::Transform>(entity).position, 1.0f, WHITE);
+//        }
 
-        for (int i = 0; i < MAX_LIGHTS; i++) {
-            if (lights[i].enabled) DrawSphereEx(lights[i].position, 0.2f, 8, 8, lights[i].color);
-            else DrawSphereWires(lights[i].position, 0.2f, 8, 8, ColorAlpha(lights[i].color, 0.3f));
+        playerSystemTest->update();
+
+
+        for (auto & light : lights) {
+            if (light.enabled) DrawSphereEx(light.position, 0.2f, 8, 8, light.color);
+            else DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
         }
 
         window->drawGrid(10, 1.0f);
@@ -130,7 +159,8 @@ int main(void)
         window->drawFPS(10, 10);
         window->drawText("Use keys [Y][R][G][B] to toggle lights", 10, 40, 20, DARKGRAY);
         window->endDrawing();
-        system->update();
+        cubeSystemTest->update();
+
     }
     return 0;
 }

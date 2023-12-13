@@ -1,14 +1,14 @@
 //
-// Created by noah on 12/12/23.
+// Created by noah on 12/13/23.
 //
 
-#ifndef RTYPE_MOVE_HPP
-#define RTYPE_MOVE_HPP
+#ifndef RTYPE_DRAWMODEL_HPP
+#define RTYPE_DRAWMODEL_HPP
 
 #include "System.hpp"
 
 namespace ECS {
-    class Move : public System {
+    class DrawModel : public System {
         public:
             void update() {
                 auto coordinatorPtr = _coordinator.lock();
@@ -22,16 +22,12 @@ namespace ECS {
                     if (count++ >= entityCount) {
                         return;
                     }
-                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                    auto &model = coordinatorPtr->getComponent<Model>(entity);
 
-                    transform.position._y -= 0.1;
-                    if (transform.position._y < 0) {
-                        transform.position._y = 20;
-                    }
+                    model.model->draw(coordinatorPtr->getComponent<Transform>(entity).position, 1.0f, WHITE);
                 }
             }
     };
 }
 
-
-#endif //RTYPE_MOVE_HPP
+#endif //RTYPE_DRAWMODEL_HPP
