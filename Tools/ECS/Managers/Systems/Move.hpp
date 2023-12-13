@@ -10,15 +10,22 @@
 namespace ECS {
     class Move : public System {
         public:
-            void update(Coordinator &coo) {
+            void update() {
+                auto coordinatorPtr = _coordinator.lock();
+                if (!coordinatorPtr) {
+                    return;
+                }
+
                 for (auto const &entity : _entities) {
-                    auto &transform = coo.getComponent<Transform>(entity);
+                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     transform.position._y -= 0.1;
-                    if (transform.position._y < 0)
+                    if (transform.position._y < 0) {
                         transform.position._y = 20;
+                    }
                 }
             }
     };
 }
+
 
 #endif //RTYPE_MOVE_HPP

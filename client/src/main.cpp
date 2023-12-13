@@ -62,17 +62,17 @@ int main(void)
     std::shared_ptr<RL::ICursor> cursor = std::make_shared<RL::ZCursor>();
     cursor->disable();
 
-    ECS::Coordinator coordinator = ECS::Coordinator();
-    coordinator.init();
+    std::shared_ptr<ECS::Coordinator> coordinator = std::make_shared<ECS::Coordinator>();
+    coordinator->init();
 
-    coordinator.registerComponent<ECS::Transform>();
+    coordinator->registerComponent<ECS::Transform>();
 
-    auto system = coordinator.registerSystem<ECS::Move>();
+    auto system = coordinator->registerSystem<ECS::Move>();
 
     ECS::Signature signature;
 
-    signature.set(coordinator.getComponentType<ECS::Move>());
-    coordinator.setSystemSignature<ECS::Move>(signature);
+    signature.set(coordinator->getComponentType<ECS::Move>());
+    coordinator->setSystemSignature<ECS::Move>(signature);
 
     std::vector<Entity> entities(ECS::MAX_ENTITIES);
 
@@ -83,8 +83,8 @@ int main(void)
     event->setExitKey(KEY_F4);
 
     for (auto& entity : entities) {
-        entity = coordinator.createEntity();
-        coordinator.addComponent(
+        entity = coordinator->createEntity();
+        coordinator->addComponent(
             entity,
             ECS::Transform{
                 .position = {randPosition(generator), 0, randPosition(generator)},
@@ -117,7 +117,7 @@ int main(void)
         planModel->draw(Vector3Zero(), 1.0f, WHITE);
 
         for (auto& entity : entities) {
-            cubeModel->draw(coordinator.getComponent<ECS::Transform>(entity).position, 1.0f, WHITE);
+            cubeModel->draw(coordinator->getComponent<ECS::Transform>(entity).position, 1.0f, WHITE);
         }
 
         for (int i = 0; i < MAX_LIGHTS; i++) {
@@ -130,7 +130,7 @@ int main(void)
         window->drawFPS(10, 10);
         window->drawText("Use keys [Y][R][G][B] to toggle lights", 10, 40, 20, DARKGRAY);
         window->endDrawing();
-        system->update(coordinator);
+        system->update();
     }
     return 0;
 }

@@ -15,8 +15,11 @@
 #include "System.hpp"
 
 namespace ECS {
+    class Coordinator;
     class SystemManager {
         public:
+            SystemManager(std::weak_ptr<Coordinator> &coordinator) : _coordinator(coordinator) {};
+            ~SystemManager() = default;
             template<typename T>
             std::shared_ptr<T> registerSystem() {
                 const char *typeName = typeid(T).name();
@@ -24,7 +27,7 @@ namespace ECS {
 //                if (_systems.find(typeName) != _systems.end())
 //                    throw tls::Error("Registering system more than once.");
 
-                auto system = std::make_shared<T>();
+                auto system = std::make_shared<T>(_coordinator);
                 _systems.insert({typeName, system});
                 return system;
             }
@@ -63,6 +66,7 @@ namespace ECS {
             }
 
         private:
+            std::weak_ptr<Coordinator> _coordinator;
             std::unordered_map<const char *, Signature> _signatures{};
             std::unordered_map<const char *, std::shared_ptr<System>> _systems{};
     };

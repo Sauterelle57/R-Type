@@ -9,12 +9,19 @@
 #define RTYPE_SYSTEM_HPP
 
 #include "Entity.hpp"
+#include "Coordinator.hpp"
 #include <set>
 
 namespace ECS {
+    class Coordinator;
     class System {
         public:
+            System(std::weak_ptr<Coordinator> &coordinator) {
+                _coordinator = coordinator;
+            };
+            ~System() = default;
             std::set<Entity> _entities;
+            std::weak_ptr<Coordinator> _coordinator;
     };
 }
 

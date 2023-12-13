@@ -14,7 +14,7 @@
 #include "SystemsManager.hpp"
 
 namespace ECS {
-    class Coordinator {
+    class Coordinator : public std::enable_shared_from_this<Coordinator>{
         public:
             Coordinator() = default;
             ~Coordinator() = default;
@@ -22,7 +22,8 @@ namespace ECS {
             void init() {
                 _componentManager = std::make_unique<ComponentManager>();
                 _entityManager = std::make_unique<EntityManager>();
-                _systemManager = std::make_unique<SystemManager>();
+                std::weak_ptr<Coordinator> weakThis = shared_from_this();
+                _systemManager = std::make_unique<SystemManager>(weakThis);
             }
 
             Entity createEntity() {
