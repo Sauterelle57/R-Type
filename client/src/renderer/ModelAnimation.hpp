@@ -18,7 +18,7 @@ namespace RL {
 
     class ZModelAnimation : public IModelAnimation {
         public:
-            ZModelAnimation(const std::string &fileName, unsigned int *animCount) {
+            ZModelAnimation(const std::string &fileName, int *animCount) {
                 _modelAnimation = LoadModelAnimations(fileName.c_str(), animCount);
             };
 
