@@ -9,10 +9,11 @@
 #define RTYPE_COMPONENT_HPP
 
 #include <cstdint>
-#include "Utils.hpp"
-#include "Vec4.hpp"
-#include "Vec3.hpp"
-#include "renderer/Model.hpp"
+#include <memory>
+#include "../../../Utils/Utils.hpp"
+#include "../../../Vec4/Vec4.hpp"
+#include "../../../Vec3/Vec3.hpp"
+#include "../../../../client/src/renderer/IModel.hpp"
 
 namespace ECS {
     struct Transform {

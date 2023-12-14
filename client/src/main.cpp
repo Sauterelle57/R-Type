@@ -1,18 +1,18 @@
 #include "raylib.h"
+#include "raymath.h"
 #include "renderer/Window.hpp"
 #include "renderer/ICamera.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/renderer.hpp"
-#include "Coordinator.hpp"
-
-#include "raymath.h"
-#include <cstdlib>
-#include <random>
+#include "../../Tools/ECS/Managers/Coordinator/Coordinator.hpp"
+#include "../../Tools/ECS/Managers/Systems/Move.hpp"
 
 #define RLIGHTS_IMPLEMENTATION
-#include "rlights.h"
-#include "Move.hpp"
-#include "DrawModel.hpp"
+#include "../include/rlights.h"
+
+#include <cstdlib>
+#include <random>
+#include "../../Tools/ECS/Managers/Systems/DrawModel.hpp"
 #include <memory>
 
 int main(void)

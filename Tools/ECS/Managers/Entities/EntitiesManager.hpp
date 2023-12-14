@@ -12,7 +12,7 @@
 #include <queue>
 #include <array>
 #include "Entity.hpp"
-#include "Error.hpp"
+#include "../../../Error/Error.hpp"
 
 using Entity = std::uint32_t;
 

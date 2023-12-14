@@ -10,7 +10,7 @@
 
 #include <cstdint>
 #include <bitset>
-#include "Component.hpp"
+#include "../Components/Component.hpp"
 
 namespace ECS {
     using Entity = std::uint32_t;

@@ -8,9 +8,10 @@
 #ifndef RTYPE_SYSTEM_HPP
 #define RTYPE_SYSTEM_HPP
 
-#include "Entity.hpp"
-#include "Coordinator.hpp"
+#include <memory>
 #include <set>
+#include "../Entities/Entity.hpp"
+// #include "../Coordinator/Coordinator.hpp"
 
 namespace ECS {
     class Coordinator;

@@ -9,8 +9,8 @@
 #define RTYPE_COMPONENTARRAY_HPP
 
 #include <unordered_map>
-#include "Entity.hpp"
-#include "Error.hpp"
+#include "../Entities/Entity.hpp"
+#include "../../../Error/Error.hpp"
 
 namespace ECS {
 

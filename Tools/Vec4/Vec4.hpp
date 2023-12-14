@@ -8,7 +8,7 @@
 #ifndef RTYPE_VEC4_HPP
 #define RTYPE_VEC4_HPP
 
-#include "raylib.h"
+#include <raylib.h>
 
 namespace tls {
     class Vec4 {

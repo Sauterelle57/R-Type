@@ -2,10 +2,10 @@
 // Created by noah on 12/11/23.
 //
 
+#include <raylib.h>
 #include <complex>
 #include "Vec3.hpp"
 #include "Utils.hpp"
-#include "raylib.h"
 
 namespace tls {
 

@@ -12,3 +12,5 @@ rtype_server
 .idea
 cmake-build-debug
 .vscode
+
+build/
