@@ -17,12 +17,14 @@
 #include "renderer/IMusic.hpp"
 #include "renderer/ISound.hpp"
 #include "renderer/IAudio.hpp"
+#include "Move.hpp"
+#include "DrawModel.hpp"
 
 namespace RT {
     class Core {
         public:
             Core();
-            ~Core();
+            ~Core() = default;
             void loop();
             void initEntities();
             void initComponents();
@@ -37,7 +39,8 @@ namespace RT {
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::vector<ECS::Entity> _entities;
-            std::vector<std::unique_ptr<ECS::System>> _systems;
+            std::shared_ptr<ECS::DrawModel> _systemDrawModel;
+            std::shared_ptr<ECS::Move> _systemMove;
     };
 };
 

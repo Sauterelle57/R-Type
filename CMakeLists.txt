@@ -50,7 +50,9 @@ add_executable(rtype_server
         Tools/Error/Error.hpp
         Tools/ECS/Managers/Components/ComponentArray.hpp
         Tools/ECS/Managers/Systems/System.hpp
-        )
+        Tools/ECS/Managers/Systems/ASystem.hpp
+        Tools/ECS/Managers/Systems/ASystem.hpp
+)
         add_executable(rtype_client
         Tools/ECS/Managers/Components/Component.hpp
         Tools/ECS/Managers/Components/ComponentsManager.hpp
@@ -115,7 +117,9 @@ add_executable(rtype_server
         client/src/main.cpp
         client/src/Core.hpp
         client/src/Core.cpp
-)
+                Tools/ECS/Managers/Systems/ASystem.hpp
+                Tools/ECS/Managers/Systems/ASystem.hpp
+        )
 
 
 #set(raylib_VERBOSE 1)

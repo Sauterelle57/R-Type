@@ -10,6 +10,7 @@
 #include "renderer/Cursor.hpp"
 #include "renderer/Event.hpp"
 #include "renderer/Model.hpp"
+#include "renderer/Utils.hpp"
 #include "Core.hpp"
 #include "Utils.hpp"
 #include "DrawModel.hpp"
@@ -18,13 +19,13 @@
 namespace RT {
     Core::Core()
     {
-        _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE test light");
+        _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
         _camera = std::make_shared<RL::ZCamera>();
         _camera->setPosition((Vector3){ 25.0f, 20.0f, 6.0f });
         _camera->setTarget((Vector3){ 0.0f, 8.0f, 0.0f });
         _camera->setUp((Vector3){ 0.0f, 1.0f, 0.0f });
         _camera->setFovy(45.0f);
-        _camera->setProjection(CAMERA_FIRST_PERSON);
+        _camera->setProjection(CAMERA_PERSPECTIVE);
 
         _cursor = std::make_shared<RL::ZCursor>();
         _cursor->disable();
@@ -37,10 +38,11 @@ namespace RT {
         _coordinator->registerComponent<ECS::Transform>();
         _coordinator->registerComponent<ECS::Model>();
 
-        SetTargetFPS(60);
+        RL::Utils::setTargetFPS(60);
     }
 
     void Core::initEntities() {
+        _entities.resize(ECS::MAX_ENTITIES);
         _entities[0] = _coordinator->createEntity();
         _coordinator->addComponent(
             _entities[0],
@@ -76,27 +78,27 @@ namespace RT {
     }
 
     void Core::initSystem() {
-        _systems[0] = std::make_unique<ECS::System>(_coordinator->registerSystem<ECS::Move>());
-        _systems[1] = std::make_unique<ECS::System>(_coordinator->registerSystem<ECS::DrawModel>());
+        _systemMove = _coordinator->registerSystem<ECS::Move>();
+        _systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
     }
 
     void Core::loop() {
+        initSystem();
         initEntities();
         initComponents();
         while (!_window->shouldClose()) {
             if (_cursor->isHidden())
                 _camera->update(CAMERA_FIRST_PERSON);
-
             _window->beginDrawing();
             _window->clearBackground(RAYWHITE);
             _camera->beginMode();
 
-            int32_t entityCount = _coordinator->getLivingEntityCount();
-            int32_t count = 0;
-
-            for (auto const &system : _systems) {
-                system->update();
-            }
+            _systemDrawModel->update();
+            _window->drawGrid(10, 1.0f);
+            _camera->endMode();
+            _window->drawFPS(10, 10);
+            _window->endDrawing();
+            _systemMove->update();
         }
     }
 };
