@@ -33,10 +33,7 @@ namespace RT {
         _event->setExitKey(KEY_F4);
 
         _coordinator = std::make_shared<ECS::Coordinator>();
-        _coordinator->init();
 
-        _coordinator->registerComponent<ECS::Transform>();
-        _coordinator->registerComponent<ECS::Model>();
 
         RL::Utils::setTargetFPS(60);
     }
@@ -52,7 +49,14 @@ namespace RT {
                 .scale = {0, 0, 0}
             }
         );
+
         _entities[1] = _coordinator->createEntity();
+        _coordinator->addComponent(
+            _entities[1],
+            ECS::Model{
+                .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb")
+            }
+        );
         _coordinator->addComponent(
             _entities[1],
             ECS::Transform {{0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0}}
@@ -60,45 +64,42 @@ namespace RT {
     }
 
     void Core::initComponents() {
+        _coordinator->init();
+
+        _coordinator->registerComponent<ECS::Transform>();
+        _coordinator->registerComponent<ECS::Model>();
+    }
+
+    void Core::initSystem() {
+        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
+        _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
+
         ECS::Signature signature;
         signature.set(_coordinator->getComponentType<ECS::Transform>());
         _coordinator->setSystemSignature<ECS::Move>(signature);
 
         ECS::Signature signature2;
         signature2.set(_coordinator->getComponentType<ECS::Transform>());
-        signature2.set(_coordinator->getComponentType<ECS::DrawModel>());
+        signature2.set(_coordinator->getComponentType<ECS::Model>());
         _coordinator->setSystemSignature<ECS::DrawModel>(signature2);
-
-        _coordinator->addComponent(
-            _entities[1],
-            ECS::Model{
-                .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb")
-            }
-        );
-    }
-
-    void Core::initSystem() {
-        _systemMove = _coordinator->registerSystem<ECS::Move>();
-        _systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
     }
 
     void Core::loop() {
+        initComponents();
         initSystem();
         initEntities();
-        initComponents();
         while (!_window->shouldClose()) {
             if (_cursor->isHidden())
                 _camera->update(CAMERA_FIRST_PERSON);
             _window->beginDrawing();
             _window->clearBackground(RAYWHITE);
             _camera->beginMode();
-
-            _systemDrawModel->update();
+            _systems._systemDrawModel->update();
             _window->drawGrid(10, 1.0f);
             _camera->endMode();
             _window->drawFPS(10, 10);
             _window->endDrawing();
-            _systemMove->update();
+            _systems._systemMove->update();
         }
     }
 };

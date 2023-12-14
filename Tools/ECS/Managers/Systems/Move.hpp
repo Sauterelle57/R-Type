@@ -18,12 +18,9 @@ namespace ECS {
                     return;
                 }
 
-                int32_t entityCount = coordinatorPtr->getLivingEntityCount();
-                int32_t count = 0;
+                int count = 0;
                 for (auto const &entity : _entities) {
-                    if (count++ >= entityCount) {
-                        return;
-                    }
+                    count++;
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
                     transform.position._y -= 0.1;
@@ -31,6 +28,7 @@ namespace ECS {
                         transform.position._y = 20;
                     }
                 }
+                std::cout << "Move: " << count << std::endl;
             }
     };
 }

@@ -20,16 +20,14 @@ namespace ECS {
                     return;
                 }
 
-                int32_t entityCount = coordinatorPtr->getLivingEntityCount();
-                int32_t count = 0;
+                int count = 0;
                 for (auto const &entity : _entities) {
-                    if (count++ >= entityCount) {
-                        return;
-                    }
+                    count++;
                     auto &model = coordinatorPtr->getComponent<Model>(entity);
 
                     model.model->draw(coordinatorPtr->getComponent<Transform>(entity).position, 1.0f, WHITE);
                 }
+                std::cout << "DrawModel: " << count << std::endl;
             }
     };
 }

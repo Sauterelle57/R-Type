@@ -28,8 +28,8 @@ namespace ECS {
             ComponentType getComponentType() {
                 const char* typeName = typeid(T).name();
 
-//                if (_componentTypes.find(typeName) == _componentTypes.end())
-//                    throw tls::Error("Component used before registered.");
+                if (_componentTypes.find(typeName) == _componentTypes.end())
+                    throw tls::Error("Component used before registered.");
                 return _componentTypes[typeName];
             }
 

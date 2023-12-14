@@ -21,6 +21,12 @@
 #include "DrawModel.hpp"
 
 namespace RT {
+
+    struct System {
+        std::shared_ptr<ECS::DrawModel> _systemDrawModel;
+        std::shared_ptr<ECS::Move> _systemMove;
+    };
+
     class Core {
         public:
             Core();
@@ -39,8 +45,7 @@ namespace RT {
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::vector<ECS::Entity> _entities;
-            std::shared_ptr<ECS::DrawModel> _systemDrawModel;
-            std::shared_ptr<ECS::Move> _systemMove;
+            System _systems;
     };
 };
 
