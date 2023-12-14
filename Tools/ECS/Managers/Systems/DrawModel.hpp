@@ -1,11 +1,15 @@
-//
-// Created by noah on 12/13/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** DrawModel
+*/
 
 #ifndef RTYPE_DRAWMODEL_HPP
 #define RTYPE_DRAWMODEL_HPP
 
 #include "System.hpp"
+#include "Coordinator.hpp"
 
 namespace ECS {
     class DrawModel : public System {

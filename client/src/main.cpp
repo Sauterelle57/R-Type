@@ -1,19 +1,19 @@
+#include <cstdlib>
+#include <random>
+#include <memory>
 #include "raylib.h"
 #include "raymath.h"
 #include "renderer/Window.hpp"
 #include "renderer/ICamera.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/renderer.hpp"
-#include "../../Tools/ECS/Managers/Coordinator/Coordinator.hpp"
-#include "../../Tools/ECS/Managers/Systems/Move.hpp"
 
 #define RLIGHTS_IMPLEMENTATION
-#include "../include/rlights.h"
+#include "rlights.h"
 
-#include <cstdlib>
-#include <random>
-#include "../../Tools/ECS/Managers/Systems/DrawModel.hpp"
-#include <memory>
+#include "DrawModel.hpp"
+#include "Coordinator.hpp"
+#include "Move.hpp"
 
 int main(void)
 {
@@ -131,7 +131,8 @@ int main(void)
         if (IsKeyDown(KEY_LEFT_SHIFT)) { camera->setPosition((Vector3) { camera->getPosition().x, static_cast<float>(camera->getPosition().y - 1), camera->getPosition().z }); }
         if (IsKeyDown(KEY_SPACE)) { camera->setPosition((Vector3) { camera->getPosition().x, static_cast<float>(camera->getPosition().y + 1), camera->getPosition().z }); }
 
-        for (int i = 0; i < MAX_LIGHTS; i++) UpdateLightValues(*shader->getShader(), lights[i]);
+        for (int i = 0; i < MAX_LIGHTS; i++)
+            UpdateLightValues(*shader->getShader(), lights[i]);
         window->beginDrawing();
         window->clearBackground(RAYWHITE);
         camera->beginMode();

@@ -9,9 +9,9 @@
 #define RTYPE_COORDINATOR_HPP
 
 #include <memory>
-#include "../Components/ComponentsManager.hpp"
-#include "../Entities/EntitiesManager.hpp"
-#include "../Systems/SystemsManager.hpp"
+#include "EntitiesManager.hpp"
+#include "ComponentsManager.hpp"
+#include "SystemsManager.hpp"
 
 namespace ECS {
     class Coordinator : public std::enable_shared_from_this<Coordinator>{

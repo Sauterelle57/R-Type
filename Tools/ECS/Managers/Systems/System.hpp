@@ -10,8 +10,7 @@
 
 #include <memory>
 #include <set>
-#include "../Entities/Entity.hpp"
-// #include "../Coordinator/Coordinator.hpp"
+#include "Entity.hpp"
 
 namespace ECS {
     class Coordinator;
@@ -21,6 +20,7 @@ namespace ECS {
                 _coordinator = coordinator;
             };
             ~System() = default;
+            void update() {};
             std::set<Entity> _entities;
             std::weak_ptr<Coordinator> _coordinator;
     };

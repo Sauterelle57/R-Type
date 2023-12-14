@@ -1,12 +1,14 @@
-//
-// Created by noah on 12/12/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** Move
+*/
 
 #ifndef RTYPE_MOVE_HPP
 #define RTYPE_MOVE_HPP
 
 #include "System.hpp"
-
 namespace ECS {
     class Move : public System {
         public:

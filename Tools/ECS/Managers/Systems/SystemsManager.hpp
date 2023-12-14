@@ -10,8 +10,8 @@
 
 #include <memory>
 #include <unordered_map>
-#include "../Entities/Entity.hpp"
-#include "../../../Error/Error.hpp"
+#include "Entity.hpp"
+#include "Error.hpp"
 #include "System.hpp"
 
 namespace ECS {

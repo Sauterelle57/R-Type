@@ -23,12 +23,12 @@ endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/client/src)
 include_directories(${CMAKE_SOURCE_DIR}/client/include)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Coordinator)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Components)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Entities)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Systems)
+include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Coordinator)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec3)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec4)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Utils)
@@ -50,23 +50,24 @@ add_executable(rtype_server
         Tools/Error/Error.hpp
         Tools/ECS/Managers/Components/ComponentArray.hpp
         Tools/ECS/Managers/Systems/System.hpp
-)
-add_executable(rtype_client
-        Tools/ECS/Managers/Components/ComponentsManager.hpp
-        Tools/ECS/Managers/Entities/EntitiesManager.hpp
-        Tools/ECS/Managers/Systems/SystemsManager.hpp
-        Tools/ECS/Managers/Coordinator/Coordinator.hpp
-        Tools/ECS/Managers/Entities/Entity.hpp
+        )
+        add_executable(rtype_client
         Tools/ECS/Managers/Components/Component.hpp
+        Tools/ECS/Managers/Components/ComponentsManager.hpp
+        Tools/ECS/Managers/Components/ComponentArray.hpp
+        Tools/ECS/Managers/Entities/EntitiesManager.hpp
+        Tools/ECS/Managers/Entities/Entity.hpp
+        Tools/ECS/Managers/Systems/SystemsManager.hpp
+        Tools/ECS/Managers/Systems/System.hpp
+        Tools/ECS/Managers/Systems/Move.hpp
+        Tools/ECS/Managers/Systems/DrawModel.hpp
+        Tools/ECS/Managers/Coordinator/Coordinator.hpp
         Tools/Vec3/Vec3.cpp
         Tools/Vec3/Vec3.hpp
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
-        client/src/main.cpp
         Tools/Vec4/Vec4.cpp
         Tools/Error/Error.hpp
-        Tools/ECS/Managers/Components/ComponentArray.hpp
-        Tools/ECS/Managers/Systems/System.hpp
         client/src/renderer/Audio.hpp
         client/src/renderer/AudioStream.hpp
         client/src/renderer/Cursor.hpp
@@ -111,8 +112,9 @@ add_executable(rtype_client
         client/src/renderer/Utils.hpp
         client/src/renderer/Wave.hpp
         client/src/renderer/Window.hpp
-        Tools/ECS/Managers/Systems/Move.hpp
-        Tools/ECS/Managers/Systems/DrawModel.hpp
+        client/src/main.cpp
+        client/src/Core.hpp
+        client/src/Core.cpp
 )
 
 
