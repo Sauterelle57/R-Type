@@ -2,10 +2,9 @@
 // Created by noah on 12/11/23.
 //
 
-#include <raylib.h>
 #include <complex>
 #include "Vec3.hpp"
-#include "Utils.hpp"
+#include "../Utils/Utils.hpp"
 
 namespace tls {
 
@@ -172,8 +171,7 @@ namespace tls {
     }
 
     bool Vec3::operator==(const Vec3 &vector) const {
-        return tls::Utils::equal(_x, vector._x) && tls::Utils::equal(_y, vector._y) && tls::Utils::equal(_z, vector._z);
+        return Utils::equal(_x, vector._x) && Utils::equal(_y, vector._y) && Utils::equal(_z, vector._z);
     }
-
 
 } // tls

@@ -14,16 +14,29 @@
 #include "Vec4.hpp"
 #include "Vec3.hpp"
 #include "renderer/IModel.hpp"
+#include "renderer/ITexture.hpp"
 
 namespace ECS {
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
-        tls::Vec3 scale;
+        float scale;
     };
 
     struct Model {
         std::shared_ptr<RL::IModel> model;
+        std::shared_ptr<RL::ITexture> texture;
+    };
+
+    struct Player {
+        int key_up;
+        int key_down;
+        int key_left;
+        int key_right;
+        int key_shoot;
+        int key_validate;
+        int key_cancel;
+        int key_settings;
     };
 
     using ComponentType = std::uint8_t;

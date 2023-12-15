@@ -28,7 +28,7 @@ namespace ECS {
                         transform.position._y = 20;
                     }
                 }
-                std::cout << "Move: " << count << std::endl;
+                // std::cout << "Move: " << count << std::endl;
             }
     };
 }

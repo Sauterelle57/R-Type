@@ -43,15 +43,14 @@ add_executable(rtype_server
         Tools/ECS/Managers/Components/Component.hpp
         Tools/Vec3/Vec3.cpp
         Tools/Vec3/Vec3.hpp
+        Tools/Vec4/Vec4.hpp
+        Tools/Vec4/Vec4.cpp
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
         server/src/main.cpp
-        Tools/Vec4/Vec4.cpp
         Tools/Error/Error.hpp
         Tools/ECS/Managers/Components/ComponentArray.hpp
         Tools/ECS/Managers/Systems/System.hpp
-        Tools/ECS/Managers/Systems/ASystem.hpp
-        Tools/ECS/Managers/Systems/ASystem.hpp
 )
         add_executable(rtype_client
         Tools/ECS/Managers/Components/Component.hpp
@@ -63,11 +62,13 @@ add_executable(rtype_server
         Tools/ECS/Managers/Systems/System.hpp
         Tools/ECS/Managers/Systems/Move.hpp
         Tools/ECS/Managers/Systems/DrawModel.hpp
+        Tools/ECS/Managers/Systems/Play.hpp
         Tools/ECS/Managers/Coordinator/Coordinator.hpp
-        Tools/Vec3/Vec3.cpp
-        Tools/Vec3/Vec3.hpp
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
+        Tools/Vec3/Vec3.hpp
+        Tools/Vec3/Vec3.cpp
+        Tools/Vec4/Vec4.hpp
         Tools/Vec4/Vec4.cpp
         Tools/Error/Error.hpp
         client/src/renderer/Audio.hpp
@@ -117,8 +118,6 @@ add_executable(rtype_server
         client/src/main.cpp
         client/src/Core.hpp
         client/src/Core.cpp
-                Tools/ECS/Managers/Systems/ASystem.hpp
-                Tools/ECS/Managers/Systems/ASystem.hpp
         )
 
 

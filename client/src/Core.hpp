@@ -19,12 +19,14 @@
 #include "renderer/IAudio.hpp"
 #include "Move.hpp"
 #include "DrawModel.hpp"
+#include "Play.hpp"
 
 namespace RT {
 
     struct System {
-        std::shared_ptr<ECS::DrawModel> _systemDrawModel;
         std::shared_ptr<ECS::Move> _systemMove;
+        std::shared_ptr<ECS::Play> _systemPlayer;
+        std::shared_ptr<ECS::DrawModel> _systemDrawModel;
     };
 
     class Core {

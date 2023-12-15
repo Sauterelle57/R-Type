@@ -24,10 +24,14 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     count++;
                     auto &model = coordinatorPtr->getComponent<Model>(entity);
+                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
-                    model.model->draw(coordinatorPtr->getComponent<Transform>(entity).position, 1.0f, WHITE);
+                    if (model.texture)
+                        model.model->getModel()->materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(model.texture->getTexture());
+
+                    model.model->draw(transform.position, transform.scale, WHITE);
                 }
-                std::cout << "DrawModel: " << count << std::endl;
+                // std::cout << "DrawModel: " << count << std::endl;
             }
     };
 }
