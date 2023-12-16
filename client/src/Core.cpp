@@ -36,7 +36,6 @@ namespace RT {
 
         _coordinator = std::make_shared<ECS::Coordinator>();
 
-
         RL::Utils::setTargetFPS(60);
     }
 
@@ -110,6 +109,29 @@ namespace RT {
                 .key_settings = KEY_TAB
             }
         );
+
+        _entities[3] = _coordinator->createEntity();
+        _coordinator->addComponent(
+            _entities[3],
+            ECS::Transform {
+                .position = {0, 0, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 0.1f
+            }
+        );
+        _coordinator->addComponent(
+            _entities[3],
+            ECS::Particles {
+                .particles = std::vector<ECS::Particle>(1000),
+                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
+                .type = ECS::ParticleType::CONE,
+                .direction = ECS::Direction::UP,
+                .speed = 300.0f,
+                .lifeTime = TLS::Clock(1000),
+                .spawnRate = TLS::Clock(10),
+                .spawnTimer = TLS::Clock(0)
+            }
+        );
     }
 
     void Core::initComponents() {
@@ -118,50 +140,71 @@ namespace RT {
         _coordinator->registerComponent<ECS::Transform>();
         _coordinator->registerComponent<ECS::Model>();
         _coordinator->registerComponent<ECS::Player>();
+        _coordinator->registerComponent<ECS::Particles>();
     }
 
     void Core::initSystem() {
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
+        _systems._systemParticles = _coordinator->registerSystem<ECS::ParticleSystem>();
 
-        ECS::Signature signature;
-        signature.set(_coordinator->getComponentType<ECS::Transform>());
-        _coordinator->setSystemSignature<ECS::Move>(signature);
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            _coordinator->setSystemSignature<ECS::Move>(signature);
+        }
 
-        ECS::Signature signature2;
-        signature2.set(_coordinator->getComponentType<ECS::Transform>());
-        signature2.set(_coordinator->getComponentType<ECS::Model>());
-        signature2.set(_coordinator->getComponentType<ECS::Player>());
-        _coordinator->setSystemSignature<ECS::DrawModel>(signature2);
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            signature.set(_coordinator->getComponentType<ECS::Player>());
+            _coordinator->setSystemSignature<ECS::DrawModel>(signature);
+        }
 
-        ECS::Signature signature3;
-        signature3.set(_coordinator->getComponentType<ECS::Transform>());
-        signature3.set(_coordinator->getComponentType<ECS::Model>());
-        signature3.set(_coordinator->getComponentType<ECS::Player>());
-        _coordinator->setSystemSignature<ECS::Play>(signature3);
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            signature.set(_coordinator->getComponentType<ECS::Player>());
+            _coordinator->setSystemSignature<ECS::Play>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Particles>());
+            _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
+        }
     }
 
     void Core::loop() {
         initComponents();
         initSystem();
         initEntities();
+
+        std::shared_ptr<RL::ZShader> shader = std::make_shared<RL::ZShader>("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
+        int glowIntensityLoc = shader->getLocation("glowIntensity");
+        float glowIntensity = 3.0f;
+        shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
+
         while (!_window->shouldClose()) {
             if (_cursor->isHidden())
                 _camera->update(CAMERA_FIRST_PERSON);
             _window->beginDrawing();
-            _window->clearBackground(RAYWHITE);
+            _window->clearBackground(BLACK);
             _camera->beginMode();
 
             _systems._systemDrawModel->update();
             _systems._systemMove->update();
             _systems._systemPlayer->update(_event);
+            _systems._systemParticles->update(_camera, shader);
 
             _window->drawGrid(10, 1.0f);
             _camera->endMode();
             _window->drawFPS(10, 10);
             _window->endDrawing();
-
         }
     }
 };

@@ -33,6 +33,7 @@ include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec3)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec4)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Utils)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Error)
+include_directories(${CMAKE_SOURCE_DIR}/Tools/Clock)
 
 add_executable(rtype_server
         Tools/ECS/Managers/Components/ComponentsManager.hpp
@@ -118,6 +119,8 @@ add_executable(rtype_server
         client/src/main.cpp
         client/src/Core.hpp
         client/src/Core.cpp
+                Tools/ECS/Managers/Systems/Particle.hpp
+                Tools/Clock/Clock.hpp
         )
 
 
