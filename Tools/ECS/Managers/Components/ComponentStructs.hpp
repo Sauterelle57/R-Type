@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <functional>
+#include <vector>
 #include "Utils.hpp"
 #include "Vec4.hpp"
 #include "Vec3.hpp"
@@ -77,6 +78,7 @@ namespace ECS {
     };
 
     struct Projectile {
+        std::function<tls::Vec3(tls::Vec3)> trajectory;
         int damage;
         float speed;
     };

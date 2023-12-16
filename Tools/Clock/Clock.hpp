@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2023
-** zappy_gui
+** rtype
 ** File description:
 ** Clock.hpp
 */
