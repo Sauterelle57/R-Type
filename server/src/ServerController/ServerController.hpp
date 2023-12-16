@@ -1,30 +1,29 @@
-/*
-** EPITECH PROJECT, 2023
-** B-CPP-500-STG-5-2-rtype-noah.gosciniak
-** File description:
-** ServerController.hpp
-*/
-
+// ServerController.hpp
 #ifndef SERVERCONTROLLER_HPP_
 #define SERVERCONTROLLER_HPP_
 
 #include "AsioWrapper.hpp"
+#include "GameController.hpp"
 #include <iostream>
+#include <functional> // Add this include for std::function
 
 namespace rt {
 
-    class ServerController {
-        public:
-            ServerController(short port);
+class ServerController {
+public:
+    using ReceiveHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
 
-            void run();
+    ServerController(short port);
 
-            void handleReceivedData(const boost::system::error_code& error, std::size_t bytes_transferred);
+    void run();
 
-        private:
-            AsioWrapper asioWrapper;
-    };
+    void handleReceivedData(const boost::system::error_code& error, std::size_t bytes_transferred);
 
-}
+private:
+    AsioWrapper asioWrapper;
+    GameController gameController;
+};
+
+} // namespace rt
 
 #endif /* !SERVERCONTROLLER_HPP_ */

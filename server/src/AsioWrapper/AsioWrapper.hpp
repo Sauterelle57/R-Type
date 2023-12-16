@@ -1,10 +1,4 @@
-/*
-** EPITECH PROJECT, 2023
-** B-CPP-500-STG-5-2-rtype-noah.gosciniak
-** File description:
-** Asiowrapper.hpp
-*/
-
+// AsioWrapper.hpp
 #ifndef ASIOWRAPPER_HPP_
 #define ASIOWRAPPER_HPP_
 
@@ -12,23 +6,26 @@
 #include <functional>
 #include <vector>
 #include <array>
+#include <string>
+
+#include "IWrapper.hpp"
 
 namespace rt {
 
-class AsioWrapper {
+class AsioWrapper : public IWrapper {
 public:
-    using ReceiveHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
+    using ReceiveHandler = std::function<void(int, std::size_t)>;
 
     AsioWrapper(short port, ReceiveHandler receiveHandler);
 
     void run();
     void startReceive();
-    void sendTo(const std::string& message, const boost::asio::ip::udp::endpoint& endpoint);
+    void sendTo(const std::string& message, const std::string& ipAddress, unsigned short port);
 
     std::vector<char> getReceivedData() const;
 
     const std::array<char, 1024>& getRecvBuffer() const;
-    const boost::asio::ip::udp::endpoint& getRemoteEndpoint() const;
+    std::pair<std::string, int> getRemoteEndpoint() const;
 
 private:
     boost::asio::io_service ioService;
@@ -41,6 +38,6 @@ private:
     void handleReceive(const boost::system::error_code& error, std::size_t bytes_transferred);
 };
 
-}
+} // namespace rt
 
-#endif /* !ASIOWRAPPER_HPP_ */
+#endif

@@ -46,6 +46,7 @@ add_executable(rtype_server
         server/src/GameController/IGameController.hpp
         server/src/GameController/GameController.hpp
         # Asio Wrapper
+        server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
 )
