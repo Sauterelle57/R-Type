@@ -17,6 +17,7 @@
 #include "renderer/IModel.hpp"
 #include "renderer/ITexture.hpp"
 #include "Clock.hpp"
+#include "Entity.hpp"
 
 namespace ECS {
     enum Direction {
@@ -72,6 +73,7 @@ namespace ECS {
         float lifeTime;
         float spawnRate;
         float spawnTimer;
+    };
 
     struct Projectile {
         int damage;
@@ -82,7 +84,7 @@ namespace ECS {
         int damage;
         float speed;
         float durability;
-        std::function<std::vector<ECS::Entity>()> create_projectile;
+//        std::function<std::vector<Entity>()> create_projectile;
     };
 
     struct Alive {
