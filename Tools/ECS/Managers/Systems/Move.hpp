@@ -35,5 +35,4 @@ namespace ECS {
     };
 }
 
-
 #endif //RTYPE_MOVE_HPP
