@@ -28,7 +28,7 @@ namespace ECS {
                 auto &particles = coordinatorPtr->getComponent<Particles>(entity);
                 auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
-                particle.position = transform.position;
+                particle.position = transform.position + particles.positionOffset;
                 particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 particle.alpha = 1.0f;
                 particle.active = true;
@@ -84,10 +84,11 @@ namespace ECS {
                 mode.beginBlend(BLEND_ADDITIVE);
                 for (auto const &entity: _entities) {
                     auto &particles = coordinatorPtr->getComponent<Particles>(entity);
+                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
                     for (auto &particle : particles.particles) {
                         if (particle.active) {
-                            camera->drawBillboard(*particles.texture->getTexture().get(), particle.position, 0.1f, RL::Utils::fade(WHITE, particle.alpha));
+                            camera->drawBillboard(*particles.texture->getTexture().get(), particle.position, transform.scale + particles.scaleOffset, RL::Utils::fade(WHITE, particle.alpha));
                         }
                     }
                 }

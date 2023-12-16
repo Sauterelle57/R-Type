@@ -66,9 +66,11 @@ namespace ECS {
         ParticleType type;
         Direction direction;
         float speed;
-        TLS::Clock lifeTime;
-        TLS::Clock spawnRate;
-        TLS::Clock spawnTimer;
+        float scaleOffset;
+        tls::Vec3 positionOffset;
+        float lifeTime;
+        float spawnRate;
+        float spawnTimer;
     };
 
     using ComponentType = std::uint8_t;

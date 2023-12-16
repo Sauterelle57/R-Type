@@ -127,9 +127,11 @@ namespace RT {
                 .type = ECS::ParticleType::CONE,
                 .direction = ECS::Direction::UP,
                 .speed = 300.0f,
-                .lifeTime = TLS::Clock(1000),
-                .spawnRate = TLS::Clock(10),
-                .spawnTimer = TLS::Clock(0)
+                .scaleOffset = 0.1f,
+                .positionOffset = {0, 0, 0},
+                .lifeTime = 1000,
+                .spawnRate = 10,
+                .spawnTimer = 0
             }
         );
     }
