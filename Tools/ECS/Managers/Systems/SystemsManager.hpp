@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <unordered_map>
-#include "Entity.hpp"
 #include "Error.hpp"
 #include "System.hpp"
 

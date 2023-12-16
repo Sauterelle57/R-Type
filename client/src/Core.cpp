@@ -43,7 +43,7 @@ namespace RT {
         // _entities.resize(ECS::MAX_ENTITIES);
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Transform {
                 .position = {100, 0, 100},
                 .rotation = {0, 0, 0, 0},
@@ -53,13 +53,13 @@ namespace RT {
 
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Model {
                 .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb"),
             }
         );
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
@@ -67,7 +67,7 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Player {
                 .key_up = KEY_Y,
                 .key_down = KEY_G,
@@ -82,14 +82,14 @@ namespace RT {
 
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Model {
                 .model = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj"),
                 .texture = std::make_shared<RL::ZTexture>("./client/resources/models/duck_text.png"),
             }
         );
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
@@ -97,7 +97,7 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Player {
                 .key_up = KEY_Y,
                 .key_down = KEY_G,
@@ -112,7 +112,7 @@ namespace RT {
 
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
@@ -120,7 +120,7 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-            _entities.extract(_entities.end()).value(),
+            *_entities.rbegin(),
             ECS::Particles {
                 .particles = std::vector<ECS::Particle>(1000),
                 .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
@@ -164,7 +164,6 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Model>());
-            signature.set(_coordinator->getComponentType<ECS::Player>());
             _coordinator->setSystemSignature<ECS::DrawModel>(signature);
         }
 
@@ -212,7 +211,7 @@ namespace RT {
             _systems._systemMove->update();
             _systems._systemPlayer->update(_event);
             _systems._systemParticles->update(_camera, shader);
-            _systems._systemShoot->update();
+            _systems._systemShoot->update(_event);
 
             _window->drawGrid(10, 1.0f);
             _camera->endMode();

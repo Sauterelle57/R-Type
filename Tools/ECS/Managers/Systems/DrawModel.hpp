@@ -30,7 +30,8 @@ namespace ECS {
                     if (model.texture)
                         model.model->getModel()->materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(model.texture->getTexture());
 
-                    model.model->draw(transform.position, transform.scale, WHITE);
+                    model.model->drawEx(transform.position, {static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)}, transform.rotation._a,
+                                        {transform.scale, transform.scale, transform.scale}, WHITE);
                 }
                 // std::cout << "DrawModel: " << count << std::endl;
             }

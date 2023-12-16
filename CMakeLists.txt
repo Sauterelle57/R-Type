@@ -67,7 +67,6 @@ add_executable(rtype_client
         Tools/ECS/Managers/Systems/DrawModel.hpp
         Tools/ECS/Managers/Systems/Play.hpp
         Tools/ECS/Managers/Systems/Particle.hpp
-        Tools/ECS/Managers/Systems/Shoot.hpp
         Tools/ECS/Managers/Coordinator/Coordinator.hpp
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
@@ -124,6 +123,7 @@ add_executable(rtype_client
         client/src/main.cpp
         client/src/Core.hpp
         client/src/Core.cpp
+        Tools/ECS/Managers/Components/kaka.hpp
 )
 
 
