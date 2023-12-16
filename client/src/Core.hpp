@@ -9,6 +9,7 @@
 #define CORE_HPP_
 
 #include <memory>
+// #include <vector>
 #include "Coordinator.hpp"
 #include "renderer/IWindow.hpp"
 #include "renderer/ICamera.hpp"
@@ -21,6 +22,7 @@
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "Particle.hpp"
+#include "Shoot.hpp"
 
 namespace RT {
 
@@ -29,6 +31,7 @@ namespace RT {
         std::shared_ptr<ECS::Play> _systemPlayer;
         std::shared_ptr<ECS::DrawModel> _systemDrawModel;
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
+        std::shared_ptr<ECS::Shoot> _systemShoot;
     };
 
     class Core {
@@ -48,9 +51,8 @@ namespace RT {
             std::shared_ptr<RL::IEvent> _event;
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
-            std::vector<ECS::Entity> _entities;
+            std::set<ECS::Entity> _entities;
             System _systems;
-            
     };
 };
 

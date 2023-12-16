@@ -40,10 +40,10 @@ namespace RT {
     }
 
     void Core::initEntities() {
-        _entities.resize(ECS::MAX_ENTITIES);
-        _entities[0] = _coordinator->createEntity();
+        // _entities.resize(ECS::MAX_ENTITIES);
+        _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities[0],
+            _entities.extract(_entities.end()).value(),
             ECS::Transform {
                 .position = {100, 0, 100},
                 .rotation = {0, 0, 0, 0},
@@ -51,15 +51,15 @@ namespace RT {
             }
         );
 
-        _entities[1] = _coordinator->createEntity();
+        _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities[1],
+            _entities.extract(_entities.end()).value(),
             ECS::Model {
                 .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb"),
             }
         );
         _coordinator->addComponent(
-            _entities[1],
+            _entities.extract(_entities.end()).value(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
@@ -67,7 +67,7 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-            _entities[1],
+            _entities.extract(_entities.end()).value(),
             ECS::Player {
                 .key_up = KEY_Y,
                 .key_down = KEY_G,
@@ -80,16 +80,16 @@ namespace RT {
             }
         );
 
-        _entities[2] = _coordinator->createEntity();
+        _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities[2],
+            _entities.extract(_entities.end()).value(),
             ECS::Model {
                 .model = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj"),
                 .texture = std::make_shared<RL::ZTexture>("./client/resources/models/duck_text.png"),
             }
         );
         _coordinator->addComponent(
-            _entities[2],
+            _entities.extract(_entities.end()).value(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
@@ -97,7 +97,7 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-            _entities[2],
+            _entities.extract(_entities.end()).value(),
             ECS::Player {
                 .key_up = KEY_Y,
                 .key_down = KEY_G,
@@ -110,9 +110,9 @@ namespace RT {
             }
         );
 
-        _entities[3] = _coordinator->createEntity();
+        _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
-            _entities[3],
+            _entities.extract(_entities.end()).value(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
@@ -120,7 +120,7 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-            _entities[3],
+            _entities.extract(_entities.end()).value(),
             ECS::Particles {
                 .particles = std::vector<ECS::Particle>(1000),
                 .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
@@ -143,6 +143,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Model>();
         _coordinator->registerComponent<ECS::Player>();
         _coordinator->registerComponent<ECS::Particles>();
+        _coordinator->registerComponent<ECS::Projectile>();
     }
 
     void Core::initSystem() {
@@ -150,6 +151,8 @@ namespace RT {
         _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
         _systems._systemParticles = _coordinator->registerSystem<ECS::ParticleSystem>();
+        _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
+
 
         {
             ECS::Signature signature;
@@ -179,6 +182,13 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Particles>());
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Projectile>());
+            _coordinator->setSystemSignature<ECS::Shoot>(signature);
+        }
     }
 
     void Core::loop() {
@@ -202,6 +212,7 @@ namespace RT {
             _systems._systemMove->update();
             _systems._systemPlayer->update(_event);
             _systems._systemParticles->update(_camera, shader);
+            _systems._systemShoot->update();
 
             _window->drawGrid(10, 1.0f);
             _camera->endMode();

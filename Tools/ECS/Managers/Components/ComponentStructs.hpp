@@ -17,6 +17,7 @@
 #include "Vec3.hpp"
 #include "renderer/IModel.hpp"
 #include "renderer/ITexture.hpp"
+#include "renderer/Texture.hpp"
 #include "Clock.hpp"
 #include "Entity.hpp"
 #include "Components.hpp"
