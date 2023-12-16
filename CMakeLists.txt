@@ -41,7 +41,7 @@ add_executable(rtype_server
         Tools/ECS/Managers/Systems/SystemsManager.hpp
         Tools/ECS/Managers/Coordinator/Coordinator.hpp
         Tools/ECS/Managers/Entities/Entity.hpp
-        Tools/ECS/Managers/Components/Component.hpp
+        Tools/ECS/Managers/Components/ComponentStructs.hpp
         Tools/Vec3/Vec3.cpp
         Tools/Vec3/Vec3.hpp
         Tools/Vec4/Vec4.hpp
@@ -54,7 +54,7 @@ add_executable(rtype_server
         Tools/ECS/Managers/Systems/System.hpp
 )
         add_executable(rtype_client
-        Tools/ECS/Managers/Components/Component.hpp
+                Tools/ECS/Managers/Components/ComponentStructs.hpp
         Tools/ECS/Managers/Components/ComponentsManager.hpp
         Tools/ECS/Managers/Components/ComponentArray.hpp
         Tools/ECS/Managers/Entities/EntitiesManager.hpp
@@ -121,6 +121,7 @@ add_executable(rtype_server
         client/src/Core.cpp
                 Tools/ECS/Managers/Systems/Particle.hpp
                 Tools/Clock/Clock.hpp
+                Tools/ECS/Managers/Components/Components.hpp
         )
 
 

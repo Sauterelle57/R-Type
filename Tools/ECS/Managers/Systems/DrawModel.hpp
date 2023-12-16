@@ -10,6 +10,7 @@
 
 #include "System.hpp"
 #include "Coordinator.hpp"
+#include "ComponentStructs.hpp"
 
 namespace ECS {
     class DrawModel : public System {

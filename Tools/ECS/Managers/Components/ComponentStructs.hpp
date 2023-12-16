@@ -5,8 +5,8 @@
 ** ComponentsManager
 */
 
-#ifndef RTYPE_COMPONENT_HPP
-#define RTYPE_COMPONENT_HPP
+#ifndef RTYPE_COMPONENTSTRUCTS_HPP
+#define RTYPE_COMPONENTSTRUCTS_HPP
 
 #include <cstdint>
 #include <memory>
@@ -18,6 +18,7 @@
 #include "renderer/ITexture.hpp"
 #include "Clock.hpp"
 #include "Entity.hpp"
+#include "Components.hpp"
 
 namespace ECS {
     enum Direction {
@@ -84,7 +85,7 @@ namespace ECS {
         int damage;
         float speed;
         float durability;
-//        std::function<std::vector<Entity>()> create_projectile;
+        std::function<std::vector<Entity>()> create_projectile;
     };
 
     struct Alive {
@@ -92,9 +93,6 @@ namespace ECS {
         int max_life;
     };
 
-    using ComponentType = std::uint8_t;
-
-    constexpr ComponentType MAX_COMPONENTS = 128;
 }
 
-#endif //RTYPE_COMPONENT_HPP
+#endif //RTYPE_COMPONENTSTRUCTS_HPP
