@@ -36,7 +36,6 @@ namespace RT {
 
         _coordinator = std::make_shared<ECS::Coordinator>();
 
-
         RL::Utils::setTargetFPS(60);
     }
 

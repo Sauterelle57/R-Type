@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <functional>
 #include "Utils.hpp"
 #include "Vec4.hpp"
 #include "Vec3.hpp"
@@ -37,6 +38,23 @@ namespace ECS {
         int key_validate;
         int key_cancel;
         int key_settings;
+    };
+
+    struct Projectile {
+        int damage;
+        float speed;
+    };
+
+    struct Weapon {
+        int damage;
+        float speed;
+        float durability;
+        std::function<std::vector<ECS::Entity>()> create_projectile;
+    };
+
+    struct Alive {
+        int life;
+        int max_life;
     };
 
     using ComponentType = std::uint8_t;
