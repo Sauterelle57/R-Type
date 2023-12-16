@@ -9,6 +9,8 @@
 #define RTYPE_MOVE_HPP
 
 #include "System.hpp"
+#include "Coordinator.hpp"
+
 namespace ECS {
     class Move : public System {
         public:

@@ -18,6 +18,7 @@ namespace tls {
             static bool equal(double a, double b);
             static bool inf(double a, double b);
             static bool sup(double a, double b);
+            static int getRandomValue(int a, int b);
     };
 
 } // tls

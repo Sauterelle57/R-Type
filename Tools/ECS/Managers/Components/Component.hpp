@@ -16,8 +16,22 @@
 #include "Vec3.hpp"
 #include "renderer/IModel.hpp"
 #include "renderer/ITexture.hpp"
+#include "Clock.hpp"
 
 namespace ECS {
+    enum Direction {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        NONE
+    };
+
+    enum ParticleType {
+        CONE,
+        EXPLOSION,
+    };
+
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
@@ -39,6 +53,25 @@ namespace ECS {
         int key_cancel;
         int key_settings;
     };
+
+    struct Particle {
+        tls::Vec3 position;
+        tls::Vec3 speed;
+        float alpha;
+        bool active;
+    };
+
+    struct Particles {
+        std::vector<Particle> particles;
+        std::shared_ptr<RL::ZTexture> texture;
+        ParticleType type;
+        Direction direction;
+        float speed;
+        float scaleOffset;
+        tls::Vec3 positionOffset;
+        float lifeTime;
+        float spawnRate;
+        float spawnTimer;
 
     struct Projectile {
         int damage;
