@@ -50,6 +50,7 @@ namespace RT {
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::vector<ECS::Entity> _entities;
             System _systems;
+            
     };
 };
 

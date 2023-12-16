@@ -1,16 +1,17 @@
 /*
 ** EPITECH PROJECT, 2023
-** rtype
+** zappy_gui
 ** File description:
 ** Clock.hpp
 */
 
-#ifndef RTYPE_GUI_CLOCK_HPP
-#define RTYPE_GUI_CLOCK_HPP
+#ifndef RTYPE_CLOCK_HPP
+#define RTYPE_CLOCK_HPP
 
 #include <chrono>
+#include <string>
 
-namespace TLS {
+namespace tls {
 
     class Clock {
         public:
@@ -65,6 +66,6 @@ namespace TLS {
             bool _stop = false;
     };
 
-} // TLS
+} // tls
 
-#endif //RTYPE_GUI_CLOCK_HPP
+#endif //RTYPE_CLOCK_HPP
