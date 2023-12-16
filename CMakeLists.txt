@@ -29,22 +29,33 @@ ExternalProject_Add(BOOSTASIO
 ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
 include_directories(${SOURCE_DIR})
 
+
+include_directories(server/src)
+include_directories(server/src/ServerController)
+include_directories(server/src/GameController)
+include_directories(server/src/AsioWrapper)
+
+add_executable(rtype_server
+        # Main
+        server/main.cpp
+        # Server Controller
+        server/src/ServerController/IServerController.hpp
+        server/src/ServerController/ServerController.cpp
+        server/src/ServerController/ServerController.hpp
+        # Game Controller
+        server/src/GameController/IGameController.hpp
+        server/src/GameController/GameController.hpp
+        # Asio Wrapper
+        server/src/AsioWrapper/AsioWrapper.cpp
+        server/src/AsioWrapper/AsioWrapper.hpp
+)
+
 include_directories(client/src)
 include_directories(client/src/ECS)
 include_directories(client/src/ECS/Managers)
 include_directories(client/src/ECS/Managers/Components)
 include_directories(client/src/ECS/Managers/Entities)
 include_directories(client/src/ECS/Managers/Systems)
-
-add_executable(rtype_server
-        server/main.cpp
-        server/src/ServerController/IServerController.hpp
-        server/src/ServerController/ServerController.cpp
-        server/src/ServerController/ServerController.hpp
-)
-
-include_directories(server/src)
-include_directories(server/src/ServerController)
 
 add_executable(rtype_client
         client/src/ECS/Managers/Components/ComponentsManager.hpp

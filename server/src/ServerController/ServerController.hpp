@@ -1,35 +1,30 @@
-// ServerController.hpp
-#ifndef RTYPE_SERVERCONTROLLER_HPP
-#define RTYPE_SERVERCONTROLLER_HPP
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** ServerController.hpp
+*/
 
-#include "IServerController.hpp"
-#include <memory>
+#ifndef SERVERCONTROLLER_HPP_
+#define SERVERCONTROLLER_HPP_
+
+#include "AsioWrapper.hpp"
 #include <iostream>
-#include <boost/asio.hpp>
 
 namespace rt {
 
-    class ServerController : public IServerController {
-    public:
-        ServerController(short port);
+    class ServerController {
+        public:
+            ServerController(short port);
 
-        ~ServerController() = default;
+            void run();
 
-        void run() override;
+            void handleReceivedData(const boost::system::error_code& error, std::size_t bytes_transferred);
 
-    private:
-        boost::asio::io_service _io_service;
-        boost::asio::ip::udp::socket _socket;
-        boost::asio::ip::udp::endpoint _remoteEndpoint;
-        std::array<char, 1024> _recvBuffer;
-
-        void startReceive();
-
-        void handleReceive(const boost::system::error_code& error, std::size_t bytes_transferred);
-
-        void handleRequest(const std::string& message);
+        private:
+            AsioWrapper asioWrapper;
     };
 
-} // rt
+}
 
-#endif //RTYPE_SERVERCONTROLLER_HPP
+#endif /* !SERVERCONTROLLER_HPP_ */
