@@ -4,8 +4,6 @@
 ** File description:
 ** AsioWrapper.cpp
 */
-*/
-
 
 #include "AsioWrapper.hpp"
 #include <iostream>
