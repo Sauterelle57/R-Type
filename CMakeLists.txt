@@ -3,14 +3,31 @@ project(rtype)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# Find and link Boost Asio
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.83 REQUIRED COMPONENTS system date_time)
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
+# Include the ExternalProject module
+include(ExternalProject)
+
+if(WIN32)
+    set(BOOSTASIO_URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip")
+elseif(UNIX)
+    set(BOOSTASIO_URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz")
+elseif(APPLE)
+    set(BOOSTASIO_URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz")
 endif()
+
+# Find and link Boost Asio
+ExternalProject_Add(BOOSTASIO
+        URL ${BOOSTASIO_URL}
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/BOOSTASIO
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        TIMEOUT 60
+        DOWNLOAD_EXTRACT_TIMESTAMP 1
+)
+
+# Specify include directories for Boost.Asio
+ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
+include_directories(${SOURCE_DIR})
 
 include_directories(client/src)
 include_directories(client/src/ECS)
@@ -36,7 +53,6 @@ add_executable(rtype_client
         client/src/main.cpp
 )
 
-if (Boost_FOUND)
-    target_link_libraries(rtype_server ${Boost_LIBRARIES})
-    target_link_libraries(rtype_client ${Boost_LIBRARIES})
-endif()
+# Link against Boost.Asio (header-only library, no need for separate libraries)
+target_link_libraries(rtype_server INTERFACE ${Boost_LIBRARIES})
+target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})
