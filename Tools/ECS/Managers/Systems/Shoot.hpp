@@ -38,7 +38,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     Projectile {
                         .direction = ECS::Direction::LEFT,
-                        .trajectory = [](tls::Vec3 pos) {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
                         },
                         .damage = 1,
@@ -49,7 +49,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Particles {
                         .particles = std::vector<ECS::Particle>(20000),
-                        .texture = std::make_shared<RL::ZTexture>("./client/resources/images/projectile.png"),
+                        .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
                         .type = ECS::ParticleType::CONE,
                         .direction = ECS::Direction::LEFT,
                         .speed = 400.0f,
@@ -79,14 +79,16 @@ namespace ECS {
                         .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
                     }
                 );
+                #include <cmath>
+
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
                         .direction = ECS::Direction::LEFT,
-                        .trajectory = [](tls::Vec3 pos) {
-                            static float t = 0.0f;
-                            t += 0.01f;
-                            return tls::Vec3{ pos._x + 0.1, 2 * sin(t * 2), pos._z };
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            std::cout << *t << std::endl;
+                            *t += 0.01f;
+                            return tls::Vec3{ pos._x + 0.1f, 2 * std::sin((*t) * 2), pos._z };
                         },
                         .damage = 1,
                         .speed = 0.5f
@@ -96,7 +98,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Particles {
                         .particles = std::vector<ECS::Particle>(20000),
-                        .texture = std::make_shared<RL::ZTexture>("./client/resources/images/projectile.png"),
+                        .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
                         .type = ECS::ParticleType::CONE,
                         .direction = ECS::Direction::LEFT,
                         .speed = 400.0f,
@@ -111,14 +113,14 @@ namespace ECS {
             }
 
             static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
-                std::vector<std::function<tls::Vec3(tls::Vec3)>> trajectories = {
-                    [](tls::Vec3 pos) {
+                std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
+                    [](tls::Vec3 pos, std::shared_ptr<float> f) {
                         return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
                     },
-                    [](tls::Vec3 pos) {
+                    [](tls::Vec3 pos, std::shared_ptr<float> f) {
                         return tls::Vec3{pos._x + 0.1, pos._y + 0.1, pos._z};
                     },
-                    [](tls::Vec3 pos) {
+                    [](tls::Vec3 pos, std::shared_ptr<float> f) {
                         return tls::Vec3{pos._x + 0.1, pos._y - 0.1, pos._z};
                     }
                 };
@@ -154,7 +156,7 @@ namespace ECS {
                         *_entities.rbegin(),
                         ECS::Particles {
                             .particles = std::vector<ECS::Particle>(20000),
-                            .texture = std::make_shared<RL::ZTexture>("./client/resources/images/projectile.png"),
+                            .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
                             .type = ECS::ParticleType::EXPLOSION,
                             .direction = ECS::Direction::LEFT,
                             .speed = 400.0f,

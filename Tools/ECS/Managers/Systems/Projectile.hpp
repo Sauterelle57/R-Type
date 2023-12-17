@@ -53,7 +53,7 @@ namespace ECS {
                 static Direction previous_direction = projectile.direction;
                 static tls::Vec3 previous_position = transform.position;
 
-                transform.position = projectile.trajectory(transform.position);
+                transform.position = projectile.trajectory(transform.position, projectile.t);
 
                 if (transform.position._y > previous_position._y)
                     projectile.direction = ECS::LEFT_UP;
