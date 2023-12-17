@@ -29,8 +29,15 @@ namespace ECS {
                 auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
-                particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
-                particle.alpha = 1.0f;
+                if (particles.direction == ECS::UP)
+                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                else if (particles.direction == ECS::DOWN)
+                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                else if (particles.direction == ECS::LEFT)
+                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                else if (particles.direction == ECS::RIGHT)
+                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                particle.alpha = particles.lifeTime;
                 particle.active = true;
 
             }
@@ -49,7 +56,7 @@ namespace ECS {
                         particle.position._x += particle.speed._x;
                         particle.position._y += particle.speed._y;
                         particle.position._z += particle.speed._z;
-                        particle.alpha -= 0.02f;
+                        particle.alpha -= 1.0f - (RL::Utils::getRandomValue(0, 100) <= particles.surviveChance ? particles.lifeTime : 0.0f);
 
                         if (particle.alpha <= 0.0f)
                             particle.active = false;
@@ -65,10 +72,12 @@ namespace ECS {
 
                 auto &particles = coordinatorPtr->getComponent<Particles>(entity);
 
+                int count = 0;
                 for (auto &particle : particles.particles) {
                     if (!particle.active) {
                         initParticle(entity, particle);
-                        break;
+                        if (++count >= particles.spawnRate)
+                            break;
                     }
                 }
             }
@@ -88,7 +97,7 @@ namespace ECS {
 
                     for (auto &particle : particles.particles) {
                         if (particle.active) {
-                            camera->drawBillboard(*particles.texture->getTexture().get(), particle.position, transform.scale + particles.scaleOffset, RL::Utils::fade(WHITE, particle.alpha));
+                            camera->drawBillboard(*particles.texture->getTexture().get(), particle.position, transform.scale * particles.scaleOffset, RL::Utils::fade(WHITE, particle.alpha));
                         }
                     }
                 }

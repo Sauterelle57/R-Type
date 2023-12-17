@@ -51,34 +51,34 @@ namespace RT {
             }
         );
 
-        _entities.insert(_entities.end(), _coordinator->createEntity());
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Model {
-                .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb"),
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Transform {
-                .position = {0, 0, 0},
-                .rotation = {0, 0, 0, 0},
-                .scale = 0.6f
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Player {
-                .key_up = KEY_Y,
-                .key_down = KEY_G,
-                .key_left = KEY_B,
-                .key_right = KEY_R,
-                .key_shoot = KEY_SPACE,
-                .key_validate = KEY_ENTER,
-                .key_cancel = KEY_DELETE,
-                .key_settings = KEY_TAB
-            }
-        );
+        // _entities.insert(_entities.end(), _coordinator->createEntity());
+        // _coordinator->addComponent(
+        //     *_entities.rbegin(),
+        //     ECS::Model {
+        //         .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb"),
+        //     }
+        // );
+        // _coordinator->addComponent(
+        //     *_entities.rbegin(),
+        //     ECS::Transform {
+        //         .position = {0, 0, 0},
+        //         .rotation = {0, 0, 0, 0},
+        //         .scale = 0.6f
+        //     }
+        // );
+        // _coordinator->addComponent(
+        //     *_entities.rbegin(),
+        //     ECS::Player {
+        //         .key_up = KEY_Y,
+        //         .key_down = KEY_G,
+        //         .key_left = KEY_B,
+        //         .key_right = KEY_R,
+        //         .key_shoot = KEY_SPACE,
+        //         .key_validate = KEY_ENTER,
+        //         .key_cancel = KEY_DELETE,
+        //         .key_settings = KEY_TAB
+        //     }
+        // );
 
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
@@ -109,31 +109,40 @@ namespace RT {
                 .key_settings = KEY_TAB
             }
         );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Weapon {
+                .damage = 1,
+                .speed = 1,
+                .durability = 1,
+                .create_projectile = ECS::Shoot::basicShot
+            }
+        );
 
-        _entities.insert(_entities.end(), _coordinator->createEntity());
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Transform {
-                .position = {0, 0, 0},
-                .rotation = {0, 0, 0, 0},
-                .scale = 0.1f
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Particles {
-                .particles = std::vector<ECS::Particle>(1000),
-                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
-                .type = ECS::ParticleType::CONE,
-                .direction = ECS::Direction::UP,
-                .speed = 300.0f,
-                .scaleOffset = 0.1f,
-                .positionOffset = {0, 0, 0},
-                .lifeTime = 1000,
-                .spawnRate = 10,
-                .spawnTimer = 0
-            }
-        );
+        // _entities.insert(_entities.end(), _coordinator->createEntity());
+        // _coordinator->addComponent(
+        //     *_entities.rbegin(),
+        //     ECS::Transform {
+        //         .position = {0, 0, 0},
+        //         .rotation = {0, 0, 0, 0},
+        //         .scale = 0.1f
+        //     }
+        // );
+        // _coordinator->addComponent(
+        //     *_entities.rbegin(),
+        //     ECS::Particles {
+        //         .particles = std::vector<ECS::Particle>(1000),
+        //         .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
+        //         .type = ECS::ParticleType::CONE,
+        //         .direction = ECS::Direction::UP,
+        //         .speed = 300.0f,
+        //         .scaleOffset = 0.1f,
+        //         .positionOffset = {0, 0, 0},
+        //         .lifeTime = 1000,
+        //         .spawnRate = 10,
+        //         .spawnTimer = 0
+        //     }
+        // );
     }
 
     void Core::initComponents() {
@@ -144,6 +153,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Player>();
         _coordinator->registerComponent<ECS::Particles>();
         _coordinator->registerComponent<ECS::Projectile>();
+        _coordinator->registerComponent<ECS::Weapon>();
     }
 
     void Core::initSystem() {
@@ -152,7 +162,7 @@ namespace RT {
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
         _systems._systemParticles = _coordinator->registerSystem<ECS::ParticleSystem>();
         _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
-
+        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
 
         {
             ECS::Signature signature;
@@ -185,8 +195,15 @@ namespace RT {
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Projectile>());
+            signature.set(_coordinator->getComponentType<ECS::Weapon>());
             _coordinator->setSystemSignature<ECS::Shoot>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Projectile>());
+            _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
         }
     }
 
@@ -203,6 +220,8 @@ namespace RT {
         while (!_window->shouldClose()) {
             if (_cursor->isHidden())
                 _camera->update(CAMERA_FIRST_PERSON);
+            if(IsKeyDown(KEY_LEFT_SHIFT)) _camera->setPosition({_camera->getPosition().x, _camera->getPosition().y - 1, _camera->getPosition().z});
+            if(IsKeyDown(KEY_SPACE)) _camera->setPosition({_camera->getPosition().x, _camera->getPosition().y + 1, _camera->getPosition().z});
             _window->beginDrawing();
             _window->clearBackground(BLACK);
             _camera->beginMode();
@@ -212,6 +231,7 @@ namespace RT {
             _systems._systemPlayer->update(_event);
             _systems._systemParticles->update(_camera, shader);
             _systems._systemShoot->update(_event);
+            _systems._systemProjectile->update();
 
             _window->drawGrid(10, 1.0f);
             _camera->endMode();

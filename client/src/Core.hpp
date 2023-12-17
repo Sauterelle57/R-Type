@@ -22,6 +22,7 @@
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "Particle.hpp"
+#include "Projectile.hpp"
 #include "Shoot.hpp"
 
 namespace RT {
@@ -32,6 +33,7 @@ namespace RT {
         std::shared_ptr<ECS::DrawModel> _systemDrawModel;
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
         std::shared_ptr<ECS::Shoot> _systemShoot;
+        std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
     };
 
     class Core {

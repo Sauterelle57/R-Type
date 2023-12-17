@@ -21,17 +21,14 @@ namespace ECS {
                     return;
                 }
 
-                int count = 0;
                 for (auto const &entity : _entities) {
-                    count++;
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
-                    transform.position._y -= 0.1;
-                    if (transform.position._y < 0) {
-                        transform.position._y = 20;
-                    }
+                    // transform.position._y -= 0.1;
+                    // if (transform.position._y < 0) {
+                    //     transform.position._y = 20;
+                    // }
                 }
-                // std::cout << "Move: " << count << std::endl;
             }
     };
 }

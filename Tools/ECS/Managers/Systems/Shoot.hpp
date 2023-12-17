@@ -16,14 +16,14 @@ namespace ECS {
 
     class Shoot : public System {
         public:
-            void basicShot(std::set<Entity> _entities, std::shared_ptr<Coordinator> _coordinator) {
+            static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities,  tls::Vec3 _pos) {
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = {0, 0, 0},
+                        .position = _pos,
                         .rotation = {0, 0, 1, -90},
-                        .scale = 1.f
+                        .scale = 0.1f
                     }
                 );
                 _coordinator->addComponent(
@@ -36,7 +36,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     Projectile {
                         .trajectory = [](tls::Vec3 pos) {
-                            return tls::Vec3{pos._x + 2, pos._y, pos._z};
+                            return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
                         },
                         .damage = 1,
                         .speed = 0.5f
@@ -45,16 +45,17 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Particles {
-                        .particles = std::vector<ECS::Particle>(1000),
+                        .particles = std::vector<ECS::Particle>(20000),
                         .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
                         .type = ECS::ParticleType::CONE,
-                        .direction = ECS::Direction::UP,
-                        .speed = 300.0f,
-                        .scaleOffset = 0.0001f,
-                        .positionOffset = {0, 0, 0},
-                        .lifeTime = 1000,
-                        .spawnRate = 10,
-                        .spawnTimer = 0
+                        .direction = ECS::Direction::LEFT,
+                        .speed = 400.0f,
+                        .scaleOffset = 0.5f,
+                        .positionOffset = {-0.5, 0, 0},
+                        .lifeTime = 2,
+                        .spawnRate = 50,
+                        .spawnTimer = 0,
+                        .surviveChance = 100
                     }
                 );
             }
@@ -63,18 +64,14 @@ namespace ECS {
                 if (!coordinatorPtr) {
                     return;
                 }
-                if (_event->isKeyPressed(KEY_F))
-                    basicShot(_entities, coordinatorPtr);
 
-                int count = 0;
                 for (auto const &entity : _entities) {
-                    count++;
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
-                    auto &projectile = coordinatorPtr->getComponent<Projectile>(entity);
+                    auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
+                    if (_event->isKeyPressed(KEY_F))
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 2, 0});
 
-                    transform.position = projectile.trajectory(transform.position);
                 }
-                 std::cout << "Shoot: " << count << std::endl;
             }
     };
 }

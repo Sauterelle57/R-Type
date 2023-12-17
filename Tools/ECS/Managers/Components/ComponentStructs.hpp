@@ -76,6 +76,7 @@ namespace ECS {
         float lifeTime;
         float spawnRate;
         float spawnTimer;
+        float surviveChance;
     };
 
     struct Projectile {
@@ -88,7 +89,7 @@ namespace ECS {
         int damage;
         float speed;
         float durability;
-        std::function<std::vector<Entity>()> create_projectile;
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities,  tls::Vec3 _pos)> create_projectile;
     };
 
     struct Alive {

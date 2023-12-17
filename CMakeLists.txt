@@ -123,7 +123,7 @@ add_executable(rtype_client
         client/src/main.cpp
         client/src/Core.hpp
         client/src/Core.cpp
-        Tools/ECS/Managers/Components/kaka.hpp
+        Tools/ECS/Managers/Systems/Projectile.hpp
 )
 
 
