@@ -28,6 +28,10 @@ namespace ECS {
         DOWN,
         LEFT,
         RIGHT,
+        LEFT_UP,
+        LEFT_DOWN,
+        RIGHT_UP,
+        RIGHT_DOWN,
         NONE
     };
 
@@ -80,16 +84,18 @@ namespace ECS {
     };
 
     struct Projectile {
+        Direction direction = ECS::Direction::LEFT;
         std::function<tls::Vec3(tls::Vec3)> trajectory;
         int damage;
         float speed;
+        bool active;
     };
 
     struct Weapon {
         int damage;
         float speed;
         float durability;
-        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities,  tls::Vec3 _pos)> create_projectile;
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos)> create_projectile;
     };
 
     struct Alive {

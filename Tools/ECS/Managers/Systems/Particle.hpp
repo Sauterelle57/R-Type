@@ -39,7 +39,6 @@ namespace ECS {
                     particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
-
             }
 
             void updateParticles(Entity entity) {

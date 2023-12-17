@@ -46,6 +46,7 @@ namespace tls {
             operator Vector3() const;
 
             bool operator==(const Vec3 &vector) const;
+            bool operator!=(const Vec3 &vector) const;
 
             Vec3 normalized() const;
 

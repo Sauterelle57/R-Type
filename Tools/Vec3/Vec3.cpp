@@ -174,4 +174,8 @@ namespace tls {
         return Utils::equal(_x, vector._x) && Utils::equal(_y, vector._y) && Utils::equal(_z, vector._z);
     }
 
+    bool Vec3::operator!=(const Vec3 &vector) const {
+        return !Utils::equal(_x, vector._x) && !Utils::equal(_y, vector._y) && !Utils::equal(_z, vector._z);
+    }
+
 } // tls

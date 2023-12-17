@@ -41,42 +41,13 @@ namespace RT {
 
     void Core::initEntities() {
         // _entities.resize(ECS::MAX_ENTITIES);
-        _entities.insert(_entities.end(), _coordinator->createEntity());
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Transform {
-                .position = {100, 0, 100},
-                .rotation = {0, 0, 0, 0},
-                .scale = 1.0f
-            }
-        );
-
         // _entities.insert(_entities.end(), _coordinator->createEntity());
         // _coordinator->addComponent(
         //     *_entities.rbegin(),
-        //     ECS::Model {
-        //         .model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb"),
-        //     }
-        // );
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
         //     ECS::Transform {
-        //         .position = {0, 0, 0},
+        //         .position = {100, 0, 100},
         //         .rotation = {0, 0, 0, 0},
-        //         .scale = 0.6f
-        //     }
-        // );
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
-        //     ECS::Player {
-        //         .key_up = KEY_Y,
-        //         .key_down = KEY_G,
-        //         .key_left = KEY_B,
-        //         .key_right = KEY_R,
-        //         .key_shoot = KEY_SPACE,
-        //         .key_validate = KEY_ENTER,
-        //         .key_cancel = KEY_DELETE,
-        //         .key_settings = KEY_TAB
+        //         .scale = 1.0f
         //     }
         // );
 
@@ -115,34 +86,9 @@ namespace RT {
                 .damage = 1,
                 .speed = 1,
                 .durability = 1,
-                .create_projectile = ECS::Shoot::basicShot
+                .create_projectile = ECS::Shoot::testShot
             }
         );
-
-        // _entities.insert(_entities.end(), _coordinator->createEntity());
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
-        //     ECS::Transform {
-        //         .position = {0, 0, 0},
-        //         .rotation = {0, 0, 0, 0},
-        //         .scale = 0.1f
-        //     }
-        // );
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
-        //     ECS::Particles {
-        //         .particles = std::vector<ECS::Particle>(1000),
-        //         .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
-        //         .type = ECS::ParticleType::CONE,
-        //         .direction = ECS::Direction::UP,
-        //         .speed = 300.0f,
-        //         .scaleOffset = 0.1f,
-        //         .positionOffset = {0, 0, 0},
-        //         .lifeTime = 1000,
-        //         .spawnRate = 10,
-        //         .spawnTimer = 0
-        //     }
-        // );
     }
 
     void Core::initComponents() {
