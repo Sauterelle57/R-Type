@@ -12,6 +12,7 @@
 #include "Coordinator.hpp"
 #include "renderer/Model.hpp"
 #include "ComponentStructs.hpp"
+#include <cmath>
 #define AMPLITUDE 0.5f
 
 namespace ECS {
@@ -73,13 +74,12 @@ namespace ECS {
                         .scale = 0.1f
                     }
                 );
-                _coordinator->addComponent(
-                    *_entities.rbegin(),
-                    Model {
-                        .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
-                    }
-                );
-                #include <cmath>
+                // _coordinator->addComponent(
+                //     *_entities.rbegin(),
+                //     Model {
+                //         .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+                //     }
+                // );
 
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -88,7 +88,7 @@ namespace ECS {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             std::cout << *t << std::endl;
                             *t += 0.01f;
-                            return tls::Vec3{ pos._x + 0.1f, 2 * std::sin((*t) * 2), pos._z };
+                            return tls::Vec3{ pos._x + 0.5f, 10 * std::sin((*t) * 5), pos._z };
                         },
                         .damage = 1,
                         .speed = 0.5f
@@ -101,13 +101,13 @@ namespace ECS {
                         .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
                         .type = ECS::ParticleType::CONE,
                         .direction = ECS::Direction::LEFT,
-                        .speed = 400.0f,
-                        .scaleOffset = 0.5f,
+                        .speed = 10000.0f,
+                        .scaleOffset = 2.0f,
                         .positionOffset = {-0.5, 0, 0},
-                        .lifeTime = 2,
-                        .spawnRate = 50,
+                        .lifeTime = 12,
+                        .spawnRate = 1,
                         .spawnTimer = 0,
-                        .surviveChance = 35
+                        .surviveChance = 0
                     }
                 );
             }

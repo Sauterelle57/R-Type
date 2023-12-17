@@ -55,7 +55,7 @@ namespace ECS {
                         particle.position._x += particle.speed._x;
                         particle.position._y += particle.speed._y;
                         particle.position._z += particle.speed._z;
-                        particle.alpha -= 1.0f - (RL::Utils::getRandomValue(0, 100) <= particles.surviveChance ? particles.lifeTime : 0.0f);
+                        particle.alpha -= 1.0f - (RL::Utils::getRandomValue(0, 100) < particles.surviveChance ? particles.lifeTime : 0.0f);
 
                         if (particle.alpha <= 0.0f)
                             particle.active = false;
