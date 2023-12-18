@@ -6,20 +6,46 @@
 */
 
 #include "UdpClient.hpp"
+#include <thread>
+#include <csignal>
+
+void signalHandler(int signum) {
+    if (signum == SIGINT) {
+        std::cout << "Received Ctrl+C. Stopping client..." << std::endl;
+        exit(0);
+    }
+}
 
 int main()
 {
-    boost::asio::io_service ioService;
+    std::signal(SIGINT, signalHandler);
+    std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
+    rt::UdpClient udpClient("127.0.0.1", 1234, receivedMessages);
 
-    rt::UdpClient udpClient("127.0.0.1", 1234);
+    udpClient.send("1");
+    udpClient.send("23");
+    udpClient.send("456");
+    udpClient.send("78910");
 
-    udpClient.send("ABC");
-    udpClient.send("DEF123");
 
-    udpClient.receive();
+    std::thread udpClientThread([&]() {
+        udpClient.run();
+    });
 
-    udpClient.receive();
+    while (1) {
+        while (!receivedMessages->empty())
+        {
+            std::cout << "Message: " << receivedMessages->front().message << std::endl;
+            std::cout << "Sender IP: " << receivedMessages->front().senderIp << std::endl;
+            std::cout << "Sender port: " << receivedMessages->front().senderPort << std::endl;
+            receivedMessages->pop();
+        }
 
-    udpClient.send("Here is a message");
+        std::cout << "GameLoop" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    }
+
+    udpClientThread.join();
     return 0;
 }
