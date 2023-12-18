@@ -10,12 +10,16 @@
 
 #include <string>
 
-class IUdpClient {
-public:
-    virtual ~IUdpClient() = default;
+namespace rt {
 
-    virtual void send(const std::string& message) = 0;
-    virtual void receive() = 0;
-};
+    class IUdpClient {
+        public:
+            virtual ~IUdpClient() = default;
+
+            virtual void send(const std::string& message) = 0;
+            virtual std::string receive() = 0;
+    };
+
+}
 
 #endif // IUDP_CLIENT_HPP_

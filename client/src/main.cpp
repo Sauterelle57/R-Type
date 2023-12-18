@@ -11,7 +11,7 @@ int main()
 {
     boost::asio::io_service ioService;
 
-    UdpClient udpClient("127.0.0.1", 1234);
+    rt::UdpClient udpClient("127.0.0.1", 1234);
 
     udpClient.send("ABC");
     udpClient.send("DEF123");
@@ -19,6 +19,7 @@ int main()
     udpClient.receive();
 
     udpClient.receive();
-    udpClient.receive();
+
+    udpClient.send("Here is a message");
     return 0;
 }
