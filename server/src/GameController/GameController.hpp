@@ -27,7 +27,6 @@ namespace rt {
                         std::cout << "GameController exec data: " << data.data << " from " << data.ip << ":" << data.port << std::endl;
                         _wrapper->sendTo(data.data, data.ip, data.port);
                     }
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 }
             }
 
