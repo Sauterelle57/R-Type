@@ -72,6 +72,7 @@ namespace ECS {
     struct Particles {
         std::vector<Particle> particles;
         std::shared_ptr<RL::ZTexture> texture;
+        std::function<void(Entity, Particle &)> createParticle;
         ParticleType type;
         Direction direction;
         float speed;
