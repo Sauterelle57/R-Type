@@ -74,12 +74,12 @@ namespace ECS {
                         .scale = 0.1f
                     }
                 );
-                // _coordinator->addComponent(
-                //     *_entities.rbegin(),
-                //     Model {
-                //         .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
-                //     }
-                // );
+//                 _coordinator->addComponent(
+//                     *_entities.rbegin(),
+//                     Model {
+//                         .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+//                     }
+//                 );
 
                 _coordinator->addComponent(
                     *_entities.rbegin(),
