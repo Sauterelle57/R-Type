@@ -11,10 +11,9 @@
 #include "GameController.hpp"
 
 int main() {
-    std::unique_ptr<rt::ServerController> serverCtrl = std::make_unique<rt::ServerController>(1234);
+    std::unique_ptr<rt::IServerController> serverCtrl = std::make_unique<rt::ServerController>(1234);
 
     serverCtrl->run();
-    std::cout << "Server ended" << std::endl;
 
     return 0;
 }

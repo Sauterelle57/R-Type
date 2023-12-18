@@ -7,38 +7,28 @@
 #include <iostream>
 #include <functional>
 #include <queue>
+#include "IServerController.hpp"
 
 namespace rt {
 
-class ServerController {
-public:
-    using ReceiveHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
+    class ServerController : public IServerController {
+        public:
+            using ReceiveHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
 
-    ServerController(short port);
+            ServerController(short port);
 
-    void run();
+            void run();
 
-    void handleReceivedData(const int error, std::size_t bytes_transferred);
+            void handleReceivedData(const int error, std::size_t bytes_transferred);
 
-    struct ReceivedData {
-        std::string data;
-        std::string ip;
-        int port;
+
+            std::queue<ReceivedData> &getReceivedQueue() { return _receivedQueue; }
+            IWrapper &getWrapper() { return asioWrapper; }
+        private:
+            GameController gameController;
+            std::queue<ReceivedData> _receivedQueue;
+            AsioWrapper asioWrapper;
     };
-
-    struct SendData {
-        std::string data;
-        std::string ip;
-        int port;
-    };
-
-    std::queue<ReceivedData> _receivedQueue;
-    std::queue<SendData> _sendQueue;
-
-private:
-    AsioWrapper asioWrapper;
-    GameController gameController;
-};
 
 } // namespace rt
 
