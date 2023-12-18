@@ -15,19 +15,16 @@ namespace rt {
         public:
             using ReceiveHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
 
-            ServerController(short port);
+            ServerController(short port, std::shared_ptr<IGameController> &gameCtrl);
 
             void run();
 
             void handleReceivedData(const int error, std::size_t bytes_transferred);
 
-
-            std::queue<ReceivedData> &getReceivedQueue() { return _receivedQueue; }
             IWrapper &getWrapper() { return asioWrapper; }
         private:
-            GameController gameController;
-            std::queue<ReceivedData> _receivedQueue;
             AsioWrapper asioWrapper;
+            std::shared_ptr<IGameController> _gameCtrl;
     };
 
 } // namespace rt

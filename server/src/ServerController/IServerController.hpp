@@ -17,19 +17,6 @@ namespace rt {
             virtual ~IServerController() = default;
             virtual void run() = 0;
             
-            struct ReceivedData {
-                std::string data;
-                std::string ip;
-                int port;
-            };
-
-            struct SendData {
-                std::string data;
-                std::string ip;
-                int port;
-            };
-
-            virtual std::queue<ReceivedData> &getReceivedQueue() = 0;
             virtual IWrapper &getWrapper() = 0;
     };
 
