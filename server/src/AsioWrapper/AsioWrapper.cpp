@@ -1,4 +1,4 @@
-// AsioWrapper.cpp
+
 #include "AsioWrapper.hpp"
 #include <iostream>
 
@@ -18,6 +18,7 @@ namespace rt {
 
     void AsioWrapper::startReceive()
     {
+        recvBuffer.fill(0);
         socket.async_receive_from(
             boost::asio::buffer(recvBuffer), remoteEndpoint,
             [this](const boost::system::error_code& error, std::size_t bytes_transferred) {

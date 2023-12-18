@@ -29,12 +29,6 @@ ExternalProject_Add(BOOSTASIO
 ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
 include_directories(${SOURCE_DIR})
 
-
-include_directories(server/src)
-include_directories(server/src/ServerController)
-include_directories(server/src/GameController)
-include_directories(server/src/AsioWrapper)
-
 add_executable(rtype_server
         # Main
         server/main.cpp
@@ -51,18 +45,34 @@ add_executable(rtype_server
         server/src/AsioWrapper/AsioWrapper.hpp
 )
 
+target_include_directories(rtype_server PRIVATE
+    server/src
+    server/src/ServerController
+    server/src/GameController
+    server/src/AsioWrapper
+)
+
 include_directories(client/src)
 include_directories(client/src/ECS)
 include_directories(client/src/ECS/Managers)
 include_directories(client/src/ECS/Managers/Components)
 include_directories(client/src/ECS/Managers/Entities)
 include_directories(client/src/ECS/Managers/Systems)
+include_directories(client/src/GameLoop)
+include_directories(client/src/UdpClient)
+
 
 add_executable(rtype_client
+        # ECS
         client/src/ECS/Managers/Components/ComponentsManager.hpp
         client/src/ECS/Managers/Entities/EntitiesManager.hpp
         client/src/ECS/Managers/Systems/SystemsManager.hpp
+        # Main
         client/src/main.cpp
+        # Udp Client
+        client/src/UdpClient/UdpClient.hpp
+        client/src/UdpClient/UdpClient.cpp
+        client/src/UdpClient/IUdpClient.hpp
 )
 
 # Link against Boost.Asio (header-only library, no need for separate libraries)
