@@ -9,3 +9,6 @@ ServerExecutable
 
 .idea
 cmake-build-debug
+cmake-build-debug-mingw
+.dnp
+build
