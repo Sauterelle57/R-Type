@@ -86,7 +86,7 @@ namespace RT {
                 .damage = 1,
                 .speed = 1,
                 .durability = 1,
-                .create_projectile = ECS::Shoot::testShot
+                .create_projectile = ECS::Shoot::doubleSinShot
             }
         );
     }

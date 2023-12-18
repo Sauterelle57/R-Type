@@ -4,7 +4,7 @@
 
 #include <complex>
 #include "Vec3.hpp"
-#include "../Utils/Utils.hpp"
+#include "Utils.hpp"
 
 namespace tls {
 

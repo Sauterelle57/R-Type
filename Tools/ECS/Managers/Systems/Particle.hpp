@@ -15,6 +15,7 @@
 #include "renderer/Texture.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/Mode.hpp"
+#include "Vec3.hpp"
 
 namespace ECS {
     class ParticleSystem : public System {

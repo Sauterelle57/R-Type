@@ -13,6 +13,7 @@
 #include "renderer/Model.hpp"
 #include "ComponentStructs.hpp"
 #include <cmath>
+#include "renderer/IEvent.hpp"
 #define AMPLITUDE 0.5f
 
 namespace ECS {
@@ -38,7 +39,6 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .direction = ECS::Direction::LEFT,
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
                         },
@@ -64,7 +64,64 @@ namespace ECS {
                 );
             }
 
-            static void testShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+            static void doubleSinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+                std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
+                    [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                        *t += 0.01f;
+                        return tls::Vec3{pos._x + 0.5f, 10 * std::cos((*t) * 5), pos._z };
+                    },
+                    [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                        *t += 0.01f;
+                        return tls::Vec3{pos._x + 0.5f, 10 * std::sin((*t) * 5), pos._z };
+                    }
+                };
+                std::vector<float> start = {M_PI / 2, 0.0};
+
+                for (int i = 0; i < 2; i++) {
+                    _entities.insert(_entities.end(), _coordinator->createEntity());
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Transform {
+                            .position = _pos,
+                            .rotation = {0, 0, 1, -90},
+                            .scale = 0.1f
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Model {
+                            .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Projectile {
+                            .t = std::make_shared<float>(start[i]),
+                            .trajectory = trajectories[i],
+                            .damage = 1,
+                            .speed = 0.5f
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::Particles {
+                            .particles = std::vector<ECS::Particle>(20000),
+                            .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
+                            .type = ECS::ParticleType::CONE,
+                            .direction = ECS::Direction::LEFT,
+                            .speed = 10000.0f,
+                            .scaleOffset = 2.0f,
+                            .positionOffset = {-0.5, 0, 0},
+                            .lifeTime = 12,
+                            .spawnRate = 1,
+                            .spawnTimer = 0,
+                            .surviveChance = 0
+                        }
+                    );
+                }
+            }
+
+            static void sinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -74,19 +131,16 @@ namespace ECS {
                         .scale = 0.1f
                     }
                 );
-//                 _coordinator->addComponent(
-//                     *_entities.rbegin(),
-//                     Model {
-//                         .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
-//                     }
-//                 );
-
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Model {
+                        .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+                    }
+                );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .direction = ECS::Direction::LEFT,
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            std::cout << *t << std::endl;
                             *t += 0.01f;
                             return tls::Vec3{ pos._x + 0.5f, 10 * std::sin((*t) * 5), pos._z };
                         },
@@ -114,13 +168,13 @@ namespace ECS {
 
             static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
-                    [](tls::Vec3 pos, std::shared_ptr<float> f) {
+                    [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
                     },
-                    [](tls::Vec3 pos, std::shared_ptr<float> f) {
+                    [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         return tls::Vec3{pos._x + 0.1, pos._y + 0.1, pos._z};
                     },
-                    [](tls::Vec3 pos, std::shared_ptr<float> f) {
+                    [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         return tls::Vec3{pos._x + 0.1, pos._y - 0.1, pos._z};
                     }
                 };
