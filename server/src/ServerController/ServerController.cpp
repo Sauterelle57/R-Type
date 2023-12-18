@@ -1,14 +1,13 @@
 // ServerController.cpp
 #include "ServerController.hpp"
 #include "GameController.hpp"
-#include <iostream>  // Add this include for std::cout and std::cerr
-#include <boost/system/error_code.hpp>  // Add this include for boost::system::error_code
+#include <iostream>
 
 namespace rt {
 
 ServerController::ServerController(short port)
     : asioWrapper(port, AsioWrapper::ReceiveHandler([this](int error, std::size_t bytes_transferred) {
-        handleReceivedData(boost::system::error_code(error, boost::system::system_category()), bytes_transferred);
+        handleReceivedData(error, bytes_transferred);
     }))
 {
 }
@@ -20,16 +19,14 @@ void ServerController::run()
     asioWrapper.run();
 }
 
-void ServerController::handleReceivedData(const boost::system::error_code& error, std::size_t bytes_transferred)
+void ServerController::handleReceivedData(const int error, std::size_t bytes_transferred)
 {
     if (!error) {
         std::cout << "Received data: " << asioWrapper.getReceivedData().data() << std::endl;
-        asioWrapper.sendTo("Hello from server!\n", asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
-        asioWrapper.sendTo("Server said goooooood byyyyye !\n", asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
-        std::string data = "Your current ID : " + std::to_string(gameController.exec()) + "\n";
-        asioWrapper.sendTo(data, asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
+        this->_receivedQueue.push((ReceivedData){ asioWrapper.getReceivedData().data(), asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second });
+        asioWrapper.sendTo("data", asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
     } else {
-        std::cerr << "Error receiving data: " << error.message() << std::endl;
+        std::cerr << "Error receiving data: " << error << std::endl;
     }
 }
 

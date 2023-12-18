@@ -5,7 +5,8 @@
 #include "AsioWrapper.hpp"
 #include "GameController.hpp"
 #include <iostream>
-#include <functional> // Add this include for std::function
+#include <functional>
+#include <queue>
 
 namespace rt {
 
@@ -17,7 +18,22 @@ public:
 
     void run();
 
-    void handleReceivedData(const boost::system::error_code& error, std::size_t bytes_transferred);
+    void handleReceivedData(const int error, std::size_t bytes_transferred);
+
+    struct ReceivedData {
+        std::string data;
+        std::string ip;
+        int port;
+    };
+
+    struct SendData {
+        std::string data;
+        std::string ip;
+        int port;
+    };
+
+    std::queue<ReceivedData> _receivedQueue;
+    std::queue<SendData> _sendQueue;
 
 private:
     AsioWrapper asioWrapper;
