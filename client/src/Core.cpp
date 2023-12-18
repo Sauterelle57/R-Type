@@ -40,17 +40,6 @@ namespace RT {
     }
 
     void Core::initEntities() {
-        // _entities.resize(ECS::MAX_ENTITIES);
-        // _entities.insert(_entities.end(), _coordinator->createEntity());
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
-        //     ECS::Transform {
-        //         .position = {100, 0, 100},
-        //         .rotation = {0, 0, 0, 0},
-        //         .scale = 1.0f
-        //     }
-        // );
-
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _coordinator->addComponent(
             *_entities.rbegin(),

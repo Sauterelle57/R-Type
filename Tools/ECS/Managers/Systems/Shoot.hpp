@@ -68,14 +68,14 @@ namespace ECS {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         *t += 0.01f;
-                        return tls::Vec3{pos._x + 0.5f, 10 * std::cos((*t) * 5), pos._z };
+                        return tls::Vec3{pos._x + 0.5f, .5 * std::cos((*t) * 10) + pos._y, pos._z };
                     },
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         *t += 0.01f;
-                        return tls::Vec3{pos._x + 0.5f, 10 * std::sin((*t) * 5), pos._z };
+                        return tls::Vec3{pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
                     }
                 };
-                std::vector<float> start = {M_PI / 2, 0.0};
+                std::vector<double> start = {_pos._y, 0.0};
 
                 for (int i = 0; i < 2; i++) {
                     _entities.insert(_entities.end(), _coordinator->createEntity());
@@ -142,7 +142,7 @@ namespace ECS {
                     Projectile {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             *t += 0.01f;
-                            return tls::Vec3{ pos._x + 0.5f, 10 * std::sin((*t) * 5), pos._z };
+                            return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
                         },
                         .damage = 1,
                         .speed = 0.5f
