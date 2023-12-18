@@ -9,6 +9,7 @@
 #define raylib_IMESH_HPP
 
 #include <iostream>
+#include "raylib.h"
 
 struct Material;
 struct Matrix;

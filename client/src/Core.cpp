@@ -19,6 +19,20 @@
 #include "Play.hpp"
 
 namespace RT {
+
+    void Core::checkCollision(ECS::Entity entity1, ECS::Entity entity2) {
+        auto coordinatorPtr = _coordinator;
+        if (!coordinatorPtr)
+            return;
+
+        auto &collision1 = coordinatorPtr->getComponent<ECS::Transform>(entity1);
+        auto &collision2 = coordinatorPtr->getComponent<ECS::Transform>(entity2);
+
+        std::cout << collision1.position._x << " " << collision2.position._x << std::endl;
+        if (RL::Utils::checkCollisionBoxes(collision1.bounds, collision2.bounds))
+            std::cout << "Collision detected between entities" << std::endl;
+    }
+
     Core::Core()
     {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
@@ -76,6 +90,22 @@ namespace RT {
                 .speed = 1,
                 .durability = 1,
                 .create_projectile = ECS::Shoot::doubleSinShot
+            }
+        );
+
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Model {
+                .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {0, 5, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 1.0f
             }
         );
     }
@@ -167,6 +197,8 @@ namespace RT {
             _systems._systemParticles->update(_camera, shader);
             _systems._systemShoot->update(_event);
             _systems._systemProjectile->update();
+
+            checkCollision(*_entities.rbegin(), *_entities.rend());
 
             _window->drawGrid(10, 1.0f);
             _camera->endMode();

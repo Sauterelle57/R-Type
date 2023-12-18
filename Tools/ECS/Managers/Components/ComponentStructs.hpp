@@ -44,6 +44,7 @@ namespace ECS {
         tls::Vec3 position;
         tls::Vec4 rotation;
         float scale;
+        BoundingBox bounds;
     };
 
     struct Model {

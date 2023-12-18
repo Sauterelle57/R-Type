@@ -9,7 +9,6 @@
 #define CORE_HPP_
 
 #include <memory>
-// #include <vector>
 #include "Coordinator.hpp"
 #include "renderer/IWindow.hpp"
 #include "renderer/ICamera.hpp"
@@ -44,6 +43,7 @@ namespace RT {
             void initEntities();
             void initComponents();
             void initSystem();
+            void checkCollision(ECS::Entity entity1, ECS::Entity entity2);
             const int _screenWidth = 1920;
             const int _screenHeight = 1080;
 
