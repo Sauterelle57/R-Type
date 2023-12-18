@@ -11,20 +11,23 @@
 #include "IUdpClient.hpp"
 #include <iostream>
 #include <boost/asio.hpp>
+#include <optional>
 
 namespace rt {
 
     class UdpClient : public IUdpClient {
         public:
-            UdpClient(const std::string& serverIP, unsigned short serverPort);
+            UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
 
             void send(const std::string& message) override;
             std::string receive() override;
+            void run() override;
 
         private:
             boost::asio::io_service ioService;
             boost::asio::ip::udp::socket socket;
             boost::asio::ip::udp::endpoint serverEndpoint;
+            std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
     };
 
 }

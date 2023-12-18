@@ -9,8 +9,17 @@
 #define IUDP_CLIENT_HPP_
 
 #include <string>
+#include <optional>
+#include <memory>
+#include <queue>
 
 namespace rt {
+
+    struct ReceivedMessage {
+        std::string message;
+        std::string senderIp;
+        unsigned short senderPort;
+    };
 
     class IUdpClient {
         public:
@@ -18,6 +27,7 @@ namespace rt {
 
             virtual void send(const std::string& message) = 0;
             virtual std::string receive() = 0;
+            virtual void run() = 0;
     };
 
 }

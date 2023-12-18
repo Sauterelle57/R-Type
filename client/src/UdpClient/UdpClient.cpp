@@ -6,14 +6,16 @@
 */
 
 #include "UdpClient.hpp"
+#include <optional>
 
 namespace rt {
 
-    UdpClient::UdpClient(const std::string& serverIP, unsigned short serverPort)
+    UdpClient::UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages)
         : ioService(), socket(ioService), serverEndpoint(boost::asio::ip::address::from_string(serverIP), serverPort)
     {
         socket.open(boost::asio::ip::udp::v4());
         socket.connect(serverEndpoint);
+        this->receivedMessages = receivedMessages;
     }
 
     void UdpClient::send(const std::string& message)
@@ -40,6 +42,16 @@ namespace rt {
         {
             std::cerr << "Error receiving data: " << error.message() << std::endl;
             return "<error>";
+        }
+    }
+
+    void UdpClient::run()
+    {
+        std::cout << "Receiving messages..." << std::endl;
+        while (true)
+        {
+            std::string message = receive();
+            receivedMessages->push({message, serverEndpoint.address().to_string(), serverEndpoint.port()});
         }
     }
 }
