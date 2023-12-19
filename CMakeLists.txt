@@ -24,11 +24,17 @@ if (UNIX)
 endif()
 
 if(WIN32)
+    if (DEFINED ENV{USERPROFILE})
+        set(HOME_DIRECTORY $ENV{USERPROFILE})
+        message("Home directory: ${HOME_DIRECTORY}")
+    else()
+        message(FATAL_ERROR "USERPROFILE environment variable is not defined.")
+    endif()
     INCLUDE_DIRECTORIES(
-    C:/Users/lucas/vcpkg/installed/x64-windows/include
+    ${HOME_DIRECTORY}/vcpkg/installed/x64-windows/include
     )
     LINK_DIRECTORIES(
-    C:/Users/lucas/vcpkg/installed/x64-windows/lib
+    ${HOME_DIRECTORY}/vcpkg/installed/x64-windows/lib
     )
 endif()
 
