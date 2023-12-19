@@ -8,16 +8,15 @@
 #ifndef ENTITIESMANAGER_HPP_
 #define ENTITIESMANAGER_HPP_
 
-#include <cstdint>
 #include <queue>
 #include <array>
-#include "Entity.hpp"
 #include "Error.hpp"
+#include "IEntitiesManager.hpp"
 
 using Entity = std::uint32_t;
 
 namespace ECS {
-    class EntityManager {
+    class EntityManager : public IEntityManager {
         public:
             EntityManager() {
                 for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {

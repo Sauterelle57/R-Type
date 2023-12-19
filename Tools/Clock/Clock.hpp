@@ -10,10 +10,10 @@
 
 #include <chrono>
 #include <string>
+#include "IClock.hpp"
 
 namespace tls {
-
-    class Clock {
+    class Clock : public IClock {
         public:
             Clock(float interval) {
                 _interval = interval;

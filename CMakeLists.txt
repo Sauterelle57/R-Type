@@ -52,6 +52,10 @@ add_executable(rtype_server
         Tools/Error/Error.hpp
         Tools/ECS/Managers/Components/ComponentArray.hpp
         Tools/ECS/Managers/Systems/System.hpp
+        Tools/Vec3/IVec3.hpp
+        Tools/Vec4/IVec4.hpp
+        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
+        Tools/Clock/IClock.hpp
 )
 
 add_executable(rtype_client
@@ -124,6 +128,10 @@ add_executable(rtype_client
         client/src/Core.hpp
         client/src/Core.cpp
         Tools/ECS/Managers/Systems/Projectile.hpp
+        Tools/Vec3/IVec3.hpp
+        Tools/Vec4/IVec4.hpp
+        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
+        Tools/Clock/IClock.hpp
 )
 
 
