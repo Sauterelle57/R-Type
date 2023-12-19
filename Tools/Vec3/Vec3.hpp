@@ -8,10 +8,10 @@
 #ifndef RTYPE_VEC3_HPP
 #define RTYPE_VEC3_HPP
 
-#include "raylib.h"
+#include "IVec3.hpp"
 
 namespace tls {
-    class Vec3 {
+    class Vec3 : public IVec3 {
         public:
             // Constructors
             Vec3();

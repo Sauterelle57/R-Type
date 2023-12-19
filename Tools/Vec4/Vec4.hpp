@@ -8,10 +8,10 @@
 #ifndef RTYPE_VEC4_HPP
 #define RTYPE_VEC4_HPP
 
-#include <raylib.h>
+#include "IVec4.hpp"
 
 namespace tls {
-    class Vec4 {
+    class Vec4 : public IVec4 {
         public:
             // Constructors
             Vec4();

@@ -31,7 +31,7 @@ namespace ECS {
                     transform.bounds = model.model->getBoundingBox();
 
                     Matrix matScale = MatrixScale(transform.scale, transform.scale, transform.scale);
-                    Matrix matRotation = MatrixRotateXYZ((Vector3){transform.rotation._x, transform.rotation._y, transform.rotation._z});
+                    Matrix matRotation = MatrixRotateXYZ((Vector3){static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)});
                     Matrix matTranslation = MatrixTranslate(transform.position._x, transform.position._y, transform.position._z);
 
                     Vector3 scaledMin = Vector3Multiply(transform.bounds.min, (Vector3){transform.scale, transform.scale, transform.scale});
