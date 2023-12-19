@@ -15,28 +15,16 @@ namespace rt {
 
     class GameController : public IGameController {
         public:
-            GameController() = default;
+            GameController();
             ~GameController() = default;
-            int exec() { 
-                while (1) {
-                    // get data from queue
-                    if (!_receivedData.empty()) {
-                        ReceivedData data = _receivedData.front();
-                        _receivedData.pop();
-                        std::cout << "EXECUTING data: (" << data.data.size() << ")\n[" << data.data << "]\nfrom: " << data.ip << ":" << data.port << std::endl;
-                        _wrapper->sendTo(data.data, data.ip, data.port);
-                    }
-                }
-            }
+            int exec();
 
-            void addReceivedData(const std::string &data, const std::string &ip, const int port) {
-                //std::cout << "GameController received data: " << data << " from " << ip << ":" << port << std::endl;
-                _receivedData.push({data, ip, port});
-            }
+            void addReceivedData(const std::string &data, const std::string &ip, const int port);
 
-            void addWrapper(IWrapper &wrapper) {
-                _wrapper = &wrapper;
-            }
+            void addWrapper(IWrapper &wrapper);
+
+            void commandHandler(const std::string &data, const std::string &ip, const int port);
+
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
