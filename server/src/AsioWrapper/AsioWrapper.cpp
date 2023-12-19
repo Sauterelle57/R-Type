@@ -30,7 +30,7 @@ namespace rt {
     {
         if (!error) {
             std::string message(recvBuffer.data(), bytes_transferred);
-            std::cout << "Received message: " << message << std::endl;
+            std::cout << "(<) Received message: [" << message << "]" << std::endl;
 
             // Call the custom receive handler
             receiveHandler(error.value(), bytes_transferred);

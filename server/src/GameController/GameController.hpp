@@ -17,6 +17,7 @@ namespace rt {
         public:
             GameController();
             ~GameController() = default;
+
             int exec();
 
             void addReceivedData(const std::string &data, const std::string &ip, const int port);
@@ -25,10 +26,15 @@ namespace rt {
 
             void commandHandler(const std::string &data, const std::string &ip, const int port);
 
+            void command_ping(const std::string &data, const std::string &ip, const int port);
+
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
             IWrapper *_wrapper;
+            std::map<std::string, std::function<void(const std::string &, const std::string &, const int)>> _commands;
+
+            void _initializeCommands();
 
     };
 

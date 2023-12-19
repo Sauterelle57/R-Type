@@ -4,6 +4,13 @@ namespace rt {
 
     GameController::GameController()
     {
+        _initializeCommands();
+    }
+
+    void GameController::_initializeCommands() {
+        _commands["PING"] = [&](const std::string &data, const std::string &ip, const int port) {
+            command_ping(data, ip, port);
+        };
     }
 
     int GameController::exec() { 
@@ -26,12 +33,22 @@ namespace rt {
     }
 
     void GameController::commandHandler(const std::string &data, const std::string &ip, const int port) {
+
         std::cout << "-------------------" << std::endl;
         std::cout << "COMMAND HANDLER" << std::endl;
+        std::cout << "from: " << ip << ":" << port << std::endl;
         std::cout << "data: " << data << std::endl;
-        std::cout << "ip: " << ip << std::endl;
-        std::cout << "port: " << port << std::endl;
-        _wrapper->sendTo(data, ip, port);
         std::cout << "-------------------" << std::endl;
+
+        try {
+            _commands.at(data)(data, ip, port);
+        } catch (const std::out_of_range &e) {
+            _wrapper->sendTo("404", ip, port);
+        }
+    }
+
+    // Commands
+    void GameController::command_ping(const std::string &data, const std::string &ip, const int port) {
+        _wrapper->sendTo("OK", ip, port);
     }
 }
