@@ -37,10 +37,10 @@ namespace RT {
     {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
         _camera = std::make_shared<RL::ZCamera>();
-        _camera->setPosition({ 25.0f, 20.0f, 6.0f });
-        _camera->setTarget({ 0.0f, 8.0f, 0.0f });
+        _camera->setPosition({ 0.0f, 10.0f, 100.0f });
+        _camera->setTarget({ 0.0f, 10.0f, 0.0f });
         _camera->setUp({ 0.0f, 1.0f, 0.0f });
-        _camera->setFovy(45.0f);
+        _camera->setFovy(30.0f);
         _camera->setProjection(CAMERA_PERSPECTIVE);
 
         _cursor = std::make_shared<RL::ZCursor>();
@@ -54,30 +54,39 @@ namespace RT {
     }
 
     void Core::initEntities() {
+        std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb");
+        Matrix matr = MatrixIdentity();
+        matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
+        matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
+        model.get()->_model->transform = matr;
+
         _entities.insert(_entities.end(), _coordinator->createEntity());
+        _playerId = *_entities.rbegin();
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Model {
-                .model = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj"),
-                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/duck_text.png"),
+                .model = model,
+//                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/duck_text.png"),
             }
         );
+
+
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
-                .scale = 0.1f
+                .scale = 0.5f
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Player {
-                .key_up = KEY_Y,
-                .key_down = KEY_G,
-                .key_left = KEY_B,
-                .key_right = KEY_R,
-                .key_shoot = KEY_SPACE,
+                .key_up = KEY_W,
+                .key_down = KEY_S,
+                .key_left = KEY_A,
+                .key_right = KEY_D,
+                .key_shoot = KEY_F,
                 .key_validate = KEY_ENTER,
                 .key_cancel = KEY_DELETE,
                 .key_settings = KEY_TAB
@@ -89,25 +98,25 @@ namespace RT {
                 .damage = 1,
                 .speed = 1,
                 .durability = 1,
-                .create_projectile = ECS::Shoot::doubleSinShot
+                .create_projectile = ECS::Shoot::basicShot
             }
         );
 
-        _entities.insert(_entities.end(), _coordinator->createEntity());
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Model {
-                .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Transform {
-                .position = {0, 5, 0},
-                .rotation = {0, 0, 0, 0},
-                .scale = 1.0f
-            }
-        );
+//        _entities.insert(_entities.end(), _coordinator->createEntity());
+//        _coordinator->addComponent(
+//            *_entities.rbegin(),
+//            ECS::Model {
+//                .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+//            }
+//        );
+//        _coordinator->addComponent(
+//            *_entities.rbegin(),
+//            ECS::Transform {
+//                .position = {0, 5, 0},
+//                .rotation = {0, 0, 0, 0},
+//                .scale = 1.0f
+//            }
+//        );
     }
 
     void Core::initComponents() {
@@ -183,10 +192,6 @@ namespace RT {
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
         while (!_window->shouldClose()) {
-            if (_cursor->isHidden())
-                _camera->update(CAMERA_FIRST_PERSON);
-            if(IsKeyDown(KEY_LEFT_SHIFT)) _camera->setPosition({_camera->getPosition().x, _camera->getPosition().y - 1, _camera->getPosition().z});
-            if(IsKeyDown(KEY_SPACE)) _camera->setPosition({_camera->getPosition().x, _camera->getPosition().y + 1, _camera->getPosition().z});
             _window->beginDrawing();
             _window->clearBackground(BLACK);
             _camera->beginMode();
