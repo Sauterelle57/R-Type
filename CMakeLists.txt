@@ -39,7 +39,7 @@ ExternalProject_Add(BOOSTASIO
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""
-        TIMEOUT 60
+        TIMEOUT 6000
         DOWNLOAD_EXTRACT_TIMESTAMP 1
 )
 
