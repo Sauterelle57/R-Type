@@ -10,6 +10,7 @@
 #include "IGameController.hpp"
 #include <iostream>
 #include <queue>
+#include <functional>
 
 namespace rt {
 
