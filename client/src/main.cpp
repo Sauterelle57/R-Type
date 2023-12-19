@@ -37,7 +37,9 @@ int main()
 
         std::cout << "GameLoop" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        udpClient.send("PING");
+        rt::Protocol message;
+        message.id = rt::protocolType::PING;
+        udpClient.send(message);
     }
 
     udpClientThread.join();

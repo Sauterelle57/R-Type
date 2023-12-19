@@ -44,6 +44,8 @@ add_executable(rtype_server
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
+        #
+        protocol/Protocol.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -51,6 +53,7 @@ target_include_directories(rtype_server PRIVATE
     server/src/ServerController
     server/src/GameController
     server/src/AsioWrapper
+    protocol
 )
 
 include_directories(client/src)
@@ -61,6 +64,7 @@ include_directories(client/src/ECS/Managers/Entities)
 include_directories(client/src/ECS/Managers/Systems)
 include_directories(client/src/GameLoop)
 include_directories(client/src/UdpClient)
+include_directories(protocol)
 
 
 add_executable(rtype_client
@@ -74,6 +78,8 @@ add_executable(rtype_client
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp
         client/src/UdpClient/IUdpClient.hpp
+        #
+        protocol/Protocol.hpp
 )
 
 # Link against Boost.Asio (header-only library, no need for separate libraries)

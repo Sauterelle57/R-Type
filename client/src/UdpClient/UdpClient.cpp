@@ -1,51 +1,49 @@
-/*
-** EPITECH PROJECT, 2023
-** B-CPP-500-STG-5-2-rtype-noah.gosciniak
-** File description:
-** UdpClient
-*/
-
+// UDPClient.cpp
 #include "UdpClient.hpp"
-#include <optional>
+#include <iostream>
 
 namespace rt {
 
     UdpClient::UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages)
-        : ioService(), socket(ioService), serverEndpoint(boost::asio::ip::address::from_string(serverIP), serverPort)
+        : ioService(), socket(ioService), serverEndpoint(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(serverIP), serverPort))
     {
         socket.open(boost::asio::ip::udp::v4());
-        socket.connect(serverEndpoint);
         this->receivedMessages = receivedMessages;
     }
 
-    void UdpClient::send(const std::string& message)
+    void UdpClient::send(const Protocol& message)
     {
         try {
-            std::cout << "Sending message: " << message << std::endl;
-            socket.send(boost::asio::buffer(message));
+            // Send the raw data of the Protocol struct
+            socket.send_to(boost::asio::buffer(&message, sizeof(Protocol)), serverEndpoint);
         } catch (std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
         }
     }
 
-    std::string UdpClient::receive()
+    Protocol UdpClient::receive()
     {
-        std::array<char, 1024> recvBuffer;
-        boost::system::error_code error;
+        try {
+            Protocol receivedMessage;
+            boost::system::error_code error;
 
-        recvBuffer.fill(0);
+            // Receive the raw data of the Protocol struct
+            size_t bytesRead = socket.receive_from(boost::asio::buffer(&receivedMessage, sizeof(Protocol)), serverEndpoint, 0, error);
 
-        size_t bytesRead = socket.receive(boost::asio::buffer(recvBuffer), 0, error);
+            if (!error)
+            {
+                // Handle receivedMessage as needed
+                std::cout << "Received message of size " << bytesRead << " bytes." << std::endl;
+            }
+            else
+            {
+                std::cerr << "Error receiving data: " << error.message() << std::endl;
+            }
 
-        if (!error)
-        {
-            std::cout << "Received message: " << std::string(recvBuffer.data(), bytesRead) << std::endl;
-            return std::string(recvBuffer.data(), bytesRead);
-        }
-        else
-        {
-            std::cerr << "Error receiving data: " << error.message() << std::endl;
-            return "<error>";
+            return receivedMessage;
+        } catch (std::exception& e) {
+            std::cerr << "Exception during receiving: " << e.what() << std::endl;
+            return Protocol(); // Return a default-constructed Protocol in case of exception
         }
     }
 
@@ -54,8 +52,11 @@ namespace rt {
         std::cout << "Receiving messages..." << std::endl;
         while (true)
         {
-            std::string message = receive();
-            receivedMessages->push({message, serverEndpoint.address().to_string(), serverEndpoint.port()});
+            Protocol receivedMessage = receive();
+            // Handle receivedMessage as needed
+            std::cout << "Received message: " << std::endl;
+            //receivedMessages->push({receivedMessage, serverEndpoint.address().to_string(), serverEndpoint.port()});
         }
     }
-}
+
+} // namespace rt

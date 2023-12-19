@@ -43,12 +43,12 @@ namespace rt {
         try {
             _commands.at(data)(data, ip, port);
         } catch (const std::out_of_range &e) {
-            _wrapper->sendTo("404", ip, port);
+            //_wrapper->sendTo("404", ip, port);
         }
     }
 
     // Commands
     void GameController::command_ping(const std::string &data, const std::string &ip, const int port) {
-        _wrapper->sendTo("OK", ip, port);
+        //_wrapper->sendTo("OK", ip, port);
     }
 }
