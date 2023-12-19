@@ -22,12 +22,6 @@ int main()
     std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
     rt::UdpClient udpClient("127.0.0.1", 1234, receivedMessages);
 
-    udpClient.send("1");
-    udpClient.send("23");
-    udpClient.send("456");
-    udpClient.send("78910");
-
-
     std::thread udpClientThread([&]() {
         udpClient.run();
     });
@@ -35,15 +29,15 @@ int main()
     while (1) {
         while (!receivedMessages->empty())
         {
-            std::cout << "Message: " << receivedMessages->front().message << std::endl;
-            std::cout << "Sender IP: " << receivedMessages->front().senderIp << std::endl;
-            std::cout << "Sender port: " << receivedMessages->front().senderPort << std::endl;
+            std::cout << "Received message:" << std::endl;
+            std::cout << "Message: [" << receivedMessages->front().message << "]" << std::endl;
             receivedMessages->pop();
+            std::cout << "-------------------" << std::endl;
         }
 
         std::cout << "GameLoop" << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
+        udpClient.send("This is a message from the client.");
     }
 
     udpClientThread.join();

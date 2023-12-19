@@ -20,8 +20,12 @@ namespace rt {
 
     void UdpClient::send(const std::string& message)
     {
-        std::cout << "Sending message: " << message << std::endl;
-        socket.send(boost::asio::buffer(message));
+        try {
+            std::cout << "Sending message: " << message << std::endl;
+            socket.send(boost::asio::buffer(message));
+        } catch (std::exception& e) {
+            std::cerr << "Exception: " << e.what() << std::endl;
+        }
     }
 
     std::string UdpClient::receive()
