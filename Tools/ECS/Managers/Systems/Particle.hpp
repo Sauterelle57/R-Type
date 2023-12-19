@@ -31,13 +31,13 @@ namespace ECS {
 
                 particle.position = transform.position + particles.positionOffset;
                 if (particles.direction == ECS::UP)
-                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                    particle.speed = { RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 else if (particles.direction == ECS::DOWN)
-                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                    particle.speed = { RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 else if (particles.direction == ECS::LEFT)
-                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                    particle.speed = { RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 else if (particles.direction == ECS::RIGHT)
-                    particle.speed = (tls::Vec3){ RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
+                    particle.speed = { RL::Utils::getRandomValue(100, 200) / (particles.speed * 10), RL::Utils::getRandomValue(-10, 10) / particles.speed, RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
             }

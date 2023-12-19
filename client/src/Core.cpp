@@ -37,9 +37,9 @@ namespace RT {
     {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
         _camera = std::make_shared<RL::ZCamera>();
-        _camera->setPosition((Vector3){ 25.0f, 20.0f, 6.0f });
-        _camera->setTarget((Vector3){ 0.0f, 8.0f, 0.0f });
-        _camera->setUp((Vector3){ 0.0f, 1.0f, 0.0f });
+        _camera->setPosition({ 25.0f, 20.0f, 6.0f });
+        _camera->setTarget({ 0.0f, 8.0f, 0.0f });
+        _camera->setUp({ 0.0f, 1.0f, 0.0f });
         _camera->setFovy(45.0f);
         _camera->setProjection(CAMERA_PERSPECTIVE);
 

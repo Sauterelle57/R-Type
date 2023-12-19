@@ -31,21 +31,21 @@ namespace ECS {
                     transform.bounds = model.model->getBoundingBox();
 
                     Matrix matScale = MatrixScale(transform.scale, transform.scale, transform.scale);
-                    Matrix matRotation = MatrixRotateXYZ((Vector3){static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)});
+                    Matrix matRotation = MatrixRotateXYZ({static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)});
                     Matrix matTranslation = MatrixTranslate(transform.position._x, transform.position._y, transform.position._z);
 
-                    Vector3 scaledMin = Vector3Multiply(transform.bounds.min, (Vector3){transform.scale, transform.scale, transform.scale});
-                    Vector3 scaledMax = Vector3Multiply(transform.bounds.max, (Vector3){transform.scale, transform.scale, transform.scale});
+                    Vector3 scaledMin = Vector3Multiply(transform.bounds.min, {transform.scale, transform.scale, transform.scale});
+                    Vector3 scaledMax = Vector3Multiply(transform.bounds.max, {transform.scale, transform.scale, transform.scale});
 
                     Vector3 points[8] = {
-                        (Vector3){scaledMin.x, scaledMin.y, scaledMin.z},
-                        (Vector3){scaledMin.x, scaledMin.y, scaledMax.z},
-                        (Vector3){scaledMin.x, scaledMax.y, scaledMin.z},
-                        (Vector3){scaledMin.x, scaledMax.y, scaledMax.z},
-                        (Vector3){scaledMax.x, scaledMin.y, scaledMin.z},
-                        (Vector3){scaledMax.x, scaledMin.y, scaledMax.z},
-                        (Vector3){scaledMax.x, scaledMax.y, scaledMin.z},
-                        (Vector3){scaledMax.x, scaledMax.y, scaledMax.z}
+                        {scaledMin.x, scaledMin.y, scaledMin.z},
+                        {scaledMin.x, scaledMin.y, scaledMax.z},
+                        {scaledMin.x, scaledMax.y, scaledMin.z},
+                        {scaledMin.x, scaledMax.y, scaledMax.z},
+                        {scaledMax.x, scaledMin.y, scaledMin.z},
+                        {scaledMax.x, scaledMin.y, scaledMax.z},
+                        {scaledMax.x, scaledMax.y, scaledMin.z},
+                        {scaledMax.x, scaledMax.y, scaledMax.z}
                     };
 
                     for (int i = 0; i < 8; i++) {
@@ -60,7 +60,7 @@ namespace ECS {
                         max = Vector3Max(max, points[i]);
                     }
 
-                    transform.bounds = (BoundingBox){min, max};
+                    transform.bounds = {min, max};
 
                     RL::Utils::drawBoundingBox(transform.bounds, RED);
 
