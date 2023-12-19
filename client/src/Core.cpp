@@ -198,7 +198,7 @@ namespace RT {
             _systems._systemShoot->update(_event);
             _systems._systemProjectile->update();
 
-            checkCollision(*_entities.rbegin(), *_entities.rend());
+            // checkCollision(*_entities.rbegin(), *_entities.rend());
 
             _window->drawGrid(10, 1.0f);
             _camera->endMode();
