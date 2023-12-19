@@ -85,6 +85,7 @@ include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Entities)
 include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Systems)
 include_directories(${CMAKE_SOURCE_DIR}/client/src/GameLoop)
 include_directories(${CMAKE_SOURCE_DIR}/client/src/UdpClient)
+include_directories(${CMAKE_SOURCE_DIR}/protocol)
 
 add_executable(rtype_server
         Tools/ECS/Managers/Components/ComponentsManager.hpp
@@ -119,6 +120,7 @@ add_executable(rtype_server
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
+        protocol/Protocol.hpp
 )
 
 add_executable(rtype_client
@@ -195,6 +197,7 @@ add_executable(rtype_client
         Tools/Vec4/IVec4.hpp
         Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         Tools/Clock/IClock.hpp
+        protocol/Protocol.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
