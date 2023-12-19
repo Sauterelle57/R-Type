@@ -59,7 +59,7 @@ namespace RT {
             *_entities.rbegin(),
             ECS::Model {
                 .model = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj"),
-                .texture = std::make_shared<RL::ZTexture>("./client/resources/models/duck_text.png"),
+                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/duck_text.png"),
             }
         );
         _coordinator->addComponent(

@@ -21,6 +21,32 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     endif()
 endif()
 
+# Include the ExternalProject module
+include(ExternalProject)
+
+if(WIN32)
+    set(BOOSTASIO_URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.zip")
+elseif(UNIX)
+    set(BOOSTASIO_URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz")
+elseif(APPLE)
+    set(BOOSTASIO_URL "https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.gz")
+endif()
+
+# Find and link Boost Asio
+ExternalProject_Add(BOOSTASIO
+        URL ${BOOSTASIO_URL}
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/BOOSTASIO
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        TIMEOUT 60
+        DOWNLOAD_EXTRACT_TIMESTAMP 1
+)
+
+# Specify include directories for Boost.Asio
+ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
+include_directories(${SOURCE_DIR})
+
 include_directories(${CMAKE_SOURCE_DIR}/client/src)
 include_directories(${CMAKE_SOURCE_DIR}/client/include)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS)
@@ -34,6 +60,14 @@ include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec4)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Utils)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Error)
 include_directories(${CMAKE_SOURCE_DIR}/Tools/Clock)
+include_directories(${CMAKE_SOURCE_DIR}/client/src)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Components)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Entities)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Systems)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/GameLoop)
+include_directories(${CMAKE_SOURCE_DIR}/client/src/UdpClient)
 
 add_executable(rtype_server
         Tools/ECS/Managers/Components/ComponentsManager.hpp
@@ -48,7 +82,6 @@ add_executable(rtype_server
         Tools/Vec4/Vec4.cpp
         Tools/Utils/Utils.hpp
         Tools/Utils/Utils.cpp
-        server/src/main.cpp
         Tools/Error/Error.hpp
         Tools/ECS/Managers/Components/ComponentArray.hpp
         Tools/ECS/Managers/Systems/System.hpp
@@ -56,6 +89,19 @@ add_executable(rtype_server
         Tools/Vec4/IVec4.hpp
         Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         Tools/Clock/IClock.hpp
+        server/main.cpp
+        # Server Controller
+        server/src/ServerController/IServerController.hpp
+        server/src/ServerController/ServerController.cpp
+        server/src/ServerController/ServerController.hpp
+        # Game Controller
+        server/src/GameController/IGameController.hpp
+        server/src/GameController/GameController.hpp
+        server/src/GameController/GameController.cpp
+        # Asio Wrapper
+        server/src/AsioWrapper/IWrapper.hpp
+        server/src/AsioWrapper/AsioWrapper.cpp
+        server/src/AsioWrapper/AsioWrapper.hpp
 )
 
 add_executable(rtype_client
@@ -134,14 +180,22 @@ add_executable(rtype_client
         Tools/Clock/IClock.hpp
 )
 
+target_include_directories(rtype_server PRIVATE
+        server/src
+        server/src/ServerController
+        server/src/GameController
+        server/src/AsioWrapper
+)
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(rtype_client raylib)
+target_link_libraries(rtype_server raylib)
 
 # Web Configurations
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Tell Emscripten to build an example.html file.
     set_target_properties(rtype_client PROPERTIES SUFFIX ".html")
+    set_target_properties(rtype_server PROPERTIES SUFFIX ".html")
 endif()
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
@@ -149,6 +203,11 @@ if (APPLE)
     target_link_libraries(rtype_client "-framework IOKit")
     target_link_libraries(rtype_client "-framework Cocoa")
     target_link_libraries(rtype_client "-framework OpenGL")
+    target_link_libraries(rtype_server "-framework IOKit")
+    target_link_libraries(rtype_server "-framework Cocoa")
+    target_link_libraries(rtype_server "-framework OpenGL")
 endif()
 
 set_target_properties(rtype_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(rtype_server INTERFACE ${Boost_LIBRARIES})
+target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})
