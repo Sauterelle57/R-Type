@@ -5,10 +5,15 @@ cmake_install.cmake
 Makefile
 
 ClientExecutable
+rtype_client
 ServerExecutable
+rtype_server
 
 .idea
 cmake-build-debug
-cmake-build-debug-mingw
-.dnp
-build
+.vscode
+
+build/
+_deps/
+CPackConfig.cmake
+CPackSourceConfig.cmake

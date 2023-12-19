@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2023
-** rtype
+** RType
 ** File description:
-** main.cpp
+** main
 */
 
 #include <iostream>
