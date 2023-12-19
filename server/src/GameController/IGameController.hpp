@@ -8,6 +8,7 @@
 #ifndef IGAMECONTROLLER_HPP_
 #define IGAMECONTROLLER_HPP_
 #include "IWrapper.hpp"
+#include <map>
 
 namespace rt {
 
