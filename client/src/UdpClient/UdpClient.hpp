@@ -1,10 +1,4 @@
-/*
-** EPITECH PROJECT, 2023
-** B-CPP-500-STG-5-2-rtype-noah.gosciniak
-** File description:
-** UdpClient
-*/
-
+// UDPClient.hpp
 #ifndef UDP_CLIENT_HPP_
 #define UDP_CLIENT_HPP_
 
@@ -12,6 +6,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <optional>
+#include <queue>
 
 namespace rt {
 
@@ -19,8 +14,8 @@ namespace rt {
         public:
             UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
 
-            void send(const std::string& message) override;
-            std::string receive() override;
+            void send(const Protocol& message) override;
+            Protocol receive() override;
             void run() override;
 
         private:
@@ -30,6 +25,6 @@ namespace rt {
             std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
     };
 
-}
+} // namespace rt
 
 #endif // UDP_CLIENT_HPP_
