@@ -18,11 +18,10 @@ namespace rt {
     class UdpClient : public IUdpClient {
         public:
             UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
-            ~UdpClient() = default;
 
-            void send(const std::string& message);
-            std::string receive();
-            void run();
+            void send(const std::string& message) override;
+            std::string receive() override;
+            void run() override;
 
         private:
             boost::asio::io_service ioService;

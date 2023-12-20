@@ -1,3 +1,4 @@
+
 #include "AsioWrapper.hpp"
 #include <iostream>
 
@@ -29,7 +30,7 @@ namespace rt {
     {
         if (!error) {
             std::string message(recvBuffer.data(), bytes_transferred);
-            std::cout << "Received message: " << message << std::endl;
+            std::cout << "(<) Received message: [" << message << "]" << std::endl;
 
             // Call the custom receive handler
             receiveHandler(error.value(), bytes_transferred);
@@ -43,11 +44,15 @@ namespace rt {
 
     void AsioWrapper::sendTo(const std::string& message, const std::string& ipAddress, unsigned short port)
     {
-        boost::asio::ip::udp::endpoint destination(boost::asio::ip::address::from_string(ipAddress), port);
-        boost::system::error_code ignored_ec;
-        socket.send_to(boost::asio::buffer(message), destination, 0, ignored_ec);
-        if (ignored_ec) {
-            std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
+        try {
+            boost::asio::ip::udp::endpoint destination(boost::asio::ip::address::from_string(ipAddress), port);
+            boost::system::error_code ignored_ec;
+            socket.send_to(boost::asio::buffer(message), destination, 0, ignored_ec);
+            if (ignored_ec) {
+                std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
+            }
+        } catch (std::exception& e) {
+            std::cerr << "Exception: " << e.what() << std::endl;
         }
     }
 

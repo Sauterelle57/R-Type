@@ -23,10 +23,9 @@ namespace rt {
     void ServerController::handleReceivedData(const int error, std::size_t bytes_transferred)
     {
         if (!error) {
-            auto receivedData = asioWrapper.getReceivedDataByStruct();
-            std::cout << "(<) Received data: [" << receivedData.id << "]" << std::endl;
+            std::cout << "(<) Received data: [" << asioWrapper.getReceivedData().data() << "]" << std::endl;
             //asioWrapper.sendTo("data", asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
-            //_gameCtrl->addReceivedData(asioWrapper.getReceivedData().data(), asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
+            _gameCtrl->addReceivedData(asioWrapper.getReceivedData().data(), asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
         } else {
             std::cerr << "Error receiving data: " << error << std::endl;
         }
