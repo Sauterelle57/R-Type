@@ -1,0 +1,21 @@
+{
+    "niveau": 1,
+    "evenements": [
+      {
+        "type": "apparition_ennemi",
+        "position_cam_x": 500,
+        "ennemis": [
+          {"type": "ennemi1", "x": 100, "y": 50},
+          {"type": "ennemi2", "x": 200, "y": 100}
+        ]
+      },
+      {
+        "type": "apparition_bonus",
+        "position_x": 1000,
+        "position_y": 75,
+        "bonus": [
+          {"type": "bonus1", "x": 150, "y": 75}
+        ]
+      }
+    ]
+  }
