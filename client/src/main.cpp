@@ -20,7 +20,9 @@ int main()
 {
     std::signal(SIGINT, signalHandler);
     std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
-    rt::UdpClient udpClient("127.0.0.1", 1234, receivedMessages);
+    rt::UdpClient udpClient;
+
+    udpClient.setup("127.0.0.1", 1234, receivedMessages);
 
     std::thread udpClientThread([&]() {
         udpClient.run();
