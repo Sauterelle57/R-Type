@@ -24,7 +24,8 @@ namespace rt {
 
         void send(const std::string& message) override {
             sf::Packet packet;
-            packet << message;
+            packet.append(message.c_str(), message.size());
+
 
             if (socket.send(packet, serverEndpoint, serverPortNumber) != sf::Socket::Done) {
                 std::cerr << "Error sending message" << std::endl;
@@ -42,10 +43,16 @@ namespace rt {
                 std::cerr << "Error receiving data" << std::endl;
                 return "<error>";
             } else {
-                std::string receivedMessage;
-                packet >> receivedMessage;
-
+                // Get the data directly from the packet
+                const void* data = packet.getData();
+                std::size_t dataSize = packet.getDataSize();
+                // Print debug information
+                std::cout << "Received packet size: " << dataSize << " bytes" << std::endl;
+                // Convert the received data to a string
+                std::string receivedMessage(static_cast<const char*>(data), dataSize);
+                // Print the string representation of the received data
                 std::cout << "Received message: " << receivedMessage << std::endl;
+
                 return receivedMessage;
             }
         }
@@ -54,6 +61,7 @@ namespace rt {
             std::cout << "Receiving messages..." << std::endl;
             while (true) {
                 std::string message = receive();
+                std::cout << "message..." << std::endl;
                 receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
             }
         }

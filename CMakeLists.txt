@@ -223,6 +223,9 @@ target_include_directories(rtype_server PRIVATE
 target_link_libraries(rtype_client PRIVATE raylib)
 target_link_libraries(rtype_server PRIVATE raylib)
 
+target_link_libraries(rtype_client PRIVATE raylib sfml-network)
+
+
 # Web Configurations
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Tell Emscripten to build an example.html file.
@@ -242,4 +245,4 @@ endif()
 
 set_target_properties(rtype_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(rtype_server INTERFACE ${Boost_LIBRARIES})
-target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})
+#target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})

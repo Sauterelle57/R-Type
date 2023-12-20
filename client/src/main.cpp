@@ -8,6 +8,7 @@
 #include "UdpClient.hpp"
 #include <thread>
 #include <csignal>
+#include "Core.hpp"
 
 void signalHandler(int signum) {
     if (signum == SIGINT) {

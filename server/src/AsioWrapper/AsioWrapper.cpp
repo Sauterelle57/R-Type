@@ -33,6 +33,7 @@ namespace rt {
             std::cout << "(<) Received message: [" << message << "]" << std::endl;
 
             // Call the custom receive handler
+            // assign recvBuffer to message
             receiveHandler(error.value(), bytes_transferred);
 
             startReceive();
