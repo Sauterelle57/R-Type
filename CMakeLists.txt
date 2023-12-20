@@ -223,6 +223,7 @@ target_include_directories(rtype_server PRIVATE
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
+target_link_libraries(rtype_server PRIVATE raylib)
 
 
 # Web Configurations
