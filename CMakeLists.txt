@@ -4,6 +4,7 @@ project(rtype)
 set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
+set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(
         SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -209,6 +210,7 @@ add_executable(rtype_client
         protocol/Protocol.hpp
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
+        client/src/UdpClient/UdpClient.cpp
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -219,9 +221,6 @@ target_include_directories(rtype_server PRIVATE
 )
 
 #set(raylib_VERBOSE 1)
-
-target_link_libraries(rtype_client PRIVATE raylib)
-target_link_libraries(rtype_server PRIVATE raylib)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
 
