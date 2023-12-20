@@ -198,6 +198,9 @@ add_executable(rtype_client
         Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         Tools/Clock/IClock.hpp
         protocol/Protocol.hpp
+        client/src/UdpClient/UdpClient.cpp
+        client/src/UdpClient/IUdpClient.hpp
+        client/src/UdpClient/UdpClient.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

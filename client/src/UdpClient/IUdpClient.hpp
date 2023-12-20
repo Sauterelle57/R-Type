@@ -12,10 +12,9 @@
 #include <optional>
 #include <memory>
 #include <queue>
-#include "Protocol.hpp"
-#include <string>
 
 namespace rt {
+
     struct ReceivedMessage {
         std::string message;
         std::string senderIp;
@@ -26,8 +25,8 @@ namespace rt {
         public:
             virtual ~IUdpClient() = default;
 
-            virtual void send(const Protocol& message) = 0;
-            virtual Protocol receive() = 0;
+            virtual void send(const std::string& message) = 0;
+            virtual std::string receive() = 0;
             virtual void run() = 0;
     };
 
