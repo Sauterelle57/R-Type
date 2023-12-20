@@ -198,6 +198,8 @@ add_executable(rtype_client
         Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         Tools/Clock/IClock.hpp
         protocol/Protocol.hpp
+        Tools/ECS/Managers/Systems/Cam.hpp
+        Tools/ECS/Managers/Systems/Traveling.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

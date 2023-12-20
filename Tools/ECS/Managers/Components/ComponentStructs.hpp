@@ -105,6 +105,14 @@ namespace ECS {
         int max_life;
     };
 
+    struct Cam {
+        std::shared_ptr<RL::ICamera> camera;
+    };
+
+    struct Traveling {
+        tls::Vec3 speed;
+    };
+
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP
