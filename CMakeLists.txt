@@ -190,13 +190,13 @@ add_executable(rtype_client
         client/src/renderer/Wave.hpp
         client/src/renderer/Window.hpp
         client/src/main.cpp
-#        client/src/Core.hpp
-#        client/src/Core.cpp
-#        Tools/ECS/Managers/Systems/Projectile.hpp
-#        Tools/Vec3/IVec3.hpp
-#        Tools/Vec4/IVec4.hpp
-#        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
-#        Tools/Clock/IClock.hpp
+        client/src/Core.hpp
+        client/src/Core.cpp
+        Tools/ECS/Managers/Systems/Projectile.hpp
+        Tools/Vec3/IVec3.hpp
+        Tools/Vec4/IVec4.hpp
+        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
+        Tools/Clock/IClock.hpp
         protocol/Protocol.hpp
         client/src/UdpClient/UdpClient.cpp
         client/src/UdpClient/IUdpClient.hpp
