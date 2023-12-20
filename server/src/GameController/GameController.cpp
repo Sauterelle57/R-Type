@@ -41,6 +41,7 @@ namespace rt {
         std::cout << "-------------------" << std::endl;
 
         try {
+            std::cout << "[" << data << "] " << data.length() << std::endl;
             _commands.at(data)(data, ip, port);
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
@@ -49,6 +50,7 @@ namespace rt {
 
     // Commands
     void GameController::command_ping(const std::string &data, const std::string &ip, const int port) {
-        //_wrapper->sendTo("OK", ip, port);
+        _wrapper->sendTo("OK", ip, port);
+        std::cout << "(>) Sent information" << std::endl;
     }
 }

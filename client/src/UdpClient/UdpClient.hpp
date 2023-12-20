@@ -1,28 +1,30 @@
-// UDPClient.hpp
 #ifndef UDP_CLIENT_HPP_
 #define UDP_CLIENT_HPP_
 
 #include "IUdpClient.hpp"
+#include <SFML/Network.hpp>
 #include <iostream>
-#include <boost/asio.hpp>
-#include <optional>
 #include <queue>
 
 namespace rt {
-
     class UdpClient : public IUdpClient {
-        public:
-            UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
+    public:
+        UdpClient() = default;
+        ~UdpClient() = default;
 
-            void send(const Protocol& message) override;
-            Protocol receive() override;
-            void run() override;
+        void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
 
-        private:
-            boost::asio::io_service ioService;
-            boost::asio::ip::udp::socket socket;
-            boost::asio::ip::udp::endpoint serverEndpoint;
-            std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
+        void send(const std::string& message);
+
+        std::string receive();
+
+        void run();
+
+    private:
+        sf::UdpSocket socket;
+        sf::IpAddress serverEndpoint;
+        unsigned short serverPortNumber{};
+        std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
     };
 
 } // namespace rt
