@@ -3,6 +3,15 @@ project(rtype)
 
 set(CMAKE_CXX_STANDARD 20)
 
+include(FetchContent)
+FetchContent_Declare(
+        SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 2.6.1
+)
+
+FetchContent_MakeAvailable(SFML)
+
 if (UNIX)
     set(RAYLIB_VERSION 5.0)
     find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED

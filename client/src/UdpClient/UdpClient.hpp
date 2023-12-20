@@ -2,46 +2,51 @@
 #define UDP_CLIENT_HPP_
 
 #include "IUdpClient.hpp"
+#include <SFML/Network.hpp>
 #include <iostream>
-#include <boost/asio.hpp>
 #include <queue>
 
 namespace rt {
 
     class UdpClient : public IUdpClient {
     public:
-        UdpClient() : ioService(), socket(ioService), serverEndpoint(boost::asio::ip::udp::v4(), 0) {}
+        UdpClient() : receivedMessages(std::make_shared<std::queue<ReceivedMessage>>()) {}
 
         void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages) {
-            serverEndpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(serverIP), serverPort);
-            socket.open(boost::asio::ip::udp::v4());
-            socket.connect(serverEndpoint);
+            serverEndpoint = sf::IpAddress(serverIP);
+            serverPortNumber = serverPort;
             this->receivedMessages = receivedMessages;
+
+            if (socket.bind(0) != sf::Socket::Done) {
+                std::cerr << "Error binding to a port" << std::endl;
+            }
         }
 
         void send(const std::string& message) override {
-            try {
+            sf::Packet packet;
+            packet << message;
+
+            if (socket.send(packet, serverEndpoint, serverPortNumber) != sf::Socket::Done) {
+                std::cerr << "Error sending message" << std::endl;
+            } else {
                 std::cout << "Sending message: " << message << std::endl;
-                socket.send(boost::asio::buffer(message));
-            } catch (std::exception& e) {
-                std::cerr << "Exception: " << e.what() << std::endl;
             }
         }
 
         std::string receive() override {
-            std::array<char, 1024> recvBuffer;
-            boost::system::error_code error;
+            sf::Packet packet;
+            sf::IpAddress sender;
+            unsigned short senderPort;
 
-            recvBuffer.fill(0);
-
-            size_t bytesRead = socket.receive(boost::asio::buffer(recvBuffer), 0, error);
-
-            if (!error) {
-                std::cout << "Received message: " << std::string(recvBuffer.data(), bytesRead) << std::endl;
-                return std::string(recvBuffer.data(), bytesRead);
-            } else {
-                std::cerr << "Error receiving data: " << error.message() << std::endl;
+            if (socket.receive(packet, sender, senderPort) != sf::Socket::Done) {
+                std::cerr << "Error receiving data" << std::endl;
                 return "<error>";
+            } else {
+                std::string receivedMessage;
+                packet >> receivedMessage;
+
+                std::cout << "Received message: " << receivedMessage << std::endl;
+                return receivedMessage;
             }
         }
 
@@ -49,17 +54,17 @@ namespace rt {
             std::cout << "Receiving messages..." << std::endl;
             while (true) {
                 std::string message = receive();
-                receivedMessages->push({message, serverEndpoint.address().to_string(), serverEndpoint.port()});
+                receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
             }
         }
 
     private:
-        boost::asio::io_service ioService;
-        boost::asio::ip::udp::socket socket;
-        boost::asio::ip::udp::endpoint serverEndpoint;
+        sf::UdpSocket socket;
+        sf::IpAddress serverEndpoint;
+        unsigned short serverPortNumber;
         std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
     };
 
-}
+} // namespace rt
 
 #endif // UDP_CLIENT_HPP_

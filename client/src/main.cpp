@@ -8,7 +8,6 @@
 #include "UdpClient.hpp"
 #include <thread>
 #include <csignal>
-#include "Core.hpp"
 
 void signalHandler(int signum) {
     if (signum == SIGINT) {
@@ -29,21 +28,19 @@ int main()
         udpClient.run();
     });
 
-//    while (1) {
-//        while (!receivedMessages->empty())
-//        {
-//            std::cout << "Received message:" << std::endl;
-//            std::cout << "Message: [" << receivedMessages->front().message << "]" << std::endl;
-//            receivedMessages->pop();
-//            std::cout << "-------------------" << std::endl;
-//        }
-//
-//        std::cout << "GameLoop" << std::endl;
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        udpClient.send("PING");
-//    }
-    std::shared_ptr<RT::Core> core = std::make_shared<RT::Core>();
-    core->loop();
+    while (1) {
+        while (!receivedMessages->empty())
+        {
+            std::cout << "Received message:" << std::endl;
+            std::cout << "Message: [" << receivedMessages->front().message << "]" << std::endl;
+            receivedMessages->pop();
+            std::cout << "-------------------" << std::endl;
+        }
+
+        std::cout << "GameLoop" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        udpClient.send("PING");
+    }
 
     udpClientThread.join();
     return 0;
