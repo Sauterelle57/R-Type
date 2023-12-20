@@ -36,12 +36,6 @@ namespace RT {
     Core::Core()
     {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
-        _camera = std::make_shared<RL::ZCamera>();
-        _camera->setPosition({ 0.0f, 10.0f, 100.0f });
-        _camera->setTarget({ 0.0f, 10.0f, 0.0f });
-        _camera->setUp({ 0.0f, 1.0f, 0.0f });
-        _camera->setFovy(30.0f);
-        _camera->setProjection(CAMERA_PERSPECTIVE);
 
         _cursor = std::make_shared<RL::ZCursor>();
         _cursor->disable();
@@ -69,8 +63,12 @@ namespace RT {
 //                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/duck_text.png"),
             }
         );
-
-
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Traveling {
+                        .speed = {0.1, 0, 0}
+                }
+        );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
@@ -102,6 +100,35 @@ namespace RT {
             }
         );
 
+        _camera = std::make_shared<RL::ZCamera>();
+        _camera->setPosition({ 0.0f, 10.0f, 100.0f });
+        _camera->setTarget({ 0.0f, 10.0f, 0.0f });
+        _camera->setUp({ 0.0f, 1.0f, 0.0f });
+        _camera->setFovy(30.0f);
+        _camera->setProjection(CAMERA_PERSPECTIVE);
+
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Cam {
+                .camera = _camera
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {0, 10, 100},
+                .rotation = {0, 0, 0, 0},
+                .scale = 1.0f
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.1, 0, 0}
+            }
+        );
+
 //        _entities.insert(_entities.end(), _coordinator->createEntity());
 //        _coordinator->addComponent(
 //            *_entities.rbegin(),
@@ -128,6 +155,8 @@ namespace RT {
         _coordinator->registerComponent<ECS::Particles>();
         _coordinator->registerComponent<ECS::Projectile>();
         _coordinator->registerComponent<ECS::Weapon>();
+        _coordinator->registerComponent<ECS::Cam>();
+        _coordinator->registerComponent<ECS::Traveling>();
     }
 
     void Core::initSystem() {
@@ -137,6 +166,8 @@ namespace RT {
         _systems._systemParticles = _coordinator->registerSystem<ECS::ParticleSystem>();
         _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
         _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
+        _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
 
         {
             ECS::Signature signature;
@@ -179,6 +210,20 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Projectile>());
             _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Cam>());
+            _coordinator->setSystemSignature<ECS::CamSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -194,7 +239,7 @@ namespace RT {
         while (!_window->shouldClose()) {
             _window->beginDrawing();
             _window->clearBackground(BLACK);
-            _camera->beginMode();
+            _systems._systemCamera->begin();
 
             _systems._systemDrawModel->update();
             _systems._systemMove->update();
@@ -202,11 +247,13 @@ namespace RT {
             _systems._systemParticles->update(_camera, shader);
             _systems._systemShoot->update(_event);
             _systems._systemProjectile->update();
+            _systems._systemCamera->update();
+            _systems._systemTraveling->update();
 
             // checkCollision(*_entities.rbegin(), *_entities.rend());
 
             _window->drawGrid(10, 1.0f);
-            _camera->endMode();
+            _systems._systemCamera->end();
             _window->drawFPS(10, 10);
             _window->endDrawing();
         }
