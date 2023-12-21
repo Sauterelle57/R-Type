@@ -16,6 +16,22 @@ namespace RL {
 
     class Utils {
         public:
+            static void disableBackfaceCulling() {
+                return rlDisableBackfaceCulling();
+            };
+
+            static void disableDepthMask() {
+                return rlDisableDepthMask();
+            };
+
+            static void enableBackfaceCulling() {
+                return rlEnableBackfaceCulling();
+            };
+
+            static void enableDepthMask() {
+                return rlEnableDepthMask();
+            };
+
             static void setClipboardText(const std::string &text) {
                 return SetClipboardText(text.c_str());
             };

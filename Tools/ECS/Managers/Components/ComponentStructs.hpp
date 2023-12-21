@@ -113,6 +113,10 @@ namespace ECS {
         tls::Vec3 speed;
     };
 
+    struct SkyBox {
+        std::shared_ptr<RL::IModel> skybox;
+    };
+
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

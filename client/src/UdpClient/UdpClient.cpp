@@ -1,6 +1,9 @@
-//
-// Created by noahg on 20/12/2023.
-//
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** UdpClient
+*/
 
 #include "UdpClient.hpp"
 

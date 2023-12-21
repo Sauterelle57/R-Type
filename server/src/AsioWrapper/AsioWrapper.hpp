@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** AsioWrapper
+*/
+
 // AsioWrapper.hpp
 #ifndef ASIOWRAPPER_HPP_
 #define ASIOWRAPPER_HPP_

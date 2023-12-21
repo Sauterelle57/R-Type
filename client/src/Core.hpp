@@ -25,6 +25,7 @@
 #include "Shoot.hpp"
 #include "Cam.hpp"
 #include "Traveling.hpp"
+#include "Skybox.hpp"
 
 namespace RT {
 
@@ -37,6 +38,7 @@ namespace RT {
         std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
         std::shared_ptr<ECS::CamSystem> _systemCamera;
         std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
+        std::shared_ptr<ECS::SkyBoxSystem> _systemSkyBox;
     };
 
     class Core {

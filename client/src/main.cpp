@@ -19,30 +19,33 @@ void signalHandler(int signum) {
 
 int main()
 {
-    std::signal(SIGINT, signalHandler);
-    std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
-    rt::UdpClient udpClient;
+    // std::signal(SIGINT, signalHandler);
+    // std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
+    // rt::UdpClient udpClient;
+    std::unique_ptr<RT::Core> core = std::make_unique<RT::Core>();
 
-    udpClient.setup("127.0.0.1", 1234, receivedMessages);
+    // udpClient.setup("127.0.0.1", 1234, receivedMessages);
 
-    std::thread udpClientThread([&]() {
-        udpClient.run();
-    });
+    // std::thread udpClientThread([&]() {
+    //     udpClient.run();
+    // });
 
-    while (1) {
-        while (!receivedMessages->empty())
-        {
-            std::cout << "Received message:" << std::endl;
-            std::cout << "Message: [" << receivedMessages->front().message << "]" << std::endl;
-            receivedMessages->pop();
-            std::cout << "-------------------" << std::endl;
-        }
+    core->loop();
 
-        std::cout << "GameLoop" << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        udpClient.send("PING");
-    }
+    // while (1) {
+    //     while (!receivedMessages->empty())
+    //     {
+    //         std::cout << "Received message:" << std::endl;
+    //         std::cout << "Message: [" << receivedMessages->front().message << "]" << std::endl;
+    //         receivedMessages->pop();
+    //         std::cout << "-------------------" << std::endl;
+    //     }
 
-    udpClientThread.join();
+    //     std::cout << "GameLoop" << std::endl;
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     udpClient.send("PING");
+    // }
+
+    // udpClientThread.join();
     return 0;
 }

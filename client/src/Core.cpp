@@ -14,9 +14,6 @@
 #include "renderer/Utils.hpp"
 #include "Core.hpp"
 #include "Utils.hpp"
-#include "DrawModel.hpp"
-#include "Move.hpp"
-#include "Play.hpp"
 
 namespace RT {
 
@@ -129,6 +126,21 @@ namespace RT {
             }
         );
 
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {0, 0, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 1.0f
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::SkyBox {}
+        );
+        _systems._systemSkyBox->init(*_entities.rbegin(), true, "./client/resources/images/skybox.hdr");
+
 //        _entities.insert(_entities.end(), _coordinator->createEntity());
 //        _coordinator->addComponent(
 //            *_entities.rbegin(),
@@ -157,6 +169,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Cam>();
         _coordinator->registerComponent<ECS::Traveling>();
+        _coordinator->registerComponent<ECS::SkyBox>();
     }
 
     void Core::initSystem() {
@@ -168,6 +181,7 @@ namespace RT {
         _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemSkyBox = _coordinator->registerSystem<ECS::SkyBoxSystem>();
 
         {
             ECS::Signature signature;
@@ -249,6 +263,7 @@ namespace RT {
             _systems._systemProjectile->update();
             _systems._systemCamera->update();
             _systems._systemTraveling->update();
+            _systems._systemSkyBox->update();
 
             // checkCollision(*_entities.rbegin(), *_entities.rend());
 
