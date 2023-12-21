@@ -3,6 +3,6 @@ rm -rf rtype_client
 mkdir build
 cmake -B build
 cd build
-make -j
+make
 cd ../
 ./rtype_client

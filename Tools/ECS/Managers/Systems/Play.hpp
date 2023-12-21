@@ -27,10 +27,10 @@ namespace ECS {
                     auto &controle = coordinatorPtr->getComponent<Player>(entity);
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
-                    if (_event->isKeyDown(controle.key_up)) transform.position._y -= 1;
-                    if (_event->isKeyDown(controle.key_down)) transform.position._y += 1;
-                    if (_event->isKeyDown(controle.key_left)) transform.position._x -= 1;
-                    if (_event->isKeyDown(controle.key_right)) transform.position._x += 1;
+                    if (_event->isKeyDown(controle.key_up)) transform.position._y += 0.3;
+                    if (_event->isKeyDown(controle.key_down)) transform.position._y -= 0.3;
+                    if (_event->isKeyDown(controle.key_left)) transform.position._x -= 0.3;
+                    if (_event->isKeyDown(controle.key_right)) transform.position._x += 0.3;
                     if (_event->isKeyDown(controle.key_shoot)) std::cout << "shoot" << std::endl;
                     if (_event->isKeyDown(controle.key_validate)) std::cout << "validate" << std::endl;
                     if (_event->isKeyDown(controle.key_cancel)) std::cout << "cancel" << std::endl;

@@ -23,6 +23,8 @@
 #include "Particle.hpp"
 #include "Projectile.hpp"
 #include "Shoot.hpp"
+#include "Cam.hpp"
+#include "Traveling.hpp"
 
 namespace RT {
 
@@ -33,6 +35,8 @@ namespace RT {
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
         std::shared_ptr<ECS::Shoot> _systemShoot;
         std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
+        std::shared_ptr<ECS::CamSystem> _systemCamera;
+        std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
     };
 
     class Core {
