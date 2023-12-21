@@ -14,9 +14,7 @@
 #include "Coordinator.hpp"
 
 #include "Utils.hpp"
-#include "DrawModel.hpp"
 #include "Move.hpp"
-#include "Play.hpp"
 #include "Traveling.hpp"
 
 namespace rt {
