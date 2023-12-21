@@ -16,6 +16,7 @@
 #include "Utils.hpp"
 #include "Move.hpp"
 #include "Traveling.hpp"
+#include "Clock.hpp"
 
 namespace rt {
 
@@ -35,6 +36,7 @@ namespace rt {
             void command_ping(const std::string &data, const std::string &ip, const int port);
             void command_move(const std::string &data, const std::string &ip, const int port);
             void command_shoot(const std::string &data, const std::string &ip, const int port);
+            void command_request_connection(const std::string &data, const std::string &ip, const int port);
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
@@ -49,9 +51,12 @@ namespace rt {
             void _initializeECS();
             void _initializeECSComponents();
             void _initializeECSSystems();
+            void _initializeECSEntities();
             std::shared_ptr<ECS::Coordinator> _coordinator;
-            std::shared_ptr<ECS::Entity> _player;
+            std::set<ECS::Entity> _entities;
+            ECS::Entity _player;
             System _systems;
+            tls::Clock _clock;
     };
 
 }

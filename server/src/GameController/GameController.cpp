@@ -8,6 +8,7 @@ namespace rt {
     {
         _initializeCommands();
         _initializeECS();
+        _clock = tls::Clock(1.0);
     }
 
     void GameController::_initializeCommands() {
@@ -20,6 +21,9 @@ namespace rt {
         _commands["SHOOT"] = [&](const std::string &data, const std::string &ip, const int port) {
             command_shoot(data, ip, port);
         };
+        _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
+            command_request_connection(data, ip, port);
+        };
     }
 
     int GameController::exec() { 
@@ -30,7 +34,9 @@ namespace rt {
                 commandHandler(data.data, data.ip, data.port);
                 _receivedData.pop();
             }
-            //std::cout << "HERE IS THE MAIN WHILE" << std::endl;
+            if (_clock.isTimeElapsed()) {
+                _systems._systemTraveling->update();
+            }
         }
     }
 
@@ -73,6 +79,7 @@ namespace rt {
 
         _initializeECSComponents();
         _initializeECSSystems();
+        _initializeECSEntities();
 
         std::cout << "SERVER/ECS configured" << std::endl;
     }
@@ -93,7 +100,34 @@ namespace rt {
         // ECS systems
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
 
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
+
         std::cout << "SERVER/ECS systems configured" << std::endl;
+    }
+
+    void GameController::_initializeECSEntities() {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        _player = *_entities.rbegin();
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.1, 0, 0}
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {0, 0, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 0.5f
+            }
+        );
     }
 
     // Commands
@@ -120,6 +154,10 @@ namespace rt {
     }
 
     void GameController::command_shoot(const std::string &data, const std::string &ip, const int port) {
+        //
+    }
+
+    void GameController::command_request_connection(const std::string &data, const std::string &ip, const int port) {
         //
     }
 }
