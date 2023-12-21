@@ -3,6 +3,16 @@ project(rtype)
 
 set(CMAKE_CXX_STANDARD 20)
 
+include(FetchContent)
+set(BUILD_SHARED_LIBS OFF)
+FetchContent_Declare(
+        SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 2.6.1
+)
+
+FetchContent_MakeAvailable(SFML)
+
 if (UNIX)
     set(RAYLIB_VERSION 5.0)
     find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
@@ -106,7 +116,7 @@ add_executable(rtype_server
         Tools/Vec3/IVec3.hpp
         Tools/Vec4/IVec4.hpp
         Tools/ECS/Managers/Entities/IEntitiesManager.hpp
-        Tools/Clock/IClock.hpp
+       Tools/Clock/IClock.hpp
         server/main.cpp
         # Server Controller
         server/src/ServerController/IServerController.hpp
@@ -198,6 +208,9 @@ add_executable(rtype_client
         Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         Tools/Clock/IClock.hpp
         protocol/Protocol.hpp
+        client/src/UdpClient/IUdpClient.hpp
+        client/src/UdpClient/UdpClient.hpp
+        client/src/UdpClient/UdpClient.cpp
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -209,8 +222,9 @@ target_include_directories(rtype_server PRIVATE
 
 #set(raylib_VERBOSE 1)
 
-target_link_libraries(rtype_client PRIVATE raylib)
+target_link_libraries(rtype_client PRIVATE raylib sfml-network)
 target_link_libraries(rtype_server PRIVATE raylib)
+
 
 # Web Configurations
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
@@ -231,4 +245,4 @@ endif()
 
 set_target_properties(rtype_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(rtype_server INTERFACE ${Boost_LIBRARIES})
-target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})
+#target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})

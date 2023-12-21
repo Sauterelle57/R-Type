@@ -1,62 +1,61 @@
-// UDPClient.cpp
+//
+// Created by noahg on 20/12/2023.
+//
+
 #include "UdpClient.hpp"
-#include <iostream>
 
 namespace rt {
-
-    UdpClient::UdpClient(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages)
-        : ioService(), socket(ioService), serverEndpoint(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(serverIP), serverPort))
-    {
-        socket.open(boost::asio::ip::udp::v4());
+    void UdpClient::setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages) {
+        serverEndpoint = sf::IpAddress(serverIP);
+        serverPortNumber = serverPort;
         this->receivedMessages = receivedMessages;
-    }
 
-    void UdpClient::send(const Protocol& message)
-    {
-        try {
-            // Send the raw data of the Protocol struct
-            socket.send_to(boost::asio::buffer(&message, sizeof(Protocol)), serverEndpoint);
-        } catch (std::exception& e) {
-            std::cerr << "Exception: " << e.what() << std::endl;
+        if (socket.bind(0) != sf::Socket::Done) {
+            std::cerr << "Error binding to a port" << std::endl;
         }
     }
 
-    Protocol UdpClient::receive()
-    {
-        try {
-            Protocol receivedMessage;
-            boost::system::error_code error;
+    void UdpClient::send(const std::string& message) {
+        sf::Packet packet;
+        packet.append(message.c_str(), message.size());
 
-            // Receive the raw data of the Protocol struct
-            size_t bytesRead = socket.receive_from(boost::asio::buffer(&receivedMessage, sizeof(Protocol)), serverEndpoint, 0, error);
 
-            if (!error)
-            {
-                // Handle receivedMessage as needed
-                std::cout << "Received message of size " << bytesRead << " bytes." << std::endl;
-            }
-            else
-            {
-                std::cerr << "Error receiving data: " << error.message() << std::endl;
-            }
+        if (socket.send(packet, serverEndpoint, serverPortNumber) != sf::Socket::Done) {
+            std::cerr << "Error sending message" << std::endl;
+        } else {
+            std::cout << "Sending message: " << message << std::endl;
+        }
+    }
+
+    std::string UdpClient::receive() {
+        sf::Packet packet;
+        sf::IpAddress sender;
+        unsigned short senderPort;
+
+        if (socket.receive(packet, sender, senderPort) != sf::Socket::Done) {
+            std::cerr << "Error receiving data" << std::endl;
+            return "<error>";
+        } else {
+            // Get the data directly from the packet
+            const void* data = packet.getData();
+            std::size_t dataSize = packet.getDataSize();
+            // Print debug information
+            std::cout << "Received packet size: " << dataSize << " bytes" << std::endl;
+            // Convert the received data to a string
+            std::string receivedMessage(static_cast<const char*>(data), dataSize);
+            // Print the string representation of the received data
+            std::cout << "Received message: " << receivedMessage << std::endl;
 
             return receivedMessage;
-        } catch (std::exception& e) {
-            std::cerr << "Exception during receiving: " << e.what() << std::endl;
-            return Protocol(); // Return a default-constructed Protocol in case of exception
         }
     }
 
-    void UdpClient::run()
-    {
+    void UdpClient::run() {
         std::cout << "Receiving messages..." << std::endl;
-        while (true)
-        {
-            Protocol receivedMessage = receive();
-            // Handle receivedMessage as needed
-            std::cout << "Received message: " << std::endl;
-            //receivedMessages->push({receivedMessage, serverEndpoint.address().to_string(), serverEndpoint.port()});
+        while (true) {
+            std::string message = receive();
+            std::cout << "message..." << std::endl;
+            receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
         }
     }
-
 } // namespace rt
