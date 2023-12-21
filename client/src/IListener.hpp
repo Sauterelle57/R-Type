@@ -8,11 +8,16 @@
 #ifndef RTYPE_ILISTENER_HPP
 #define RTYPE_ILISTENER_HPP
 
+#include <string>
+
 namespace RT {
     class IListener {
         public:
             virtual ~IListener() = default;
+
             virtual void onEvent() = 0;
+
+            virtual void addEvent(const std::string &event) = 0;
     };
 }
 

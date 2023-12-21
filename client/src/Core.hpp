@@ -25,6 +25,7 @@
 #include "Shoot.hpp"
 #include "Cam.hpp"
 #include "Traveling.hpp"
+#include "IListener.hpp"
 
 namespace RT {
 
@@ -59,6 +60,8 @@ namespace RT {
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
             System _systems;
+
+            std::unique_ptr<IListener> _listener;
     };
 };
 
