@@ -18,6 +18,7 @@
 #include "Move.hpp"
 #include "Play.hpp"
 #include "MultipleLink.hpp"
+#include "Listener.hpp"
 
 namespace RT {
 
@@ -46,6 +47,9 @@ namespace RT {
         _coordinator = std::make_shared<ECS::Coordinator>();
 
         RL::Utils::setTargetFPS(60);
+
+        _listener = std::make_unique<Listener>();
+        _listener->addEvent("Hello World");
     }
 
     void Core::initEntities() {
@@ -241,6 +245,7 @@ namespace RT {
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
         while (!_window->shouldClose()) {
+            _listener->onEvent();
             _window->beginDrawing();
             _window->clearBackground(BLACK);
             _systems._systemCamera->begin();
