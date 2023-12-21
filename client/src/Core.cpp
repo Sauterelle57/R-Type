@@ -17,6 +17,7 @@
 #include "DrawModel.hpp"
 #include "Move.hpp"
 #include "Play.hpp"
+#include "UniqueLink.hpp"
 
 namespace RT {
 
@@ -55,7 +56,7 @@ namespace RT {
         model.get()->_model->transform = matr;
 
         _entities.insert(_entities.end(), _coordinator->createEntity());
-        _playerId = *_entities.rbegin();
+        Entity player = *_entities.rbegin();
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Model {
@@ -108,6 +109,7 @@ namespace RT {
         _camera->setProjection(CAMERA_PERSPECTIVE);
 
         _entities.insert(_entities.end(), _coordinator->createEntity());
+        Entity cam = *_entities.rbegin();
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Cam {
@@ -128,6 +130,7 @@ namespace RT {
                 .speed = {0.1, 0, 0}
             }
         );
+        ECS::UniqueLinkManager::createLink(_coordinator, cam, player);
 
 //        _entities.insert(_entities.end(), _coordinator->createEntity());
 //        _coordinator->addComponent(
@@ -157,6 +160,8 @@ namespace RT {
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Cam>();
         _coordinator->registerComponent<ECS::Traveling>();
+        _coordinator->registerComponent<ECS::UniqueLink>();
+        _coordinator->registerComponent<ECS::MultipleLink>();
     }
 
     void Core::initSystem() {

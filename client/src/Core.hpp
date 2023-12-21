@@ -57,7 +57,6 @@ namespace RT {
             std::shared_ptr<RL::IEvent> _event;
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
-            int _playerId = 0;
             std::set<ECS::Entity> _entities;
             System _systems;
     };

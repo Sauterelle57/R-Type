@@ -46,7 +46,8 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &camera = coordinatorPtr->getComponent<Cam>(entity);
-                    camera.camera->setTarget(transform.position + tls::Vec3{0, 0, -10});
+                    auto &playerTransform = coordinatorPtr->getComponent<Transform>(coordinatorPtr->getComponent<UniqueLink>(entity).to);
+                    camera.camera->setTarget(playerTransform.position);
 
                     camera.camera->setPosition(transform.position);
                 }

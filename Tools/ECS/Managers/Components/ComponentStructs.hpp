@@ -113,6 +113,16 @@ namespace ECS {
         tls::Vec3 speed;
     };
 
+    struct UniqueLink {
+        Entity from;
+        Entity to;
+    };
+
+    struct MultipleLink {
+        std::set<Entity> from;
+        std::set<Entity> to;
+    };
+
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

@@ -215,6 +215,9 @@ add_executable(rtype_client
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp
+        Tools/ECS/Managers/Systems/UniqueLink.hpp
+        Tools/ECS/Managers/Systems/MultipleLink.hpp
+        Tools/ECS/Managers/Systems/MultipleLink.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
