@@ -8,6 +8,7 @@
 #include "System.hpp"
 #include "Coordinator.hpp"
 #include "ComponentStructs.hpp"
+#include "MultipleLink.hpp"
 
 namespace ECS {
     class CamSystem : public System {
@@ -46,8 +47,13 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &camera = coordinatorPtr->getComponent<Cam>(entity);
-                    auto &playerTransform = coordinatorPtr->getComponent<Transform>(coordinatorPtr->getComponent<UniqueLink>(entity).to);
-                    camera.camera->setTarget(playerTransform.position);
+                    auto player = MultipleLinkManager::getTo(coordinatorPtr, entity, "target");
+                    if (player != -1) {
+                        auto &playerTransform = coordinatorPtr->getComponent<Transform>(player);
+                        camera.camera->setTarget(playerTransform.position);
+                    } else {
+                        camera.camera->setTarget(camera.camera->getPosition() + tls::Vec3{0, 0, -1});
+                    }
 
                     camera.camera->setPosition(transform.position);
                 }

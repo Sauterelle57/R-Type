@@ -12,6 +12,7 @@
 #include <memory>
 #include <functional>
 #include <vector>
+#include <set>
 #include "Utils.hpp"
 #include "Vec4.hpp"
 #include "Vec3.hpp"
@@ -21,6 +22,8 @@
 #include "Clock.hpp"
 #include "Entity.hpp"
 #include "Components.hpp"
+#include "renderer/ICamera.hpp"
+#include "Coordinator.hpp"
 
 namespace ECS {
     enum Direction {
@@ -114,14 +117,18 @@ namespace ECS {
     };
 
     struct UniqueLink {
+        std::string name;
         Entity from;
         Entity to;
     };
 
     struct MultipleLink {
-        std::set<Entity> from;
-        std::set<Entity> to;
+        std::set<UniqueLink> links;
     };
+
+    inline bool operator<(const UniqueLink& lhs, const UniqueLink& rhs) {
+        return lhs.name < rhs.name;
+    }
 
 }
 
