@@ -11,6 +11,13 @@
 #include <iostream>
 #include <queue>
 #include <functional>
+#include "Coordinator.hpp"
+
+#include "Utils.hpp"
+#include "DrawModel.hpp"
+#include "Move.hpp"
+#include "Play.hpp"
+#include "Traveling.hpp"
 
 namespace rt {
 
@@ -29,6 +36,9 @@ namespace rt {
 
             void command_ping(const std::string &data, const std::string &ip, const int port);
 
+            struct System {
+                std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
+            };
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
@@ -36,7 +46,12 @@ namespace rt {
             std::map<std::string, std::function<void(const std::string &, const std::string &, const int)>> _commands;
 
             void _initializeCommands();
-
+            void _initializeECS();
+            void _initializeECSComponents();
+            void _initializeECSSystems();
+            std::shared_ptr<ECS::Coordinator> _coordinator;
+            std::shared_ptr<ECS::Entity> _player;
+            System _systems;
     };
 
 }

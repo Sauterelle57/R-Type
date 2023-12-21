@@ -5,6 +5,7 @@ namespace rt {
     GameController::GameController()
     {
         _initializeCommands();
+        _initializeECS();
     }
 
     void GameController::_initializeCommands() {
@@ -21,6 +22,7 @@ namespace rt {
                 commandHandler(data.data, data.ip, data.port);
                 _receivedData.pop();
             }
+            //std::cout << "HERE IS THE MAIN WHILE" << std::endl;
         }
     }
 
@@ -46,6 +48,39 @@ namespace rt {
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
         }
+    }
+
+    // ECS
+    void GameController::_initializeECS() {
+        std::cout << "SERVER/ECS initializing..." << std::endl;
+
+        // ECS init
+        _coordinator = std::make_shared<ECS::Coordinator>();
+        _coordinator->init();
+
+        _initializeECSComponents();
+        _initializeECSSystems();
+
+        std::cout << "SERVER/ECS configured" << std::endl;
+    }
+
+    void GameController::_initializeECSComponents() {
+        std::cout << "SERVER/ECS initializing components..." << std::endl;
+
+        // ECS components
+        _coordinator->registerComponent<ECS::Transform>();
+        _coordinator->registerComponent<ECS::Traveling>();
+
+        std::cout << "SERVER/ECS components configured" << std::endl;
+    }
+
+    void GameController::_initializeECSSystems() {
+        std::cout << "SERVER/ECS initializing systems..." << std::endl;
+
+        // ECS systems
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+
+        std::cout << "SERVER/ECS systems configured" << std::endl;
     }
 
     // Commands

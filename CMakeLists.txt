@@ -126,11 +126,46 @@ add_executable(rtype_server
         server/src/GameController/IGameController.hpp
         server/src/GameController/GameController.hpp
         server/src/GameController/GameController.cpp
+        server/src/Client/Client.cpp
+        server/src/Client/Client.hpp
+        server/src/Client/IClient.hpp
         # Asio Wrapper
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
         protocol/Protocol.hpp
+        # ECS
+        Tools/ECS/Managers/Components/ComponentStructs.hpp
+        Tools/ECS/Managers/Components/ComponentsManager.hpp
+        Tools/ECS/Managers/Components/ComponentArray.hpp
+        Tools/ECS/Managers/Components/Components.hpp
+        Tools/ECS/Managers/Entities/EntitiesManager.hpp
+        Tools/ECS/Managers/Entities/Entity.hpp
+        Tools/ECS/Managers/Systems/SystemsManager.hpp
+        Tools/ECS/Managers/Systems/System.hpp
+        Tools/ECS/Managers/Systems/Move.hpp
+        Tools/ECS/Managers/Systems/DrawModel.hpp
+        Tools/ECS/Managers/Systems/Play.hpp
+        Tools/ECS/Managers/Systems/Particle.hpp
+        Tools/ECS/Managers/Coordinator/Coordinator.hpp
+        Tools/Utils/Utils.hpp
+        Tools/Utils/Utils.cpp
+        Tools/Vec3/Vec3.hpp
+        Tools/Vec3/Vec3.cpp
+        Tools/Vec4/Vec4.hpp
+        Tools/Vec4/Vec4.cpp
+        Tools/Clock/Clock.hpp
+        Tools/Error/Error.hpp
+        Tools/ECS/Managers/Systems/Projectile.hpp
+        Tools/Vec3/IVec3.hpp
+        Tools/Vec4/IVec4.hpp
+        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
+        Tools/Clock/IClock.hpp
+        Tools/ECS/Managers/Systems/Cam.hpp
+        Tools/ECS/Managers/Systems/Traveling.hpp
+        Tools/ECS/Managers/Systems/Cam.hpp
+        Tools/ECS/Managers/Systems/Traveling.hpp
+        Tools/ECS/Managers/Systems/MultipleLink.hpp
 )
 
 add_executable(rtype_client
@@ -223,6 +258,7 @@ target_include_directories(rtype_server PRIVATE
         server/src/ServerController
         server/src/GameController
         server/src/AsioWrapper
+        server/src/Client
 )
 
 #set(raylib_VERBOSE 1)
