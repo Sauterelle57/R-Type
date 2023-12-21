@@ -210,6 +210,8 @@ add_executable(rtype_client
         protocol/Protocol.hpp
         Tools/ECS/Managers/Systems/Cam.hpp
         Tools/ECS/Managers/Systems/Traveling.hpp
+        Tools/ECS/Managers/Systems/Cam.hpp
+        Tools/ECS/Managers/Systems/Traveling.hpp
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp
