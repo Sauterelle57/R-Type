@@ -33,6 +33,8 @@ namespace rt {
             void commandHandler(const std::string &data, const std::string &ip, const int port);
 
             void command_ping(const std::string &data, const std::string &ip, const int port);
+            void command_move(const std::string &data, const std::string &ip, const int port);
+            void command_shoot(const std::string &data, const std::string &ip, const int port);
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;

@@ -1,4 +1,6 @@
 #include "GameController.hpp"
+#include <sstream>
+#include <string>  
 
 namespace rt {
 
@@ -11,6 +13,12 @@ namespace rt {
     void GameController::_initializeCommands() {
         _commands["PING"] = [&](const std::string &data, const std::string &ip, const int port) {
             command_ping(data, ip, port);
+        };
+        _commands["MOVE"] = [&](const std::string &data, const std::string &ip, const int port) {
+            command_move(data, ip, port);
+        };
+        _commands["SHOOT"] = [&](const std::string &data, const std::string &ip, const int port) {
+            command_shoot(data, ip, port);
         };
     }
 
@@ -42,9 +50,14 @@ namespace rt {
         std::cout << "data: " << data << std::endl;
         std::cout << "-------------------" << std::endl;
 
+        std::istringstream iss(data);
+        std::string command;
+        iss >> command;
+
+
         try {
-            std::cout << "[" << data << "] " << data.length() << std::endl;
-            _commands.at(data)(data, ip, port);
+            std::cout << "[" << command << "] " << data.length() << std::endl;
+            _commands.at(command)(data, ip, port);
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
         }
@@ -87,5 +100,26 @@ namespace rt {
     void GameController::command_ping(const std::string &data, const std::string &ip, const int port) {
         _wrapper->sendTo("OK", ip, port);
         std::cout << "(>) Sent information" << std::endl;
+    }
+
+    void GameController::command_move(const std::string &data, const std::string &ip, const int port) {
+        // Assuming data is "MOVE 1 2 3"
+        std::istringstream iss(data);
+        std::string command;
+        int x, y, z;
+
+        if (iss >> command >> x >> y >> z) {
+            if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
+            std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
+            
+            _wrapper->sendTo(command, ip, port);
+            }
+        } else {
+            std::cerr << "Error extracting values from the string." << std::endl;
+        }
+    }
+
+    void GameController::command_shoot(const std::string &data, const std::string &ip, const int port) {
+        //
     }
 }
