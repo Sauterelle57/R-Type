@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 
+#define DEBUG_GAMECONTROLLER 0 // Only for testing purposes
+
 namespace rt {
 
     GameController::GameController()
@@ -153,11 +155,25 @@ namespace rt {
         std::string command;
         int x, y, z;
 
+        if (DEBUG_GAMECONTROLLER) {
+            if (!_clientController.checkClientIDExist(0))
+                command_request_connection(data, ip, port);
+            auto playerID = 0;
+            std::cout << "Player ID: " << playerID << std::endl;
+        } else {
+            if (!_clientController.isClientExist(ip, port))
+                return;
+            auto playerID = _clientController.getPlayerID(ip, port);
+        }
+
         if (iss >> command >> x >> y >> z) {
             if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
-            std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
-            
-            _wrapper->sendTo(command, ip, port);
+                std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
+                auto &transform = _coordinator->getComponent<ECS::Transform>(_player);
+
+                transform.position._x += x;
+                transform.position._y += y;
+                transform.position._z += z;
             }
         } else {
             std::cerr << "Error extracting values from the string." << std::endl;
