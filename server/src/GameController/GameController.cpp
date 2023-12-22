@@ -12,7 +12,7 @@ namespace rt {
     {
         _initializeCommands();
         _initializeECS();
-        _clock = tls::Clock(0.02);
+        _clock = tls::Clock(0.005);
     }
 
     void GameController::_initializeCommands() {
@@ -124,7 +124,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0, 0, 0}
+                .speed = {0.0, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -146,7 +146,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0, 0, 0}
+                .speed = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
