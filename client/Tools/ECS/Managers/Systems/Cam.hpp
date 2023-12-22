@@ -54,8 +54,9 @@ namespace ECS {
                     } else {
                         camera.camera->setTarget(camera.camera->getPosition() + tls::Vec3{0, 0, -1});
                     }
-
                     camera.camera->setPosition(transform.position);
+                    std::cout << "Position: " << camera.camera->getPosition()._x << " " << camera.camera->getPosition()._y << " " << camera.camera->getPosition()._z << std::endl;
+                    std::cout << "Target: " << camera.camera->getTarget().x << " " << camera.camera->getTarget().y << " " << camera.camera->getTarget().z << std::endl;
                 }
             }
     };

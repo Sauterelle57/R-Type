@@ -215,7 +215,7 @@ namespace RT {
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
         while (!_window->shouldClose()) {
-            if (!_receivedMessages->empty()) {
+            while (!_receivedMessages->empty()) {
                 std::string message = _receivedMessages->front().message;
                 _listener->addEvent(message);
                 _receivedMessages->pop();

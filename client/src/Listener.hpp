@@ -71,9 +71,10 @@ namespace RT {
                                     }
                                 );
                             } else if (token == "CAMERA") {
+                                std::cout << "NEW CAMERA CREATED" << std::endl;
                                 std::shared_ptr<RL::ICamera> camera = std::make_shared<RL::ZCamera>();
-                                camera->setPosition({ 0.0f, 10.0f, 100.0f });
-                                camera->setTarget({ 0.0f, 10.0f, 0.0f });
+                                camera->setPosition({ 0.0f, 0.0f, 0.0f });
+                                camera->setTarget({ 0.0f, 0.0f, 0.0f });
                                 camera->setUp({ 0.0f, 1.0f, 0.0f });
                                 camera->setFovy(30.0f);
                                 camera->setProjection(CAMERA_PERSPECTIVE);
@@ -89,7 +90,7 @@ namespace RT {
                     } else {
                         while (ss >> token) {
                             if (token == "TRANSFORM") {
-                                auto &transform = _coordinator->getComponent<ECS::Transform>(std::stoi(id));
+                                auto &transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[std::stoi(id)]);
                                 float x, y, z, rx, ry, rz, ra, scale;
                                 ss >> x >> y >> z >> rx >> ry >> rz >> ra >> scale;
                                 transform = ECS::Transform {
