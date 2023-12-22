@@ -1,6 +1,9 @@
-//
-// Created by noah on 12/11/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** Vec3
+*/
 
 #include <complex>
 #include "Vec3.hpp"

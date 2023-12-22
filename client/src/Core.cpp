@@ -6,6 +6,8 @@
 */
 
 #include <thread>
+#include "../Tools/ECS/Managers/Systems/Shoot.hpp"
+#include "../Tools/ECS/Managers/Components/ComponentStructs.hpp"
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/Cursor.hpp"
@@ -15,8 +17,8 @@
 #include "renderer/Utils.hpp"
 #include "Core.hpp"
 #include "Utils.hpp"
-#include "DrawModel.hpp"
 #include "Move.hpp"
+#include "DrawModel.hpp"
 #include "Play.hpp"
 #include "MultipleLink.hpp"
 #include "Listener.hpp"

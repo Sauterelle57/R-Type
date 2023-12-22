@@ -8,11 +8,12 @@
 #ifndef RTYPE_SHOOT_HPP
 #define RTYPE_SHOOT_HPP
 
+#include <cmath>
+#include "../../../../src/renderer/Model.hpp"
+#include "../Components/ComponentStructs.hpp"
 #include "System.hpp"
 #include "Coordinator.hpp"
-#include "renderer/Model.hpp"
 #include "ComponentStructs.hpp"
-#include <cmath>
 #include "renderer/IEvent.hpp"
 #define AMPLITUDE 0.5f
 

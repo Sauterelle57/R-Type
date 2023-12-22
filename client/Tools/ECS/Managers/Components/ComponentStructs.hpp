@@ -67,14 +67,14 @@ namespace ECS {
     };
 
     struct Player {
-        int key_up;
-        int key_down;
-        int key_left;
-        int key_right;
-        int key_shoot;
-        int key_validate;
-        int key_cancel;
-        int key_settings;
+        int key_up = KEY_W;
+        int key_down = KEY_S;
+        int key_left = KEY_A;
+        int key_right = KEY_D;
+        int key_shoot = KEY_F;
+        int key_validate = KEY_ENTER;
+        int key_cancel = KEY_DELETE;
+        int key_settings = KEY_TAB;
     };
 
     struct Particle {
