@@ -1,6 +1,10 @@
 #include "GameController.hpp"
 #include <sstream>
-#include <string>  
+#include <string>
+#include <iostream>
+#include <iomanip>
+
+#define DEBUG_GAMECONTROLLER 0 // Only for testing purposes
 
 namespace rt {
 
@@ -8,7 +12,7 @@ namespace rt {
     {
         _initializeCommands();
         _initializeECS();
-        _clock = tls::Clock(1.0);
+        _clock = tls::Clock(0.05);
     }
 
     void GameController::_initializeCommands() {
@@ -36,6 +40,7 @@ namespace rt {
             }
             if (_clock.isTimeElapsed()) {
                 _systems._systemTraveling->update();
+                _eventController();
             }
         }
     }
@@ -118,7 +123,7 @@ namespace rt {
 
     ECS::Entity GameController::_createPlayer() {
         _entities.insert(_entities.end(), _coordinator->createEntity());
-        _player = *_entities.rbegin();
+        ECS::Entity _player = *_entities.rbegin();
 
         _coordinator->addComponent(
             *_entities.rbegin(),
@@ -150,12 +155,27 @@ namespace rt {
         std::istringstream iss(data);
         std::string command;
         int x, y, z;
+        int playerID = 0;
+
+        if (DEBUG_GAMECONTROLLER) {
+            if (!_clientController.checkClientIDExist(0))
+                command_request_connection(data, ip, port);
+            playerID = 0;
+            std::cout << "Player ID: " << playerID << std::endl;
+        } else {
+            if (!_clientController.isClientExist(ip, port))
+                return;
+            playerID = _clientController.getPlayerID(ip, port);
+        }
 
         if (iss >> command >> x >> y >> z) {
             if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
-            std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
-            
-            _wrapper->sendTo(command, ip, port);
+                std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
+                auto &transform = _coordinator->getComponent<ECS::Transform>(playerID);
+
+                transform.position._x += x;
+                transform.position._y += y;
+                transform.position._z += z;
             }
         } else {
             std::cerr << "Error extracting values from the string." << std::endl;
@@ -172,13 +192,50 @@ namespace rt {
         auto id = _createPlayer();
         _clientController.addPlayerID(ip, port, id);
 
+        /*
         auto transform = _coordinator->getComponent<ECS::Transform>(_clientController.getPlayerID(ip, port));
 
         std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
         std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
         std::cout << "scale: " << transform.scale << std::endl;
 
-        std::string response = "CREATE " + std::to_string(id) + " " + std::to_string(transform.position._x) + " " + std::to_string(transform.position._y) + " " + std::to_string(transform.position._z) + " " + std::to_string(transform.rotation._x) + " " + std::to_string(transform.rotation._y) + " " + std::to_string(transform.rotation._z) + " " +  std::to_string(transform.rotation._a) + " " + std::to_string(transform.scale);
+        std::ostringstream responseStream;
+        responseStream << "CREATE " << id << " TRANSFORM " << std::fixed << std::setprecision(2)
+                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                    << transform.rotation._a << " " << transform.scale << " PLAYER_1";
+
+        std::string response = responseStream.str();
+
         _wrapper->sendTo(response, ip, port);
+        */
+    }
+
+    // Event controller
+
+    void GameController::_eventController_transform(std::shared_ptr<Client> client) {
+        auto transform = _coordinator->getComponent<ECS::Transform>(client->getPlayerID());
+
+        //std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
+        //std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
+        //std::cout << "scale: " << transform.scale << std::endl;
+
+        std::ostringstream responseStream;
+        responseStream << client->getPlayerID() << " TRANSFORM " << std::fixed << std::setprecision(2)
+                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                    << transform.rotation._a << " " << transform.scale;
+
+        std::string response = responseStream.str();
+
+        _wrapper->sendTo(response, client->getIpAdress(), client->getPort());
+    }
+
+    void GameController::_eventController() {
+        auto clients = _clientController.getClients();
+
+        for (auto &client : clients) {
+            _eventController_transform(client);
+        }
     }
 }
