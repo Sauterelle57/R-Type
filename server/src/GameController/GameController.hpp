@@ -55,15 +55,19 @@ namespace rt {
             void _initializeECSEntities();
 
             ECS::Entity _createPlayer();
+            ECS::Entity _createEnnemy();
             void _eventController();
             void _eventController_transform(std::shared_ptr<Client> client);
             void _eventController_camera(std::shared_ptr<Client> client);
+            void _eventController_ennemy(std::shared_ptr<Client> client);
             
             rt::ClientController _clientController;
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
+            bool _cameraInit;
             ECS::Entity _camera;
+            ECS::Entity _ennemy;
 
             System _systems;
             tls::Clock _clock;
