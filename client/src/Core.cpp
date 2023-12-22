@@ -229,13 +229,13 @@ namespace RT {
             _window->clearBackground(BLACK);
             _systems._systemCamera->begin();
 
+            _systems._systemCamera->update();
             _systems._systemDrawModel->update();
-//            _systems._systemMove->update();
             _systems._systemPlayer->update(_event, _udpClient);
+//            _systems._systemMove->update();
 //            _systems._systemParticles->update(_camera, shader);
 //            _systems._systemShoot->update(_event);
 //            _systems._systemProjectile->update();
-            _systems._systemCamera->update();
 //            _systems._systemTraveling->update();
 
             // checkCollision(*_entities->rbegin(), *_entities->rend());

@@ -48,13 +48,13 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &camera = coordinatorPtr->getComponent<Cam>(entity);
                     auto player = MultipleLinkManager::getTo(coordinatorPtr, entity, "target");
+                    camera.camera->setPosition(transform.position);
                     if (player != -1) {
                         auto &playerTransform = coordinatorPtr->getComponent<Transform>(player);
                         camera.camera->setTarget(playerTransform.position);
                     } else {
                         camera.camera->setTarget(camera.camera->getPosition() + tls::Vec3{0, 0, -1});
                     }
-                    camera.camera->setPosition(transform.position);
                     std::cout << "Position: " << camera.camera->getPosition()._x << " " << camera.camera->getPosition()._y << " " << camera.camera->getPosition()._z << std::endl;
                     std::cout << "Target: " << camera.camera->getTarget().x << " " << camera.camera->getTarget().y << " " << camera.camera->getTarget().z << std::endl;
                 }
