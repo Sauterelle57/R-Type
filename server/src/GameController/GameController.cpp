@@ -118,6 +118,24 @@ namespace rt {
     void GameController::_initializeECSEntities() {
         std::cout << "SERVER/ECS initializing entities..." << std::endl;
 
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        _camera = *_entities.rbegin();
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.1, 0, 0}
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {0, 0, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 0.5f
+            }
+        );
+
         std::cout << "SERVER/ECS entities configured" << std::endl;
     }
 
@@ -224,7 +242,25 @@ namespace rt {
         responseStream << client->getPlayerID() << " TRANSFORM " << std::fixed << std::setprecision(2)
                     << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                     << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                    << transform.rotation._a << " " << transform.scale;
+                    << transform.rotation._a << " " << transform.scale << " PLAYER_1";
+
+        std::string response = responseStream.str();
+
+        _wrapper->sendTo(response, client->getIpAdress(), client->getPort());
+    }
+
+    void GameController::_eventController_camera(std::shared_ptr<Client> client) {
+        auto transform = _coordinator->getComponent<ECS::Transform>(_camera);
+
+        //std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
+        //std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
+        //std::cout << "scale: " << transform.scale << std::endl;
+
+        std::ostringstream responseStream;
+        responseStream << _camera << " TRANSFORM " << std::fixed << std::setprecision(2)
+                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                    << transform.rotation._a << " " << transform.scale << " CAMERA";
 
         std::string response = responseStream.str();
 
@@ -236,6 +272,7 @@ namespace rt {
 
         for (auto &client : clients) {
             _eventController_transform(client);
+            _eventController_camera(client);
         }
     }
 }
