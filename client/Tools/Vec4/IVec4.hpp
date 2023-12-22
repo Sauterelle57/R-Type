@@ -1,6 +1,9 @@
-//
-// Created by noah on 12/19/23.
-//
+/*
+** EPITECH PROJECT, 2023
+** B-CPP-500-STG-5-2-rtype-noah.gosciniak
+** File description:
+** IVec4
+*/
 
 #ifndef RTYPE_IVEC4_HPP
 #define RTYPE_IVEC4_HPP

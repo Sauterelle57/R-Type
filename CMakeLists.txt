@@ -230,6 +230,7 @@ target_include_directories(rtype_server PRIVATE
 )
 
 target_include_directories(rtype_client PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/protocol
         ${CMAKE_SOURCE_DIR}/client/include
         ${CMAKE_SOURCE_DIR}/client/src
         ${CMAKE_SOURCE_DIR}/client/src/ECS
@@ -239,18 +240,18 @@ target_include_directories(rtype_client PRIVATE
         ${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Systems
         ${CMAKE_SOURCE_DIR}/client/src/GameLoop
         ${CMAKE_SOURCE_DIR}/client/src/UdpClient
-        ${CMAKE_SOURCE_DIR}/protocol
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS
+        ${CMAKE_SOURCE_DIR}/client/Tools
+        ${CMAKE_SOURCE_DIR}/client/Tools/Vec3
+        ${CMAKE_SOURCE_DIR}/client/Tools/Vec4
+        ${CMAKE_SOURCE_DIR}/client/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/client/Tools/Utils
+        ${CMAKE_SOURCE_DIR}/client/Tools/Error
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Components
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Entities
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Systems
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Coordinator
-        ${CMAKE_SOURCE_DIR}/client/Tools/Vec3
-        ${CMAKE_SOURCE_DIR}/client/Tools/Vec4
-        ${CMAKE_SOURCE_DIR}/client/Tools/Utils
-        ${CMAKE_SOURCE_DIR}/client/Tools/Error
-        ${CMAKE_SOURCE_DIR}/client/Tools/Clock
 )
 #set(raylib_VERBOSE 1)
 
