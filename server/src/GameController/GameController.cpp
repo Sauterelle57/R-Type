@@ -84,7 +84,7 @@ namespace rt {
 
         _initializeECSComponents();
         _initializeECSSystems();
-        _initializeECSEntities();
+        //_initializeECSEntities();
 
         std::cout << "SERVER/ECS configured" << std::endl;
     }
@@ -124,7 +124,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.0, 0, 0}
+                .speed = {0.001, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -146,7 +146,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.01, 0, 0}
+                .speed = {0.00, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -208,6 +208,7 @@ namespace rt {
         if (!_clientController.isClientExist(ip, port))
             _clientController.addClient(ip, port);
         auto id = _createPlayer();
+        _initializeECSEntities();
         _clientController.addPlayerID(ip, port, id);
 
         /*
