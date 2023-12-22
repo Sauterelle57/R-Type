@@ -43,6 +43,14 @@ namespace rt
                 }
                 return 0;
             };
+            std::vector<std::shared_ptr<Client>> getClients() const {
+                std::vector<std::shared_ptr<Client>> clients;
+                for (const auto &client : _clients) {
+                    clients.push_back(client.second);
+                }
+                return clients;
+            };
+
         private:
             std::map<std::string, std::shared_ptr<Client>> _clients;
     };
