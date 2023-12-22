@@ -124,13 +124,13 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.1, 0, 0}
+                .speed = {0, 0, 0}
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {0, 10, 100},
+                .position = {0, 10, -100},
                 .rotation = {0, 0, 0, 0},
                 .scale = 0.5f
             }
@@ -146,7 +146,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.1, 0, 0}
+                .speed = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
