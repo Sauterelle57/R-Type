@@ -176,6 +176,8 @@ add_executable(rtype_client
         Tools/ECS/Managers/Systems/MultipleLink.hpp
         client/src/IListener.hpp
         client/src/Listener.hpp
+        client/src/IListener.hpp
+        client/src/Listener.hpp
         client/Tools/ECS/Managers/Systems/Projectile.hpp
         client/Tools/Vec3/IVec3.hpp
         client/Tools/Vec4/IVec4.hpp
