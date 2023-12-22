@@ -8,6 +8,9 @@
 #ifndef CLIENT_HPP_
 #define CLIENT_HPP_
 #include "IClient.hpp"
+#include <iostream>
+#include <string>
+#include <map>
 
 namespace rt
 {
@@ -23,6 +26,7 @@ namespace rt
             std::string _ipAdress;
             int _port;
             int _playerID;
+            std::map<EventType, bool> _events;
     };
 }
 

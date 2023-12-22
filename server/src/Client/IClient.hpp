@@ -18,6 +18,10 @@ namespace rt
 
             virtual std::string getIpAdress() const = 0;
             virtual int getPort() const = 0;
+
+            enum EventType {
+                TRANSFORM
+            };
     };
 }
 

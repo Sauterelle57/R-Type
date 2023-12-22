@@ -206,4 +206,7 @@ namespace rt {
 
         _wrapper->sendTo(response, ip, port);
     }
+
+    void GameController::_eventController() {
+    }
 }

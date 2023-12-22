@@ -55,6 +55,7 @@ namespace rt {
             void _initializeECSEntities();
 
             ECS::Entity _createPlayer();
+            void _eventController();
             
             rt::ClientController _clientController;
 
