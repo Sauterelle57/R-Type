@@ -31,7 +31,9 @@ namespace ECS {
                     if (_event->isKeyDown(controle.key_right)) udpClient->send("MOVE 1 0 0");
                     if (_event->isKeyDown(controle.key_shoot)) std::cout << "shoot" << std::endl;
                     if (_event->isKeyDown(controle.key_validate)) std::cout << "validate" << std::endl;
-                    if (_event->isKeyDown(controle.key_cancel)) std::cout << "cancel" << std::endl;
+                    if (_event->isKeyDown(controle.key_cancel)) {
+                        std::cout << "cancel" << std::endl;
+                    };
                     if (_event->isKeyDown(controle.key_settings)) std::cout << "settings" << std::endl;
                 }
                 // std::cout << "Play: " << count << std::endl;

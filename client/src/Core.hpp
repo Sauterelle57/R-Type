@@ -68,6 +68,8 @@ namespace RT {
             std::shared_ptr<std::queue<rt::ReceivedMessage>> _receivedMessages;
             std::shared_ptr<rt::UdpClient> _udpClient;
             std::unique_ptr<std::thread> _udpClientThread;
+
+            std::shared_ptr<bool> _isRunning;
     };
 };
 

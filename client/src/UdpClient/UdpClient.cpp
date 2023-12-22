@@ -40,21 +40,21 @@ namespace rt {
             const void* data = packet.getData();
             std::size_t dataSize = packet.getDataSize();
             // Print debug information
-            std::cout << "Received packet size: " << dataSize << " bytes" << std::endl;
+            //std::cout << "Received packet size: " << dataSize << " bytes" << std::endl;
             // Convert the received data to a string
             std::string receivedMessage(static_cast<const char*>(data), dataSize);
             // Print the string representation of the received data
-            std::cout << "Received message: " << receivedMessage << std::endl;
+            //std::cout << "Received message: " << receivedMessage << std::endl;
 
             return receivedMessage;
         }
     }
 
-    void UdpClient::run() {
+    void UdpClient::run(std::shared_ptr<bool> running) {
         std::cout << "Receiving messages..." << std::endl;
-        while (true) {
+        while (*running) {
             std::string message = receive();
-            std::cout << "message..." << std::endl;
+            //std::cout << "message..." << std::endl;
             receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
         }
     }

@@ -124,7 +124,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.01, 0, 0}
+                .speed = {0.0, 0, 0}
             }
         );
         _coordinator->addComponent(

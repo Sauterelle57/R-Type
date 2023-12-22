@@ -5,6 +5,7 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <queue>
+#include <memory>
 
 namespace rt {
     class UdpClient : public IUdpClient {
@@ -18,7 +19,7 @@ namespace rt {
 
         std::string receive();
 
-        void run();
+        void run(std::shared_ptr<bool> running);
 
     private:
         sf::UdpSocket socket;

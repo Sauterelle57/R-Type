@@ -41,12 +41,14 @@ namespace RT {
     Core::Core() {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
 
-        _cursor = std::make_shared<RL::ZCursor>();
-        _cursor->disable();
+        // _cursor = std::make_shared<RL::ZCursor>();
+        // _cursor->disable();
         _event = std::make_shared<RL::ZEvent>();
         _event->setExitKey(KEY_F4);
 
         _coordinator = std::make_shared<ECS::Coordinator>();
+
+        _isRunning = std::make_shared<bool>(true);
 
         RL::Utils::setTargetFPS(60);
 
@@ -57,7 +59,7 @@ namespace RT {
         _udpClient->setup("127.0.0.1", 1234, _receivedMessages);
 
         _udpClientThread = std::make_unique<std::thread>(([&]() {
-            _udpClient->run();
+            _udpClient->run(_isRunning);
         }));
         _udpClient->send("CONNECTION_REQUEST");
     }
