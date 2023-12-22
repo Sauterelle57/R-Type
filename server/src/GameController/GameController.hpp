@@ -57,6 +57,7 @@ namespace rt {
             ECS::Entity _createPlayer();
             void _eventController();
             void _eventController_transform(std::shared_ptr<Client> client);
+            void _eventController_camera(std::shared_ptr<Client> client);
             
             rt::ClientController _clientController;
 
