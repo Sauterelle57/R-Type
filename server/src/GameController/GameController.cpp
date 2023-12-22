@@ -111,6 +111,12 @@ namespace rt {
     }
 
     void GameController::_initializeECSEntities() {
+        std::cout << "SERVER/ECS initializing entities..." << std::endl;
+
+        std::cout << "SERVER/ECS entities configured" << std::endl;
+    }
+
+    ECS::Entity GameController::_createPlayer() {
         _entities.insert(_entities.end(), _coordinator->createEntity());
         _player = *_entities.rbegin();
 
@@ -128,6 +134,9 @@ namespace rt {
                 .scale = 0.5f
             }
         );
+
+        std::cout << "Player created as ID: " << _player << std::endl;
+        return _player;
     }
 
     // Commands
@@ -158,6 +167,18 @@ namespace rt {
     }
 
     void GameController::command_request_connection(const std::string &data, const std::string &ip, const int port) {
-        //
+        if (!_clientController.isClientExist(ip, port))
+            _clientController.addClient(ip, port);
+        auto id = _createPlayer();
+        _clientController.addPlayerID(ip, port, id);
+
+        auto transform = _coordinator->getComponent<ECS::Transform>(_clientController.getPlayerID(ip, port));
+
+        std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
+        std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
+        std::cout << "scale: " << transform.scale << std::endl;
+
+        std::string response = "CREATE " + std::to_string(id) + " " + std::to_string(transform.position._x) + " " + std::to_string(transform.position._y) + " " + std::to_string(transform.position._z) + " " + std::to_string(transform.rotation._x) + " " + std::to_string(transform.rotation._y) + " " + std::to_string(transform.rotation._z) + " " +  std::to_string(transform.rotation._a) + " " + std::to_string(transform.scale);
+        _wrapper->sendTo(response, ip, port);
     }
 }

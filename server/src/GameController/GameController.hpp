@@ -17,6 +17,7 @@
 #include "Move.hpp"
 #include "Traveling.hpp"
 #include "Clock.hpp"
+#include "ClientController.hpp"
 
 namespace rt {
 
@@ -52,6 +53,11 @@ namespace rt {
             void _initializeECSComponents();
             void _initializeECSSystems();
             void _initializeECSEntities();
+
+            ECS::Entity _createPlayer();
+            
+            rt::ClientController _clientController;
+
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
             ECS::Entity _player;

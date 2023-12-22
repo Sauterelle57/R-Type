@@ -9,15 +9,21 @@
 #define CLIENT_HPP_
 #include "IClient.hpp"
 
-class Client : public IClient {
-    public:
-        Client(std::string ipAdress, int port);
-        ~Client();
-        std::string getIpAdress() const;
-        int getPort() const;
-    private:
-        std::string _ipAdress;
-        int _port;
-};
+namespace rt
+{
+    class Client : public IClient {
+        public:
+            Client(std::string ipAdress, int port);
+            ~Client();
+            std::string getIpAdress() const;
+            int getPort() const;
+            void setPlayerID(const int id);
+            int getPlayerID() const;
+        private:
+            std::string _ipAdress;
+            int _port;
+            int _playerID;
+    };
+}
 
 #endif /* !CLIENT_HPP_ */

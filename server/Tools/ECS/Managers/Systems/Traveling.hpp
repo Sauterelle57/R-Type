@@ -23,7 +23,7 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &traveling = coordinatorPtr->getComponent<Traveling>(entity);
 
-                    std::cout << transform.position._x << std::endl;
+                    //std::cout << transform.position._x << std::endl;
 
                     transform.position += traveling.speed;
                 }

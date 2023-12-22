@@ -87,6 +87,7 @@ add_executable(rtype_server
         server/src/Client/Client.cpp
         server/src/Client/Client.hpp
         server/src/Client/IClient.hpp
+        server/src/Client/ClientController.hpp
         # Asio Wrapper
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp

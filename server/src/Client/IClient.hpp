@@ -10,12 +10,15 @@
 #include <iostream>
 #include <string>
 
-class IClient {
-    public:
-        virtual ~IClient() = default;
+namespace rt
+{
+    class IClient {
+        public:
+            virtual ~IClient() = default;
 
-        virtual std::string getIpAdress() const = 0;
-        virtual int getPort() const = 0;
-};
+            virtual std::string getIpAdress() const = 0;
+            virtual int getPort() const = 0;
+    };
+}
 
 #endif /* !ICLIENT_HPP_ */
