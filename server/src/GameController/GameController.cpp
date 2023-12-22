@@ -130,7 +130,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {0, 0, 0},
+                .position = {0, 10, 100},
                 .rotation = {0, 0, 0, 0},
                 .scale = 0.5f
             }

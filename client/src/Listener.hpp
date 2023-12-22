@@ -33,7 +33,6 @@ namespace RT {
                         _entities->insert(_entities->end(), entity);
                         _serverToClient[std::stoi(id)] = entity;
 
-
                         while (ss >> token) {
                             if (token == "TRANSFORM") {
                                 float x, y, z, rx, ry, rz, ra, scale;
@@ -46,8 +45,7 @@ namespace RT {
                                         scale
                                     }
                                 );
-                            }
-                            if (token == "PLAYER_1") {
+                            } else if (token == "PLAYER_1") {
                                 std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb");
                                 Matrix matr = MatrixIdentity();
                                 matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
@@ -72,8 +70,7 @@ namespace RT {
                                         .key_settings = KEY_F1,
                                     }
                                 );
-                            }
-                            if (token == "CAMERA") {
+                            } else if (token == "CAMERA") {
                                 std::shared_ptr<RL::ICamera> camera = std::make_shared<RL::ZCamera>();
                                 camera->setPosition({ 0.0f, 10.0f, 100.0f });
                                 camera->setTarget({ 0.0f, 10.0f, 0.0f });

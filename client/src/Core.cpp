@@ -48,6 +48,7 @@ namespace RT {
 
         RL::Utils::setTargetFPS(60);
 
+        _entities = std::make_shared<std::set<ECS::Entity>>();
         _listener = std::make_unique<Listener>(_coordinator, _entities);
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
