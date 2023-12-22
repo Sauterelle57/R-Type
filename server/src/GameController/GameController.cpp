@@ -12,7 +12,7 @@ namespace rt {
     {
         _initializeCommands();
         _initializeECS();
-        _clock = tls::Clock(1.0);
+        _clock = tls::Clock(0.05);
     }
 
     void GameController::_initializeCommands() {
