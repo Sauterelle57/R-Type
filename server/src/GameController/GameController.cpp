@@ -1,6 +1,8 @@
 #include "GameController.hpp"
 #include <sstream>
-#include <string>  
+#include <string>
+#include <iostream>
+#include <iomanip>
 
 namespace rt {
 
@@ -178,7 +180,14 @@ namespace rt {
         std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
         std::cout << "scale: " << transform.scale << std::endl;
 
-        std::string response = "CREATE " + std::to_string(id) + " " + std::to_string(transform.position._x) + " " + std::to_string(transform.position._y) + " " + std::to_string(transform.position._z) + " " + std::to_string(transform.rotation._x) + " " + std::to_string(transform.rotation._y) + " " + std::to_string(transform.rotation._z) + " " +  std::to_string(transform.rotation._a) + " " + std::to_string(transform.scale);
+        std::ostringstream responseStream;
+        responseStream << "CREATE " << id << " TRANSFORM " << std::fixed << std::setprecision(2)
+                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                    << transform.rotation._a << " " << transform.scale << " PLAYER_1";
+
+        std::string response = responseStream.str();
+
         _wrapper->sendTo(response, ip, port);
     }
 }
