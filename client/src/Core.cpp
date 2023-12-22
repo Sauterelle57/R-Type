@@ -56,6 +56,7 @@ namespace RT {
         _udpClientThread = std::make_unique<std::thread>(([&]() {
             _udpClient->run();
         }));
+        _udpClient->send("CONNECTION_REQUEST");
     }
 
     Core::~Core() {
