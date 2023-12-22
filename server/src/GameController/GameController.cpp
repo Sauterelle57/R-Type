@@ -123,7 +123,7 @@ namespace rt {
 
     ECS::Entity GameController::_createPlayer() {
         _entities.insert(_entities.end(), _coordinator->createEntity());
-        _player = *_entities.rbegin();
+        ECS::Entity _player = *_entities.rbegin();
 
         _coordinator->addComponent(
             *_entities.rbegin(),
@@ -155,22 +155,23 @@ namespace rt {
         std::istringstream iss(data);
         std::string command;
         int x, y, z;
+        int playerID = 0;
 
         if (DEBUG_GAMECONTROLLER) {
             if (!_clientController.checkClientIDExist(0))
                 command_request_connection(data, ip, port);
-            auto playerID = 0;
+            playerID = 0;
             std::cout << "Player ID: " << playerID << std::endl;
         } else {
             if (!_clientController.isClientExist(ip, port))
                 return;
-            auto playerID = _clientController.getPlayerID(ip, port);
+            playerID = _clientController.getPlayerID(ip, port);
         }
 
         if (iss >> command >> x >> y >> z) {
             if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
                 std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
-                auto &transform = _coordinator->getComponent<ECS::Transform>(_player);
+                auto &transform = _coordinator->getComponent<ECS::Transform>(playerID);
 
                 transform.position._x += x;
                 transform.position._y += y;
@@ -215,9 +216,9 @@ namespace rt {
     void GameController::_eventController_transform(std::shared_ptr<Client> client) {
         auto transform = _coordinator->getComponent<ECS::Transform>(client->getPlayerID());
 
-        std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
-        std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
-        std::cout << "scale: " << transform.scale << std::endl;
+        //std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
+        //std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
+        //std::cout << "scale: " << transform.scale << std::endl;
 
         std::ostringstream responseStream;
         responseStream << client->getPlayerID() << " TRANSFORM " << std::fixed << std::setprecision(2)

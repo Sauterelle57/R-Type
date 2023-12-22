@@ -62,7 +62,8 @@ namespace rt {
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
-            ECS::Entity _player;
+            ECS::Entity _camera;
+
             System _systems;
             tls::Clock _clock;
     };
