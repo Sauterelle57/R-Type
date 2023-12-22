@@ -25,9 +25,9 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = _pos,
-                        .rotation = {0, 0, 1, -90},
-                        .scale = 0.15f
+                        _pos,
+                        {0, 0, 1, -90},
+                        0.15f
                     }
                 );
                 _coordinator->addComponent(
@@ -82,9 +82,9 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Transform {
-                            .position = _pos,
-                            .rotation = {0, 0, 1, -90},
-                            .scale = 0.1f
+                            _pos,
+                            {0, 0, 1, -90},
+                            0.1f
                         }
                     );
                     _coordinator->addComponent(
@@ -126,9 +126,9 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = _pos,
-                        .rotation = {0, 0, 1, -90},
-                        .scale = 0.1f
+                        _pos,
+                        {0, 0, 1, -90},
+                        0.1f
                     }
                 );
                 _coordinator->addComponent(
@@ -186,9 +186,9 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Transform {
-                            .position = _pos,
-                            .rotation = rotations[i],
-                            .scale = 0.1f
+                            _pos,
+                            rotations[i],
+                            0.1f
                         }
                     );
                     _coordinator->addComponent(

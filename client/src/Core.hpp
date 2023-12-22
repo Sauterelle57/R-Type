@@ -26,6 +26,8 @@
 #include "Cam.hpp"
 #include "Traveling.hpp"
 #include "IListener.hpp"
+#include "IUdpClient.hpp"
+#include "UdpClient.hpp"
 
 namespace RT {
 
@@ -43,7 +45,7 @@ namespace RT {
     class Core {
         public:
             Core();
-            ~Core() = default;
+            ~Core();
             void loop();
             void initEntities();
             void initComponents();
@@ -58,10 +60,14 @@ namespace RT {
             std::shared_ptr<RL::IEvent> _event;
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
-            std::set<ECS::Entity> _entities;
+            std::shared_ptr<std::set<ECS::Entity>> _entities;
             System _systems;
 
             std::unique_ptr<IListener> _listener;
+
+            std::shared_ptr<std::queue<rt::ReceivedMessage>> _receivedMessages;
+            std::shared_ptr<rt::UdpClient> _udpClient;
+            std::unique_ptr<std::thread> _udpClientThread;
     };
 };
 

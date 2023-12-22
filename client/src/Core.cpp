@@ -5,6 +5,7 @@
 ** Core
 */
 
+#include <thread>
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/Cursor.hpp"
@@ -35,8 +36,7 @@ namespace RT {
             std::cout << "Collision detected between entities" << std::endl;
     }
 
-    Core::Core()
-    {
+    Core::Core() {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
 
         _cursor = std::make_shared<RL::ZCursor>();
@@ -48,103 +48,71 @@ namespace RT {
 
         RL::Utils::setTargetFPS(60);
 
-        _listener = std::make_unique<Listener>();
-        _listener->addEvent("Hello World");
+        _listener = std::make_unique<Listener>(_coordinator, _entities);
+        _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
+        _udpClient = std::make_shared<rt::UdpClient>();
+        _udpClient->setup("127.0.0.1", 1234, _receivedMessages);
+
+        _udpClientThread = std::make_unique<std::thread>(([&]() {
+            _udpClient->run();
+        }));
+    }
+
+    Core::~Core() {
+        _udpClientThread->join();
     }
 
     void Core::initEntities() {
-        std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb");
-        Matrix matr = MatrixIdentity();
-        matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
-        matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
-        model.get()->_model->transform = matr;
-
-        _entities.insert(_entities.end(), _coordinator->createEntity());
-        Entity player = *_entities.rbegin();
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Model {
-                .model = model,
-//                .texture = std::make_shared<RL::ZTexture>("./client/resources/images/duck_text.png"),
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Traveling {
-                .speed = {0.1, 0, 0}
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Transform {
-                .position = {0, 0, 0},
-                .rotation = {0, 0, 0, 0},
-                .scale = 0.5f
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Player {
-                .key_up = KEY_W,
-                .key_down = KEY_S,
-                .key_left = KEY_A,
-                .key_right = KEY_D,
-                .key_shoot = KEY_F,
-                .key_validate = KEY_ENTER,
-                .key_cancel = KEY_DELETE,
-                .key_settings = KEY_TAB
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Weapon {
-                .damage = 1,
-                .speed = 1,
-                .durability = 1,
-                .create_projectile = ECS::Shoot::basicShot
-            }
-        );
-
-        _camera = std::make_shared<RL::ZCamera>();
-        _camera->setPosition({ 0.0f, 10.0f, 100.0f });
-        _camera->setTarget({ 0.0f, 10.0f, 0.0f });
-        _camera->setUp({ 0.0f, 1.0f, 0.0f });
-        _camera->setFovy(30.0f);
-        _camera->setProjection(CAMERA_PERSPECTIVE);
-
-        _entities.insert(_entities.end(), _coordinator->createEntity());
-        Entity cam = *_entities.rbegin();
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Cam {
-                .camera = _camera
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Transform {
-                .position = {0, 10, 100},
-                .rotation = {0, 0, 0, 0},
-                .scale = 1.0f
-            }
-        );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Traveling {
-                .speed = {0.1, 0, 0}
-            }
-        );
-        ECS::MultipleLinkManager::createLink(_coordinator, cam, player, "target");
-
-//        _entities.insert(_entities.end(), _coordinator->createEntity());
 //        _coordinator->addComponent(
-//            *_entities.rbegin(),
+//            *_entities->rbegin(),
+//            ECS::Weapon {
+//                .damage = 1,
+//                .speed = 1,
+//                .durability = 1,
+//                .create_projectile = ECS::Shoot::basicShot
+//            }
+//        );
+
+//        _camera = std::make_shared<RL::ZCamera>();
+//        _camera->setPosition({ 0.0f, 10.0f, 100.0f });
+//        _camera->setTarget({ 0.0f, 10.0f, 0.0f });
+//        _camera->setUp({ 0.0f, 1.0f, 0.0f });
+//        _camera->setFovy(30.0f);
+//        _camera->setProjection(CAMERA_PERSPECTIVE);
+//
+//        _entities->insert(_entities->end(), _coordinator->createEntity());
+//        Entity cam = *_entities->rbegin();
+//        _coordinator->addComponent(
+//            *_entities->rbegin(),
+//            ECS::Cam {
+//                .camera = _camera
+//            }
+//        );
+//        _coordinator->addComponent(
+//            *_entities->rbegin(),
+//            ECS::Transform {
+//                {0, 10, 100},
+//                {0, 0, 0, 0},
+//                1.0f
+//            }
+//        );
+//        _coordinator->addComponent(
+//            *_entities->rbegin(),
+//            ECS::Traveling {
+//                .speed = {0.1, 0, 0}
+//            }
+//        );
+//        ECS::MultipleLinkManager::createLink(_coordinator, cam, player, "target");
+
+//        _entities->insert(_entities->end(), _coordinator->createEntity());
+//        _coordinator->addComponent(
+//            *_entities->rbegin(),
 //            ECS::Model {
 //                .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
 //            }
 //        );
 //        _coordinator->addComponent(
-//            *_entities.rbegin(),
+//            *_entities->rbegin(),
 //            ECS::Transform {
 //                .position = {0, 5, 0},
 //                .rotation = {0, 0, 0, 0},
@@ -245,21 +213,26 @@ namespace RT {
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
         while (!_window->shouldClose()) {
+            if (!_receivedMessages->empty()) {
+                std::string message = _receivedMessages->front().message;
+                _listener->addEvent(message);
+                _receivedMessages->pop();
+            }
             _listener->onEvent();
             _window->beginDrawing();
             _window->clearBackground(BLACK);
             _systems._systemCamera->begin();
 
             _systems._systemDrawModel->update();
-            _systems._systemMove->update();
-            _systems._systemPlayer->update(_event);
-            _systems._systemParticles->update(_camera, shader);
-            _systems._systemShoot->update(_event);
-            _systems._systemProjectile->update();
+//            _systems._systemMove->update();
+            _systems._systemPlayer->update(_event, _udpClient);
+//            _systems._systemParticles->update(_camera, shader);
+//            _systems._systemShoot->update(_event);
+//            _systems._systemProjectile->update();
             _systems._systemCamera->update();
-            _systems._systemTraveling->update();
+//            _systems._systemTraveling->update();
 
-            // checkCollision(*_entities.rbegin(), *_entities.rend());
+            // checkCollision(*_entities->rbegin(), *_entities->rend());
 
             _window->drawGrid(10, 1.0f);
             _systems._systemCamera->end();

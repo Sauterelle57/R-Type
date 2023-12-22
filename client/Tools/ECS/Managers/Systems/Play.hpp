@@ -11,26 +11,24 @@
 #include "System.hpp"
 #include "Coordinator.hpp"
 #include "renderer/IEvent.hpp"
+#include "UdpClient.hpp"
 
 namespace ECS {
     class Play : public System {
         public:
-            void update(std::shared_ptr<RL::IEvent> _event) {
+            void update(std::shared_ptr<RL::IEvent> _event, std::shared_ptr<rt::UdpClient> udpClient) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
                 }
 
-                int count = 0;
                 for (auto const &entity : _entities) {
-                    count++;
                     auto &controle = coordinatorPtr->getComponent<Player>(entity);
-                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 
-                    if (_event->isKeyDown(controle.key_up)) transform.position._y += 0.3;
-                    if (_event->isKeyDown(controle.key_down)) transform.position._y -= 0.3;
-                    if (_event->isKeyDown(controle.key_left)) transform.position._x -= 0.3;
-                    if (_event->isKeyDown(controle.key_right)) transform.position._x += 0.3;
+                    if (_event->isKeyDown(controle.key_up)) udpClient->send("Move 0 0.3 0");
+                    if (_event->isKeyDown(controle.key_down)) udpClient->send("Move 0 -0.3 0");
+                    if (_event->isKeyDown(controle.key_left)) udpClient->send("Move 0.3 0 0");
+                    if (_event->isKeyDown(controle.key_right)) udpClient->send("Move -0.3 0 0");
                     if (_event->isKeyDown(controle.key_shoot)) std::cout << "shoot" << std::endl;
                     if (_event->isKeyDown(controle.key_validate)) std::cout << "validate" << std::endl;
                     if (_event->isKeyDown(controle.key_cancel)) std::cout << "cancel" << std::endl;

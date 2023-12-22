@@ -47,7 +47,18 @@ namespace ECS {
         tls::Vec3 position;
         tls::Vec4 rotation;
         float scale;
-        BoundingBox bounds;
+        BoundingBox bounds{};
+        Transform() = default;
+        Transform(float px, float py, float pz, float rx, float ry, float rz, float ra, float s) :
+            position(px, py, pz),
+            rotation(rx, ry, rz, ra),
+            scale(s)
+        {}
+        Transform(tls::Vec3 pos, tls::Vec4 rot, float s) :
+            position(pos),
+            rotation(rot),
+            scale(s)
+        {}
     };
 
     struct Model {
