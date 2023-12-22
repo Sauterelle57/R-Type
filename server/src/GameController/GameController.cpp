@@ -12,7 +12,7 @@ namespace rt {
     {
         _initializeCommands();
         _initializeECS();
-        _clock = tls::Clock(0.05);
+        _clock = tls::Clock(0.02);
     }
 
     void GameController::_initializeCommands() {
@@ -191,9 +191,9 @@ namespace rt {
                 std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
                 auto &transform = _coordinator->getComponent<ECS::Transform>(playerID);
 
-                transform.position._x += x;
-                transform.position._y += y;
-                transform.position._z += z;
+                transform.position._x += x * 0.25f;
+                transform.position._y += y * 0.25f;
+                transform.position._z += z * 0.25f;
             }
         } else {
             std::cerr << "Error extracting values from the string." << std::endl;
