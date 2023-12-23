@@ -21,12 +21,12 @@ namespace rt {
         _commands["PING"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandPing(data, ip, port);
         };
-        _commands["MOVE"] = [&](const std::string &data, const std::string &ip, const int port) {
-            commandMove(data, ip, port);
-        };
-        _commands["SHOOT"] = [&](const std::string &data, const std::string &ip, const int port) {
-            commandShoot(data, ip, port);
-        };
+//        _commands["MOVE"] = [&](const std::string &data, const std::string &ip, const int port) {
+//            commandMove(data, ip, port);
+//        };
+//        _commands["SHOOT"] = [&](const std::string &data, const std::string &ip, const int port) {
+//            commandShoot(data, ip, port);
+//        };
         _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
@@ -46,11 +46,7 @@ namespace rt {
                 _systems._systemShoot->update();
                 _systems._systemCollider->update();
                 _systems._systemClientUpdater->update();
-//                _eventController();
-//                for (auto &client: _clientController->getClients()) {
-//                    auto &collider = _coordinator->getComponent<ECS::Collider>();
-//                    collider.velocity = {0.01, 0, 0};
-//                }
+                _systems._systemMove->update();
             }
         }
     }
@@ -78,7 +74,10 @@ namespace rt {
 
         try {
             std::cout << "[" << command << "] " << data.length() << std::endl;
-            _commands.at(command)(data, ip, port);
+            if (command == "SHOOT" || command == "MOVE")
+                _systems._systemPlayerManager->update(data, ip, port);
+            else
+                _commands.at(command)(data, ip, port);
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
         }
@@ -107,6 +106,7 @@ namespace rt {
         _coordinator->registerComponent<ECS::Collider>();
         _coordinator->registerComponent<ECS::Type>();
         _coordinator->registerComponent<ECS::ClientUpdater>();
+        _coordinator->registerComponent<ECS::Player>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
     }
@@ -120,6 +120,8 @@ namespace rt {
         _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCollider = _coordinator->registerSystem<ECS::ColliderSystem>();
         _systems._systemClientUpdater = _coordinator->registerSystem<ECS::ClientUpdaterSystem>();
+        _systems._systemPlayerManager = _coordinator->registerSystem<ECS::PlayerManager>();
+        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
 
         {
             ECS::Signature signature;
@@ -142,6 +144,7 @@ namespace rt {
            signature.set(_coordinator->getComponentType<ECS::Transform>());
            signature.set(_coordinator->getComponentType<ECS::Weapon>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
+            signature.set(_coordinator->getComponentType<ECS::Player>());
             _coordinator->setSystemSignature<ECS::Shoot>(signature);
         }
 
@@ -160,6 +163,25 @@ namespace rt {
             signature.set(_coordinator->getComponentType<ECS::Type>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
             _coordinator->setSystemSignature<ECS::ClientUpdaterSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Player>());
+            signature.set(_coordinator->getComponentType<ECS::Type>());
+            signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Collider>());
+            _coordinator->setSystemSignature<ECS::PlayerManager>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Player>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Collider>());
+            _coordinator->setSystemSignature<ECS::Move>(signature);
         }
 
         std::cout << "SERVER/ECS systems configured" << std::endl;
@@ -254,6 +276,13 @@ namespace rt {
             ECS::ClientUpdater {
                 .wrapper = _wrapper,
                 .clientController = _clientController
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Player {
+                .isShooting = false,
+                .mooving = {0, 0, 0}
             }
         );
     }
@@ -394,57 +423,6 @@ namespace rt {
     void GameController::commandPing(const std::string &data, const std::string &ip, const int port) {
         _wrapper->sendTo("OK", ip, port);
         std::cout << "(>) Sent information" << std::endl;
-    }
-
-    void GameController::commandMove(const std::string &data, const std::string &ip, const int port) {
-//        // Assuming data is "MOVE 1 2 3"
-//        std::istringstream iss(data);
-//        std::string command;
-//        int x, y, z;
-//        int playerID = 0;
-//
-//        if (DEBUG_GAMECONTROLLER) {
-//            if (!_clientController->checkClientIDExist(0))
-//                commandRequestConnection(data, ip, port);
-//            playerID = 0;
-//            std::cout << "Player ID: " << playerID << std::endl;
-//        } else {
-//            if (!_clientController->isClientExist(ip, port))
-//                return;
-//            playerID = _clientController->getPlayerID(ip, port);
-//        }
-//
-//        if (iss >> command >> x >> y >> z) {
-//            if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
-//                std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
-//                auto &transform = _coordinator->getComponent<ECS::Transform>(playerID);
-//                auto &collider = _coordinator->getComponent<ECS::Collider>(playerID);
-//
-//                transform.position._x += x * 0.25f;
-//                transform.position._y += y * 0.25f;
-//                transform.position._z += z * 0.25f;
-//                collider.velocity += {x * 0.25f, y * 0.25f, z * 0.25f};
-//            }
-//        } else {
-//            std::cerr << "Error extracting values from the string." << std::endl;
-//        }
-    }
-
-    void GameController::commandShoot(const std::string &data, const std::string &ip, const int port) {
-        int playerID = 0;
-
-        if (DEBUG_GAMECONTROLLER) {
-//            if (!_clientController->checkClientIDExist(0))
-//                commandRequestConnection(data, ip, port);
-//            playerID = 0;
-//            std::cout << "Player ID: " << playerID << std::endl;
-        } else {
-            if (!_clientController->isClientExist(ip, port))
-                return;
-//            playerID = _clientController->getPlayerID(ip, port);
-        }
-
-//        _entitiesShoot[playerID] = true;
     }
 
     void GameController::commandRequestConnection(const std::string &data, const std::string &ip, const int port) {

@@ -254,13 +254,12 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
                     auto &updater = coordinatorPtr->getComponent<ClientUpdater>(entity);
+                    auto &player = coordinatorPtr->getComponent<Player>(entity);
 
-                    if (1 == 0) // todo modifier
-                    weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
-//                    if (_entitiesShoot[entity]) {
-//                        std::cout << "ECS/SHOOT: (" << entity << ") => Shooting..." << std::endl;
-//                        _entitiesShoot[entity] = false;
-//                    }
+                    if (player.isShooting) {
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
+                        player.isShooting = false;
+                    }
                 }
             }
     };

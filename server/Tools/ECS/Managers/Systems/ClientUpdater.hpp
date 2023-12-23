@@ -23,7 +23,6 @@ namespace ECS {
                 }
 
                 for (auto const &entity : _entities) {
-                    std::cout << "ClientUpdaterSystem: " << entity << std::endl;
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);

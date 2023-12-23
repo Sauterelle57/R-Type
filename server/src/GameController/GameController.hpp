@@ -22,6 +22,7 @@
 #include "Projectile.hpp"
 #include "Collider.hpp"
 #include "ClientUpdater.hpp"
+#include "PlayerManager.hpp"
 
 namespace rt {
 
@@ -49,6 +50,8 @@ namespace rt {
                 std::shared_ptr<ECS::Shoot> _systemShoot;
                 std::shared_ptr<ECS::ColliderSystem> _systemCollider;
                 std::shared_ptr<ECS::ClientUpdaterSystem> _systemClientUpdater;
+                std::shared_ptr<ECS::PlayerManager> _systemPlayerManager;
+                std::shared_ptr<ECS::Move> _systemMove;
             };
         private:
             int i = 0;
