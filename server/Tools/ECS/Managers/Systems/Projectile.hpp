@@ -60,7 +60,10 @@ namespace ECS {
                         std::string response = responseStream.str();
                         wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                     }
+                    std::cout << "before destroy" << std::endl;
+                    std::cout << entity << std::endl;
                     coordinatorPtr->destroyEntity(entity);
+                    std::cout << "after destroy" << std::endl;
                     return;
                 }
 

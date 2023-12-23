@@ -127,6 +127,13 @@ namespace rt {
             _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
         }
 
+        {
+           ECS::Signature signature;
+           signature.set(_coordinator->getComponentType<ECS::Transform>());
+           signature.set(_coordinator->getComponentType<ECS::Weapon>());
+           _coordinator->setSystemSignature<ECS::Shoot>(signature);
+       }
+
         std::cout << "SERVER/ECS systems configured" << std::endl;
     }
 
