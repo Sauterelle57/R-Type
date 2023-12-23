@@ -41,6 +41,8 @@ namespace rt {
             }
             if (_clock.isTimeElapsed()) {
                 _systems._systemTraveling->update();
+                _systems._systemProjectile->update();
+                _systems._systemShoot->update(_entitiesShoot);
                 _eventController();
             }
         }
@@ -96,6 +98,8 @@ namespace rt {
         // ECS components
         _coordinator->registerComponent<ECS::Transform>();
         _coordinator->registerComponent<ECS::Traveling>();
+        _coordinator->registerComponent<ECS::Weapon>();
+        _coordinator->registerComponent<ECS::Projectile>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
     }
@@ -105,12 +109,22 @@ namespace rt {
 
         // ECS systems
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
+        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
 
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Traveling>());
             _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
+
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Projectile>());
+            _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
         }
 
         std::cout << "SERVER/ECS systems configured" << std::endl;
@@ -158,6 +172,17 @@ namespace rt {
                 .scale = 0.5f
             }
         );
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Weapon {
+               .damage = 1,
+               .speed = 1,
+               .durability = 1,
+               .create_projectile = ECS::Shoot::basicShot
+           }
+       );
+
+       _entitiesShoot[_player] = false;
 
         std::cout << "Player created as ID: " << _player << std::endl;
         return _player;
@@ -181,6 +206,8 @@ namespace rt {
                 .scale = 0.5f
             }
         );
+
+        _entitiesShoot[ennemy] = false;
 
         std::cout << "Ennemy created as ID: " << ennemy << std::endl;
         return ennemy;
@@ -225,7 +252,20 @@ namespace rt {
     }
 
     void GameController::command_shoot(const std::string &data, const std::string &ip, const int port) {
-        //
+        int playerID = 0;
+
+        if (DEBUG_GAMECONTROLLER) {
+            if (!_clientController.checkClientIDExist(0))
+                command_request_connection(data, ip, port);
+            playerID = 0;
+            std::cout << "Player ID: " << playerID << std::endl;
+        } else {
+            if (!_clientController.isClientExist(ip, port))
+                return;
+            playerID = _clientController.getPlayerID(ip, port);
+        }
+
+        _entitiesShoot[playerID] = true;
     }
 
     void GameController::command_request_connection(const std::string &data, const std::string &ip, const int port) {
@@ -307,7 +347,7 @@ namespace rt {
         responseStream << _ennemy << " TRANSFORM " << std::fixed << std::setprecision(2)
                     << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                     << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                    << transform.rotation._a << " " << transform.scale << " PLAYER_1";
+                    << transform.rotation._a << " " << transform.scale << " ENEMY";
 
         std::string response = responseStream.str();
 

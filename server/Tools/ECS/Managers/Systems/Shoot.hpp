@@ -12,6 +12,7 @@
 #include "Coordinator.hpp"
 #include "ComponentStructs.hpp"
 #include <cmath>
+#include "ClientController.hpp"
 #define AMPLITUDE 0.5f
 
 namespace ECS {
@@ -135,7 +136,7 @@ namespace ECS {
                 }
             }
 
-            void update() {
+            void update(std::map<ECS::Entity, bool> _entitiesShoot) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
@@ -145,8 +146,11 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
 
-                    if (1 == 0) // TODO: check if player is shooting (shoot)
+                    if (_entitiesShoot[entity]) {
                         weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0});
+                        std::cout << "ECS/SHOOT: (" << entity << ") => Shooting..." << std::endl;
+                        _entitiesShoot[entity] = false;
+                    }
                 }
             }
     };

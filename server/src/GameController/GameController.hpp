@@ -18,6 +18,8 @@
 #include "Traveling.hpp"
 #include "Clock.hpp"
 #include "ClientController.hpp"
+#include "Shoot.hpp"
+#include "Projectile.hpp"
 
 namespace rt {
 
@@ -41,6 +43,8 @@ namespace rt {
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
+                std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
+                std::shared_ptr<ECS::Shoot> _systemShoot;
             };
         private:
             int i = 0;
@@ -65,6 +69,7 @@ namespace rt {
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
+            std::map<ECS::Entity, bool> _entitiesShoot;
             bool _cameraInit;
             ECS::Entity _camera;
             ECS::Entity _ennemy;
