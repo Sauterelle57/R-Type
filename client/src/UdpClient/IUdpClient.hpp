@@ -14,7 +14,6 @@
 #include <queue>
 
 namespace rt {
-
     struct ReceivedMessage {
         std::string message;
         std::string address;

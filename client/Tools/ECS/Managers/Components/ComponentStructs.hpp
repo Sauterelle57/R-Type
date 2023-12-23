@@ -71,7 +71,7 @@ namespace ECS {
         int key_down = KEY_S;
         int key_left = KEY_A;
         int key_right = KEY_D;
-        int key_shoot = KEY_F;
+        int key_shoot = KEY_SPACE;
         int key_validate = KEY_ENTER;
         int key_cancel = KEY_DELETE;
         int key_settings = KEY_TAB;

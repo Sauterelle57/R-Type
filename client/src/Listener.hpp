@@ -21,7 +21,7 @@ namespace RT {
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
-                    std::cout << "New event : " << front << std::endl;
+//                    std::cout << "New event : " << front << std::endl;
                     _queue.pop();
 
                     std::stringstream ss(front);
@@ -70,8 +70,55 @@ namespace RT {
                                         .key_settings = KEY_F1,
                                     }
                                 );
+                            } else if (token == "PLAYER_2") {
+                                std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/ship.glb");
+                                Matrix matr = MatrixIdentity();
+                                matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
+                                matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
+                                model->_model->transform = matr;
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model {
+                                        .model = model,
+                                    }
+                                );
+                            } else if (token == "ENEMY") {
+                                std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/vivinsect.glb");
+                                Matrix matr = MatrixIdentity();
+                                matr = MatrixMultiply(matr, MatrixRotateY(180 * DEG2RAD));
+                                matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
+                                model->_model->transform = matr;
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model {
+                                        .model = model,
+                                    }
+                                );
+                            } else if (token == "BASIC_SHOT") {
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model {
+                                        .model = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb"),
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Particles {
+                                        .particles = std::vector<ECS::Particle>(500),
+                                        .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
+                                        .type = ECS::ParticleType::CONE,
+                                        .direction = ECS::Direction::LEFT,
+                                        .speed = 75.0f,
+                                        .scaleOffset = 3.0f,
+                                        .positionOffset = {-0.5, 0, 0},
+                                        .lifeTime = 2,
+                                        .spawnRate = 35,
+                                        .spawnTimer = 0,
+                                        .surviveChance = 5
+                                    }
+                                );
                             } else if (token == "CAMERA") {
-                                std::cout << "NEW CAMERA CREATED" << std::endl;
+//                                std::cout << "NEW CAMERA CREATED" << std::endl;
                                 std::shared_ptr<RL::ICamera> camera = std::make_shared<RL::ZCamera>();
                                 camera->setPosition({ 0.0f, 0.0f, 0.0f });
                                 camera->setTarget({ 0.0f, 0.0f, 0.0f });
@@ -85,6 +132,8 @@ namespace RT {
                                         .camera = camera
                                     }
                                 );
+                            } else {
+//                                std::cout << "Unknown token : " << token << std::endl;
                             }
                         }
                     } else {
@@ -98,13 +147,15 @@ namespace RT {
                                     {rx, ry, rz, ra},
                                     scale
                                 };
+                            } else if (token == "DESTROY") {
+                                _coordinator->destroyEntity(_serverToClient[std::stoi(id)]);
                             } else {
-                                std::cout << "token : " << token << std::endl;
+//                                std::cout << "[UPDATE] (osef) Unknown token : " << token << std::endl;
                             }
                         }
                     }
 
-                    std::cout << "end" << std::endl;
+//                    std::cout << "end" << std::endl;
                 }
             }
 

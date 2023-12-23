@@ -142,20 +142,20 @@ namespace RT {
     }
 
     void Core::initSystem() {
-        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
+//        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
         _systems._systemParticles = _coordinator->registerSystem<ECS::ParticleSystem>();
-        _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
-        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
+//        _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
+//        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
-        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+//        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
 
-        {
-            ECS::Signature signature;
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            _coordinator->setSystemSignature<ECS::Move>(signature);
-        }
+//        {
+//            ECS::Signature signature;
+//            signature.set(_coordinator->getComponentType<ECS::Transform>());
+//            _coordinator->setSystemSignature<ECS::Move>(signature);
+//        }
 
         {
             ECS::Signature signature;
@@ -179,19 +179,19 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
 
-        {
-            ECS::Signature signature;
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Weapon>());
-            _coordinator->setSystemSignature<ECS::Shoot>(signature);
-        }
+//        {
+//            ECS::Signature signature;
+//            signature.set(_coordinator->getComponentType<ECS::Transform>());
+//            signature.set(_coordinator->getComponentType<ECS::Weapon>());
+//            _coordinator->setSystemSignature<ECS::Shoot>(signature);
+//        }
 
-        {
-            ECS::Signature signature;
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Projectile>());
-            _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
-        }
+//        {
+//            ECS::Signature signature;
+//            signature.set(_coordinator->getComponentType<ECS::Transform>());
+//            signature.set(_coordinator->getComponentType<ECS::Projectile>());
+//            _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
+//        }
 
         {
             ECS::Signature signature;
@@ -200,12 +200,12 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::CamSystem>(signature);
         }
 
-        {
-            ECS::Signature signature;
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Traveling>());
-            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
-        }
+//        {
+//            ECS::Signature signature;
+//            signature.set(_coordinator->getComponentType<ECS::Transform>());
+//            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+//            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+//        }
     }
 
     void Core::loop() {
@@ -232,13 +232,7 @@ namespace RT {
             _systems._systemCamera->update();
             _systems._systemDrawModel->update();
             _systems._systemPlayer->update(_event, _udpClient);
-//            _systems._systemMove->update();
-//            _systems._systemParticles->update(_camera, shader);
-//            _systems._systemShoot->update(_event);
-//            _systems._systemProjectile->update();
-//            _systems._systemTraveling->update();
-
-            // checkCollision(*_entities->rbegin(), *_entities->rend());
+            _systems._systemParticles->update(_camera, shader);
 
             _window->drawGrid(10, 1.0f);
             _systems._systemCamera->end();
