@@ -28,6 +28,7 @@
 #include "IListener.hpp"
 #include "IUdpClient.hpp"
 #include "UdpClient.hpp"
+#include "Sound.hpp"
 
 namespace RT {
 
@@ -40,6 +41,7 @@ namespace RT {
         std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
         std::shared_ptr<ECS::CamSystem> _systemCamera;
         std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
+        std::shared_ptr<ECS::SoundSystem> _systemSound;
     };
 
     class Core {
@@ -72,6 +74,8 @@ namespace RT {
             std::shared_ptr<bool> _isRunning;
 
             std::unique_ptr<tls::IClock> _clock;
+
+            std::unique_ptr<RL::IAudio> _audio;
     };
 };
 
