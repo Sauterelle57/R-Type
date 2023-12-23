@@ -53,8 +53,8 @@ namespace RT {
             void initComponents();
             void initSystem();
             void checkCollision(ECS::Entity entity1, ECS::Entity entity2);
-            const int _screenWidth = 1920 / 3;
-            const int _screenHeight = 1080 / 3;
+            const int _screenWidth = 1920 / 2;
+            const int _screenHeight = 1080 / 2;
 
             std::shared_ptr<RL::IWindow> _window;
             std::shared_ptr<RL::ICamera> _camera;
