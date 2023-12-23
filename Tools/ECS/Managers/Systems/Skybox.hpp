@@ -43,14 +43,14 @@ namespace ECS {
                 RL::ZShader::setValue(element.skybox->getModel()->materials[0].shader, RL::ZShader::getLocation(element.skybox->getModel()->materials[0].shader, "doGamma"), hdr, SHADER_UNIFORM_INT);
                 RL::ZShader::setValue(element.skybox->getModel()->materials[0].shader, RL::ZShader::getLocation(element.skybox->getModel()->materials[0].shader, "vflipped"), hdr, SHADER_UNIFORM_INT);
 
-                Shader shdrCubemap = RL::ZShader::load("./client/resources/shaders/cubemap.vs", "./client/resources/shaders/cubemap.fs");
+                std::shared_ptr<RL::ZShader> shdrCubemap = std::make_shared<RL::ZShader>("./client/resources/shaders/cubemap.vs", "./client/resources/shaders/cubemap.fs");
 
-                RL::ZShader::setValue(shdrCubemap, RL::ZShader::getLocation(shdrCubemap, "equirectangularMap"), zero, SHADER_UNIFORM_INT);
+                shdrCubemap->setValue(shdrCubemap->getLocation("equirectangularMap"), zero, SHADER_UNIFORM_INT);
 
                 if (isHdr) {
                     Texture2D panorama;
                     panorama = RL::ZTexture::load(path);
-                    element.skybox->getModel()->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = RL::ZTexture::genCubemap(shdrCubemap, panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+                    element.skybox->getModel()->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = RL::ZTexture::genCubemap(*shdrCubemap->getShader(), panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
                 } else {
                     RL::ZImage img(path);
                     element.skybox->getModel()->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = RL::ZTexture::loadCubemap(*img.getImage(), CUBEMAP_LAYOUT_AUTO_DETECT);

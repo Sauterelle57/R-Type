@@ -255,6 +255,7 @@ namespace RT {
             _window->clearBackground(BLACK);
             _systems._systemCamera->begin();
 
+            _systems._systemSkyBox->update();
             _systems._systemDrawModel->update();
             _systems._systemMove->update();
             _systems._systemPlayer->update(_event);
@@ -263,7 +264,6 @@ namespace RT {
             _systems._systemProjectile->update();
             _systems._systemCamera->update();
             _systems._systemTraveling->update();
-            _systems._systemSkyBox->update();
 
             // checkCollision(*_entities.rbegin(), *_entities.rend());
 
