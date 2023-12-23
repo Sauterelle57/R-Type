@@ -12,6 +12,7 @@
 #include <iostream>
 #include <iomanip>
 #include "IWrapper.hpp"
+#include "Vec3.hpp"
 
 namespace ECS {
 
@@ -30,13 +31,14 @@ namespace ECS {
             projectiles.speed = weapon.speed;
         }
 
-        void update(rt::ClientController &clientCtrl, rt::IWrapper *wrapper) {
+        void update(ECS::Entity cameraEntity, rt::ClientController &clientCtrl, rt::IWrapper *wrapper) {
             auto coordinatorPtr = _coordinator.lock();
             if (!coordinatorPtr) {
                 return;
             }
 
             auto clientIDS = clientCtrl.getClients();
+            auto camTransform = coordinatorPtr->getComponent<Transform>(cameraEntity);
 
             for (auto const &entity : _entities) {
                 auto &projectile = coordinatorPtr->getComponent<Projectile>(entity);
@@ -50,6 +52,17 @@ namespace ECS {
                 float angle = std::atan2(newPosition._y - position._y, newPosition._x - position._x) * 180 / M_PI_;
 
                 transform.rotation = {0, 0, 1, angle - 90};
+
+                if (std::abs(camTransform.position._x - transform.position._x) > 5 || std::abs(camTransform.position._y - transform.position._y) > 100) {
+                    for (auto const &clientID : clientIDS) {
+                        std::ostringstream responseStream;
+                        responseStream << entity << " DESTROY";
+                        std::string response = responseStream.str();
+                        wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                    }
+                    coordinatorPtr->destroyEntity(entity);
+                    return;
+                }
 
                 std::ostringstream responseStream;
                 responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)

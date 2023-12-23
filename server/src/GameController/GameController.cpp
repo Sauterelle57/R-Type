@@ -41,7 +41,7 @@ namespace rt {
             }
             if (_clock.isTimeElapsed()) {
                 _systems._systemTraveling->update();
-                _systems._systemProjectile->update(_clientController, _wrapper);
+                _systems._systemProjectile->update(_camera, _clientController, _wrapper);
                 _systems._systemShoot->update(_entitiesShoot);
                 _eventController();
             }
