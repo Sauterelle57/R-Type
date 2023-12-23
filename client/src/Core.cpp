@@ -68,6 +68,7 @@ namespace RT {
             _udpClient->run(_isRunning);
         }));
         _udpClient->send("CONNECTION_REQUEST");
+        _clock = std::make_unique<tls::Clock>(0.01);
     }
 
     Core::~Core() {
@@ -231,19 +232,21 @@ namespace RT {
                 _receivedMessages->pop();
             }
             _listener->onEvent();
-            _window->beginDrawing();
-            _window->clearBackground(BLACK);
-            _systems._systemCamera->begin();
+            if (_clock->isTimeElapsed()) {
+                _window->beginDrawing();
+                _window->clearBackground(BLACK);
+                _systems._systemCamera->begin();
 
-            _systems._systemCamera->update();
-            _systems._systemDrawModel->update();
-            _systems._systemPlayer->update(_event, _udpClient);
-            _systems._systemParticles->update(_camera, shader);
+                _systems._systemCamera->update();
+                _systems._systemDrawModel->update();
+                _systems._systemPlayer->update(_event, _udpClient);
+                _systems._systemParticles->update(_camera, shader);
 
-            _window->drawGrid(10, 1.0f);
-            _systems._systemCamera->end();
-            _window->drawFPS(10, 10);
-            _window->endDrawing();
+                _window->drawGrid(10, 1.0f);
+                _systems._systemCamera->end();
+                _window->drawFPS(10, 10);
+                _window->endDrawing();
+            }
         }
     }
 };

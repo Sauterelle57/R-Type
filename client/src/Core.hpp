@@ -70,6 +70,8 @@ namespace RT {
             std::unique_ptr<std::thread> _udpClientThread;
 
             std::shared_ptr<bool> _isRunning;
+
+            std::unique_ptr<tls::IClock> _clock;
     };
 };
 
