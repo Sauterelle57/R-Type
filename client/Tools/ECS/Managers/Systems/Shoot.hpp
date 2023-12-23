@@ -8,11 +8,12 @@
 #ifndef RTYPE_SHOOT_HPP
 #define RTYPE_SHOOT_HPP
 
+#include <cmath>
+#include "../../../../src/renderer/Model.hpp"
+#include "../Components/ComponentStructs.hpp"
 #include "System.hpp"
 #include "Coordinator.hpp"
-#include "renderer/Model.hpp"
 #include "ComponentStructs.hpp"
-#include <cmath>
 #include "renderer/IEvent.hpp"
 #define AMPLITUDE 0.5f
 
@@ -25,9 +26,9 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = _pos,
-                        .rotation = {0, 0, 1, -90},
-                        .scale = 0.1f
+                        _pos,
+                        {0, 0, 1, -90},
+                        0.15f
                     }
                 );
                 _coordinator->addComponent(
@@ -40,7 +41,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     Projectile {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
+                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
                         },
                         .damage = 1,
                         .speed = 0.5f
@@ -53,13 +54,13 @@ namespace ECS {
                         .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
                         .type = ECS::ParticleType::CONE,
                         .direction = ECS::Direction::LEFT,
-                        .speed = 400.0f,
-                        .scaleOffset = 0.5f,
+                        .speed = 75.0f,
+                        .scaleOffset = 3.0f,
                         .positionOffset = {-0.5, 0, 0},
                         .lifeTime = 2,
-                        .spawnRate = 50,
+                        .spawnRate = 35,
                         .spawnTimer = 0,
-                        .surviveChance = 35
+                        .surviveChance = 5
                     }
                 );
             }
@@ -82,9 +83,9 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Transform {
-                            .position = _pos,
-                            .rotation = {0, 0, 1, -90},
-                            .scale = 0.1f
+                            _pos,
+                            {0, 0, 1, -90},
+                            0.1f
                         }
                     );
                     _coordinator->addComponent(
@@ -126,9 +127,9 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = _pos,
-                        .rotation = {0, 0, 1, -90},
-                        .scale = 0.1f
+                        _pos,
+                        {0, 0, 1, -90},
+                        0.1f
                     }
                 );
                 _coordinator->addComponent(
@@ -186,9 +187,9 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Transform {
-                            .position = _pos,
-                            .rotation = rotations[i],
-                            .scale = 0.1f
+                            _pos,
+                            rotations[i],
+                            0.1f
                         }
                     );
                     _coordinator->addComponent(
@@ -236,7 +237,7 @@ namespace ECS {
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
 
                     if (_event->isKeyPressed(KEY_F))
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 2, 0});
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0});
                 }
             }
     };

@@ -159,10 +159,6 @@ namespace tls {
         return *this;
     }
 
-    Vec3::operator Vector3() const {
-        return Vector3{static_cast<float>(_x), static_cast<float>(_y), static_cast<float>(_z)};
-    }
-
     Vec3 Vec3::normalized() const {
         double len = std::sqrt(dot(*this));
 

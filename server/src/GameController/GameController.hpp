@@ -11,6 +11,16 @@
 #include <iostream>
 #include <queue>
 #include <functional>
+#include "Coordinator.hpp"
+
+#include "Utils.hpp"
+#include "Move.hpp"
+#include "Traveling.hpp"
+#include "Clock.hpp"
+#include "ClientController.hpp"
+#include "Shoot.hpp"
+#include "Projectile.hpp"
+#include "Collider.hpp"
 
 namespace rt {
 
@@ -28,7 +38,16 @@ namespace rt {
             void commandHandler(const std::string &data, const std::string &ip, const int port);
 
             void command_ping(const std::string &data, const std::string &ip, const int port);
+            void command_move(const std::string &data, const std::string &ip, const int port);
+            void command_shoot(const std::string &data, const std::string &ip, const int port);
+            void command_request_connection(const std::string &data, const std::string &ip, const int port);
 
+            struct System {
+                std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
+                std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
+                std::shared_ptr<ECS::Shoot> _systemShoot;
+                std::shared_ptr<ECS::ColliderSystem> _systemCollider;
+            };
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
@@ -36,7 +55,29 @@ namespace rt {
             std::map<std::string, std::function<void(const std::string &, const std::string &, const int)>> _commands;
 
             void _initializeCommands();
+            void _initializeECS();
+            void _initializeECSComponents();
+            void _initializeECSSystems();
+            void _initializeECSEntities();
 
+            ECS::Entity _createPlayer();
+            ECS::Entity _createEnnemy();
+            void _eventController();
+            void _eventController_transform(std::shared_ptr<Client> client);
+            void _eventController_camera(std::shared_ptr<Client> client);
+            void _eventController_ennemy(std::shared_ptr<Client> client);
+            
+            rt::ClientController _clientController;
+
+            std::shared_ptr<ECS::Coordinator> _coordinator;
+            std::set<ECS::Entity> _entities;
+            std::map<ECS::Entity, bool> _entitiesShoot;
+            bool _cameraInit;
+            ECS::Entity _camera;
+            ECS::Entity _ennemy;
+
+            System _systems;
+            tls::Clock _clock;
     };
 
 }

@@ -23,6 +23,11 @@
 #include "Particle.hpp"
 #include "Projectile.hpp"
 #include "Shoot.hpp"
+#include "Cam.hpp"
+#include "Traveling.hpp"
+#include "IListener.hpp"
+#include "IUdpClient.hpp"
+#include "UdpClient.hpp"
 
 namespace RT {
 
@@ -33,19 +38,21 @@ namespace RT {
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
         std::shared_ptr<ECS::Shoot> _systemShoot;
         std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
+        std::shared_ptr<ECS::CamSystem> _systemCamera;
+        std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
     };
 
     class Core {
         public:
             Core();
-            ~Core() = default;
+            ~Core();
             void loop();
             void initEntities();
             void initComponents();
             void initSystem();
             void checkCollision(ECS::Entity entity1, ECS::Entity entity2);
-            const int _screenWidth = 1920;
-            const int _screenHeight = 1080;
+            const int _screenWidth = 1920 / 3;
+            const int _screenHeight = 1080 / 3;
 
             std::shared_ptr<RL::IWindow> _window;
             std::shared_ptr<RL::ICamera> _camera;
@@ -53,8 +60,16 @@ namespace RT {
             std::shared_ptr<RL::IEvent> _event;
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
-            std::set<ECS::Entity> _entities;
+            std::shared_ptr<std::set<ECS::Entity>> _entities;
             System _systems;
+
+            std::unique_ptr<IListener> _listener;
+
+            std::shared_ptr<std::queue<rt::ReceivedMessage>> _receivedMessages;
+            std::shared_ptr<rt::UdpClient> _udpClient;
+            std::unique_ptr<std::thread> _udpClientThread;
+
+            std::shared_ptr<bool> _isRunning;
     };
 };
 

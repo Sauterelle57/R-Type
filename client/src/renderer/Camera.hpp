@@ -57,8 +57,8 @@ namespace RL {
                 return DrawBillboardPro(*_camera, texture, source, position, up, size, origin, rotation, tint);
             };
 
-            Vector3 getPosition() {
-                return _camera->position;
+            tls::Vec3 getPosition() {
+                return {_camera->position.x, _camera->position.y, _camera->position.z};
             };
 
             void setPosition(Vector3 position) {

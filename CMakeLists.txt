@@ -74,49 +74,7 @@ ExternalProject_Add(BOOSTASIO
 ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
 include_directories(${SOURCE_DIR})
 
-include_directories(${CMAKE_SOURCE_DIR}/client/src)
-include_directories(${CMAKE_SOURCE_DIR}/client/include)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Components)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Entities)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Systems)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/ECS/Managers/Coordinator)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec3)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/Vec4)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/Utils)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/Error)
-include_directories(${CMAKE_SOURCE_DIR}/Tools/Clock)
-include_directories(${CMAKE_SOURCE_DIR}/client/src)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Components)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Entities)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Systems)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/GameLoop)
-include_directories(${CMAKE_SOURCE_DIR}/client/src/UdpClient)
-include_directories(${CMAKE_SOURCE_DIR}/protocol)
-
 add_executable(rtype_server
-        Tools/ECS/Managers/Components/ComponentsManager.hpp
-        Tools/ECS/Managers/Entities/EntitiesManager.hpp
-        Tools/ECS/Managers/Systems/SystemsManager.hpp
-        Tools/ECS/Managers/Coordinator/Coordinator.hpp
-        Tools/ECS/Managers/Entities/Entity.hpp
-        Tools/ECS/Managers/Components/ComponentStructs.hpp
-        Tools/Vec3/Vec3.cpp
-        Tools/Vec3/Vec3.hpp
-        Tools/Vec4/Vec4.hpp
-        Tools/Vec4/Vec4.cpp
-        Tools/Utils/Utils.hpp
-        Tools/Utils/Utils.cpp
-        Tools/Error/Error.hpp
-        Tools/ECS/Managers/Components/ComponentArray.hpp
-        Tools/ECS/Managers/Systems/System.hpp
-        Tools/Vec3/IVec3.hpp
-        Tools/Vec4/IVec4.hpp
-        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
-       Tools/Clock/IClock.hpp
         server/main.cpp
         # Server Controller
         server/src/ServerController/IServerController.hpp
@@ -126,35 +84,44 @@ add_executable(rtype_server
         server/src/GameController/IGameController.hpp
         server/src/GameController/GameController.hpp
         server/src/GameController/GameController.cpp
+        server/src/Client/Client.cpp
+        server/src/Client/Client.hpp
+        server/src/Client/IClient.hpp
+        server/src/Client/ClientController.hpp
         # Asio Wrapper
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
         protocol/Protocol.hpp
+        server/Tools/ECS/Managers/Systems/Projectile.hpp
+        server/Tools/Vec3/IVec3.hpp
+        server/Tools/Vec4/IVec4.hpp
+        server/Tools/ECS/Managers/Entities/IEntitiesManager.hpp
+        server/Tools/Clock/IClock.hpp
+        server/Tools/ECS/Managers/Systems/Traveling.hpp
+        server/Tools/ECS/Managers/Systems/MultipleLink.hpp
+        server/Tools/ECS/Managers/Components/ComponentStructs.hpp
+        server/Tools/ECS/Managers/Components/ComponentsManager.hpp
+        server/Tools/ECS/Managers/Components/ComponentArray.hpp
+        server/Tools/ECS/Managers/Components/Components.hpp
+        server/Tools/ECS/Managers/Entities/EntitiesManager.hpp
+        server/Tools/ECS/Managers/Entities/Entity.hpp
+        server/Tools/ECS/Managers/Systems/SystemsManager.hpp
+        server/Tools/ECS/Managers/Systems/System.hpp
+        server/Tools/ECS/Managers/Systems/Move.hpp
+        server/Tools/ECS/Managers/Coordinator/Coordinator.hpp
+        server/Tools/Utils/Utils.hpp
+        server/Tools/Utils/Utils.cpp
+        server/Tools/Vec3/Vec3.hpp
+        server/Tools/Vec3/Vec3.cpp
+        server/Tools/Vec4/Vec4.hpp
+        server/Tools/Vec4/Vec4.cpp
+        server/Tools/Clock/Clock.hpp
+        server/Tools/Error/Error.hpp
+        server/Tools/ECS/Managers/Systems/Shoot.hpp
 )
 
 add_executable(rtype_client
-        Tools/ECS/Managers/Components/ComponentStructs.hpp
-        Tools/ECS/Managers/Components/ComponentsManager.hpp
-        Tools/ECS/Managers/Components/ComponentArray.hpp
-        Tools/ECS/Managers/Components/Components.hpp
-        Tools/ECS/Managers/Entities/EntitiesManager.hpp
-        Tools/ECS/Managers/Entities/Entity.hpp
-        Tools/ECS/Managers/Systems/SystemsManager.hpp
-        Tools/ECS/Managers/Systems/System.hpp
-        Tools/ECS/Managers/Systems/Move.hpp
-        Tools/ECS/Managers/Systems/DrawModel.hpp
-        Tools/ECS/Managers/Systems/Play.hpp
-        Tools/ECS/Managers/Systems/Particle.hpp
-        Tools/ECS/Managers/Coordinator/Coordinator.hpp
-        Tools/Utils/Utils.hpp
-        Tools/Utils/Utils.cpp
-        Tools/Vec3/Vec3.hpp
-        Tools/Vec3/Vec3.cpp
-        Tools/Vec4/Vec4.hpp
-        Tools/Vec4/Vec4.cpp
-        Tools/Clock/Clock.hpp
-        Tools/Error/Error.hpp
         client/src/renderer/Audio.hpp
         client/src/renderer/AudioStream.hpp
         client/src/renderer/Cursor.hpp
@@ -202,35 +169,100 @@ add_executable(rtype_client
         client/src/main.cpp
         client/src/Core.hpp
         client/src/Core.cpp
-        Tools/ECS/Managers/Systems/Projectile.hpp
-        Tools/Vec3/IVec3.hpp
-        Tools/Vec4/IVec4.hpp
-        Tools/ECS/Managers/Entities/IEntitiesManager.hpp
-        Tools/Clock/IClock.hpp
         protocol/Protocol.hpp
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp
+        client/src/IListener.hpp
+        client/src/Listener.hpp
+        client/src/IListener.hpp
+        client/src/Listener.hpp
+        client/Tools/Vec3/IVec3.hpp
+        client/Tools/Vec4/IVec4.hpp
+        client/Tools/ECS/Managers/Entities/IEntitiesManager.hpp
+        client/Tools/Clock/IClock.hpp
+        client/Tools/ECS/Managers/Systems/Projectile.hpp
+        client/Tools/ECS/Managers/Systems/Cam.hpp
+        client/Tools/ECS/Managers/Systems/Traveling.hpp
+        client/Tools/ECS/Managers/Systems/Cam.hpp
+        client/Tools/ECS/Managers/Systems/Traveling.hpp
+        client/Tools/ECS/Managers/Systems/MultipleLink.hpp
+        client/Tools/ECS/Managers/Components/ComponentStructs.hpp
+        client/Tools/ECS/Managers/Components/ComponentsManager.hpp
+        client/Tools/ECS/Managers/Components/ComponentArray.hpp
+        client/Tools/ECS/Managers/Components/Components.hpp
+        client/Tools/ECS/Managers/Entities/EntitiesManager.hpp
+        client/Tools/ECS/Managers/Entities/Entity.hpp
+        client/Tools/ECS/Managers/Systems/SystemsManager.hpp
+        client/Tools/ECS/Managers/Systems/System.hpp
+        client/Tools/ECS/Managers/Systems/Move.hpp
+        client/Tools/ECS/Managers/Systems/DrawModel.hpp
+        client/Tools/ECS/Managers/Systems/Play.hpp
+        client/Tools/ECS/Managers/Systems/Particle.hpp
+        client/Tools/ECS/Managers/Coordinator/Coordinator.hpp
+        client/Tools/Utils/Utils.hpp
+        client/Tools/Utils/Utils.cpp
+        client/Tools/Vec3/Vec3.hpp
+        client/Tools/Vec3/Vec3.cpp
+        client/Tools/Vec4/Vec4.hpp
+        client/Tools/Vec4/Vec4.cpp
+        client/Tools/Clock/Clock.hpp
+        client/Tools/Error/Error.hpp
+        server/Tools/ECS/Managers/Systems/Collider.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
-        server/src
-        server/src/ServerController
-        server/src/GameController
-        server/src/AsioWrapper
+        ${CMAKE_SOURCE_DIR}/server/src
+        ${CMAKE_SOURCE_DIR}/server/src/ServerController
+        ${CMAKE_SOURCE_DIR}/server/src/GameController
+        ${CMAKE_SOURCE_DIR}/server/src/AsioWrapper
+        ${CMAKE_SOURCE_DIR}/server/src/Client
+        ${CMAKE_SOURCE_DIR}/server/Tools/ECS
+        ${CMAKE_SOURCE_DIR}/server/Tools/ECS/Managers
+        ${CMAKE_SOURCE_DIR}/server/Tools/ECS/Managers/Components
+        ${CMAKE_SOURCE_DIR}/server/Tools/ECS/Managers/Entities
+        ${CMAKE_SOURCE_DIR}/server/Tools/ECS/Managers/Systems
+        ${CMAKE_SOURCE_DIR}/server/Tools/ECS/Managers/Coordinator
+        ${CMAKE_SOURCE_DIR}/server/Tools/Vec3
+        ${CMAKE_SOURCE_DIR}/server/Tools/Vec4
+        ${CMAKE_SOURCE_DIR}/server/Tools/Utils
+        ${CMAKE_SOURCE_DIR}/server/Tools/Error
+        ${CMAKE_SOURCE_DIR}/server/Tools/Clock
 )
 
+target_include_directories(rtype_client PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/protocol
+        ${CMAKE_SOURCE_DIR}/client/include
+        ${CMAKE_SOURCE_DIR}/client/src
+        ${CMAKE_SOURCE_DIR}/client/src/ECS
+        ${CMAKE_SOURCE_DIR}/client/src/ECS/Managers
+        ${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Components
+        ${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Entities
+        ${CMAKE_SOURCE_DIR}/client/src/ECS/Managers/Systems
+        ${CMAKE_SOURCE_DIR}/client/src/GameLoop
+        ${CMAKE_SOURCE_DIR}/client/src/UdpClient
+        ${CMAKE_SOURCE_DIR}/client/Tools/ECS
+        ${CMAKE_SOURCE_DIR}/client/Tools
+        ${CMAKE_SOURCE_DIR}/client/Tools/Vec3
+        ${CMAKE_SOURCE_DIR}/client/Tools/Vec4
+        ${CMAKE_SOURCE_DIR}/client/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/client/Tools/Utils
+        ${CMAKE_SOURCE_DIR}/client/Tools/Error
+        ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers
+        ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Components
+        ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Entities
+        ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Systems
+        ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Coordinator
+)
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
-target_link_libraries(rtype_server PRIVATE raylib)
 
 
 # Web Configurations
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Tell Emscripten to build an example.html file.
     set_target_properties(rtype_client PROPERTIES SUFFIX ".html")
-    set_target_properties(rtype_server PROPERTIES SUFFIX ".html")
 endif()
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
@@ -238,9 +270,6 @@ if (APPLE)
     target_link_libraries(rtype_client "-framework IOKit")
     target_link_libraries(rtype_client "-framework Cocoa")
     target_link_libraries(rtype_client "-framework OpenGL")
-    target_link_libraries(rtype_server "-framework IOKit")
-    target_link_libraries(rtype_server "-framework Cocoa")
-    target_link_libraries(rtype_server "-framework OpenGL")
 endif()
 
 set_target_properties(rtype_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

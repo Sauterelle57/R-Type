@@ -17,6 +17,7 @@ namespace ECS {
     class DrawModel : public System {
         public:
             void update() {
+                static bool drawHitbox = false;
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
@@ -61,15 +62,18 @@ namespace ECS {
                     }
 
                     transform.bounds = {min, max};
-
-                    RL::Utils::drawBoundingBox(transform.bounds, RED);
+                    if (drawHitbox)
+                        RL::Utils::drawBoundingBox(transform.bounds, RED);
 
 
                     if (model.texture)
                         model.model->getModel()->materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = *(model.texture->getTexture());
 
+
+                    if (IsKeyPressed(KEY_H)) // TODO ENLEVER CA
+                        drawHitbox = !drawHitbox;
                     model.model->drawEx(transform.position, {static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)}, transform.rotation._a,
-                                        {transform.scale, transform.scale, transform.scale}, WHITE);
+                                    {transform.scale, transform.scale, transform.scale}, model.color);
                 }
                 // std::cout << "DrawModel: " << count << std::endl;
             }
