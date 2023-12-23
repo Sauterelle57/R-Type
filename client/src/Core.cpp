@@ -53,7 +53,13 @@ namespace RT {
         RL::Utils::setTargetFPS(60);
 
         _entities = std::make_shared<std::set<ECS::Entity>>();
-        _listener = std::make_unique<Listener>(_coordinator, _entities);
+        _camera = std::make_shared<RL::ZCamera>();
+        _camera->setPosition({ 0.0f, 0.0f, 0.0f });
+        _camera->setTarget({ 0.0f, 0.0f, 0.0f });
+        _camera->setUp({ 0.0f, 1.0f, 0.0f });
+        _camera->setFovy(30.0f);
+        _camera->setProjection(CAMERA_PERSPECTIVE);
+        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _udpClient->setup("127.0.0.1", 1234, _receivedMessages);

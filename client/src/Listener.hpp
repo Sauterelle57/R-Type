@@ -16,12 +16,12 @@
 namespace RT {
     class Listener : public IListener {
         public:
-            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities) : _coordinator(coordinator), _entities(entities) {};
+            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {};
             ~Listener() = default;
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
-//                    std::cout << "New event : " << front << std::endl;
+                    std::cout << "New event : " << front << std::endl;
                     _queue.pop();
 
                     std::stringstream ss(front);
@@ -118,22 +118,15 @@ namespace RT {
                                     }
                                 );
                             } else if (token == "CAMERA") {
-//                                std::cout << "NEW CAMERA CREATED" << std::endl;
-                                std::shared_ptr<RL::ICamera> camera = std::make_shared<RL::ZCamera>();
-                                camera->setPosition({ 0.0f, 0.0f, 0.0f });
-                                camera->setTarget({ 0.0f, 0.0f, 0.0f });
-                                camera->setUp({ 0.0f, 1.0f, 0.0f });
-                                camera->setFovy(30.0f);
-                                camera->setProjection(CAMERA_PERSPECTIVE);
-
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Cam {
-                                        .camera = camera
+                                        .camera = _cam
                                     }
                                 );
+
                             } else {
-//                                std::cout << "Unknown token : " << token << std::endl;
+                                std::cout << "Unknown token : " << token << std::endl;
                             }
                         }
                     } else {
@@ -150,12 +143,10 @@ namespace RT {
                             } else if (token == "DESTROY") {
                                 _coordinator->destroyEntity(_serverToClient[std::stoi(id)]);
                             } else {
-//                                std::cout << "[UPDATE] (osef) Unknown token : " << token << std::endl;
+//                                std::cout << "[UPDATE] Unknown token : " << token << std::endl;
                             }
                         }
                     }
-
-//                    std::cout << "end" << std::endl;
                 }
             }
 
@@ -167,6 +158,7 @@ namespace RT {
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::shared_ptr<std::set<Entity>> _entities;
             std::unordered_map<Entity, Entity> _serverToClient;
+            std::shared_ptr<RL::ICamera> _cam;
     };
 }
 
