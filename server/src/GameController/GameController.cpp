@@ -45,6 +45,10 @@ namespace rt {
                 _systems._systemShoot->update(_entitiesShoot);
                 _systems._systemCollider->update(_clientController, _wrapper);
                 _eventController();
+                for (auto &client: _clientController.getClients()) {
+                    auto &collider = _coordinator->getComponent<ECS::Collider>(client->getPlayerID());
+                    collider.velocity = {0.01, 0, 0};
+                }
             }
         }
     }
@@ -168,6 +172,8 @@ namespace rt {
             }
         );
 
+        _tile = _createTile();
+
         std::cout << "SERVER/ECS entities configured" << std::endl;
     }
 
@@ -201,7 +207,10 @@ namespace rt {
        _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
-               0
+               .team = 0,
+               .breakable = true,
+               .movable = true,
+               .velocity = {0.01, 0, 0},
            }
         );
 
@@ -241,7 +250,10 @@ namespace rt {
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
-               1
+               .team = 1,
+               .breakable = true,
+               .movable = true,
+               .velocity = {0.005, 0, 0}
            }
         );
 
@@ -249,6 +261,38 @@ namespace rt {
 
         std::cout << "Ennemy created as ID: " << ennemy << std::endl;
         return ennemy;
+    }
+
+    ECS::Entity GameController::_createTile() {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        ECS::Entity tile = *_entities.rbegin();
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.005, 0, 0}
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {40, 5, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 5.0f
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = false,
+                .movable = false,
+                .velocity = {0.005, 0, 0}
+            }
+        );
+
+        std::cout << "Tile created as ID: " << tile << std::endl;
+        return tile;
     }
 
     // Commands
@@ -279,10 +323,12 @@ namespace rt {
             if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
                 std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
                 auto &transform = _coordinator->getComponent<ECS::Transform>(playerID);
+                auto &collider = _coordinator->getComponent<ECS::Collider>(playerID);
 
                 transform.position._x += x * 0.25f;
                 transform.position._y += y * 0.25f;
                 transform.position._z += z * 0.25f;
+                collider.velocity += {x * 0.25f, y * 0.25f, z * 0.25f};
             }
         } else {
             std::cerr << "Error extracting values from the string." << std::endl;
@@ -313,9 +359,9 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
+            _ennemy = _createEnnemy();
         }
         _clientController.addPlayerID(ip, port, id);
-        _ennemy = _createEnnemy();
 
         /*
         auto transform = _coordinator->getComponent<ECS::Transform>(_clientController.getPlayerID(ip, port));
@@ -358,7 +404,7 @@ namespace rt {
         }
     }
 
-    void GameController::_eventController_camera(std::shared_ptr<Client> client) {
+    void GameController::_eventController_camera() {
         auto transform = _coordinator->getComponent<ECS::Transform>(_camera);
 
         std::ostringstream responseStream;
@@ -374,7 +420,7 @@ namespace rt {
             _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
     }
 
-    void GameController::_eventController_ennemy(std::shared_ptr<Client> client) {
+    void GameController::_eventController_ennemy() {
         auto transform = _coordinator->getComponent<ECS::Transform>(_ennemy);
 
         std::ostringstream responseStream;
@@ -390,13 +436,30 @@ namespace rt {
             _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
     }
 
+    void GameController::_eventController_tile() {
+        auto transform = _coordinator->getComponent<ECS::Transform>(_tile);
+
+        std::ostringstream responseStream;
+        responseStream << _tile << " TRANSFORM " << std::fixed << std::setprecision(2)
+                       << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                       << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                       << transform.rotation._a << " " << transform.scale << " TILE";
+
+        std::string response = responseStream.str();
+        auto clients = _clientController.getClients();
+
+        for (auto &clt : clients)
+            _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
+    }
+
     void GameController::_eventController() {
         auto clients = _clientController.getClients();
 
         for (auto &client : clients) {
             _eventController_transform(client);
-            _eventController_camera(client);
-            _eventController_ennemy(client);
         }
+        _eventController_camera();
+        _eventController_ennemy();
+        _eventController_tile();
     }
 }

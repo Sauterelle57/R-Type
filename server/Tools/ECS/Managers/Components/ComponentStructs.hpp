@@ -91,9 +91,11 @@ namespace ECS {
     }
 
     struct Collider {
-        uint8_t team;
+        uint8_t team{};
+        bool breakable = true;
+        bool movable = true;
+        tls::Vec3 velocity;
     };
-
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

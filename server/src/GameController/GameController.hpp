@@ -62,10 +62,12 @@ namespace rt {
 
             ECS::Entity _createPlayer();
             ECS::Entity _createEnnemy();
+            ECS::Entity _createTile();
             void _eventController();
             void _eventController_transform(std::shared_ptr<Client> client);
-            void _eventController_camera(std::shared_ptr<Client> client);
-            void _eventController_ennemy(std::shared_ptr<Client> client);
+            void _eventController_camera();
+            void _eventController_ennemy();
+            void _eventController_tile();
             
             rt::ClientController _clientController;
 
@@ -75,6 +77,7 @@ namespace rt {
             bool _cameraInit;
             ECS::Entity _camera;
             ECS::Entity _ennemy;
+            ECS::Entity _tile;
 
             System _systems;
             tls::Clock _clock;

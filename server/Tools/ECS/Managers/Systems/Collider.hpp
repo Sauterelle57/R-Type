@@ -24,36 +24,42 @@ namespace ECS {
 
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
-                    auto &team = coordinatorPtr->getComponent<Collider>(entity).team;
+                    auto &collider = coordinatorPtr->getComponent<Collider>(entity);
 
                     for (auto const &entity2 : _entities) {
                         if (entity == entity2) {
                             continue;
                         }
                         auto &transform2 = coordinatorPtr->getComponent<Transform>(entity2);
-                        auto &team2 = coordinatorPtr->getComponent<Collider>(entity2).team;
+                        auto &collider2 = coordinatorPtr->getComponent<Collider>(entity2);
 
 //                        if (transform.bounds.min.x < transform2.bounds.max.x && transform.bounds.max.x > transform2.bounds.min.x &&
 //                            transform.bounds.min.y < transform2.bounds.max.y && transform.bounds.max.y > transform2.bounds.min.y) {
 //                            std::cout << "Collision" << std::endl;
 //                        }
                         if (transform.position._x > transform2.position._x - 2 && transform.position._x < transform2.position._x + 2 &&
-                            transform.position._y > transform2.position._y - 2 && transform.position._y < transform2.position._y + 2 && team != team2) {
-                            for (auto const &clientID : clientIDS) {
-                                std::ostringstream responseStream;
-                                responseStream << entity << " DESTROY";
-                                std::string response = responseStream.str();
-                                wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                            transform.position._y > transform2.position._y - 2 && transform.position._y < transform2.position._y + 2) {
+                            if (collider.breakable && collider2.breakable && collider.team != collider2.team) {
+                                for (auto const &clientID : clientIDS) {
+                                    std::ostringstream responseStream;
+                                    responseStream << entity << " DESTROY";
+                                    std::string response = responseStream.str();
+                                    wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                                }
+                                for (auto const &clientID : clientIDS) {
+                                    std::ostringstream responseStream;
+                                    responseStream << entity2 << " DESTROY";
+                                    std::string response = responseStream.str();
+                                    wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                                }
+                                coordinatorPtr->destroyEntity(entity);
+                                coordinatorPtr->destroyEntity(entity2);
+                                return;
+                            } else if (collider.movable) {
+                                transform.position -= collider.velocity + (!collider2.movable ? collider2.velocity : tls::Vec3(0, 0, 0));
+                            } else if (collider2.movable) {
+                                transform2.position -= collider2.velocity + (!collider.movable ? collider.velocity : tls::Vec3(0, 0, 0));
                             }
-                            for (auto const &clientID : clientIDS) {
-                                std::ostringstream responseStream;
-                                responseStream << entity2 << " DESTROY";
-                                std::string response = responseStream.str();
-                                wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
-                            }
-                            coordinatorPtr->destroyEntity(entity);
-                            coordinatorPtr->destroyEntity(entity2);
-                            return;
                         }
                     }
                 }
