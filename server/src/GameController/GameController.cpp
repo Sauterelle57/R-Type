@@ -13,7 +13,7 @@ namespace rt {
         _cameraInit = false;
         _initializeCommands();
         _initializeECS();
-        _clock = tls::Clock(0.001);
+        _clock = tls::Clock(0.006);
     }
 
     void GameController::_initializeCommands() {
