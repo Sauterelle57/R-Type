@@ -173,6 +173,7 @@ namespace rt {
         );
 
         _tile = _createTile();
+        _breakableTile = _createBreakableTile();
 
         std::cout << "SERVER/ECS entities configured" << std::endl;
     }
@@ -292,6 +293,38 @@ namespace rt {
         );
 
         std::cout << "Tile created as ID: " << tile << std::endl;
+        return tile;
+    }
+
+    ECS::Entity GameController::_createBreakableTile() {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        ECS::Entity tile = *_entities.rbegin();
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.005, 0, 0}
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = {40, 10, 0},
+                .rotation = {0, 0, 0, 0},
+                .scale = 5.0f
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = true,
+                .movable = false,
+                .velocity = {0.005, 0, 0}
+            }
+        );
+
+        std::cout << "Breakable Tile created as ID: " << tile << std::endl;
         return tile;
     }
 
@@ -452,6 +485,22 @@ namespace rt {
             _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
     }
 
+    void GameController::_eventController_breakable_tile() {
+        auto transform = _coordinator->getComponent<ECS::Transform>(_breakableTile);
+
+        std::ostringstream responseStream;
+        responseStream << _breakableTile << " TRANSFORM " << std::fixed << std::setprecision(2)
+                       << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                       << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                       << transform.rotation._a << " " << transform.scale << " TILE_BREAKABLE";
+
+        std::string response = responseStream.str();
+        auto clients = _clientController.getClients();
+
+        for (auto &clt : clients)
+            _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
+    }
+
     void GameController::_eventController() {
         auto clients = _clientController.getClients();
 
@@ -461,5 +510,6 @@ namespace rt {
         _eventController_camera();
         _eventController_ennemy();
         _eventController_tile();
+        _eventController_breakable_tile();
     }
 }
