@@ -61,10 +61,10 @@ namespace RT {
             }
         );
         _coordinator->addComponent(
-                *_entities.rbegin(),
-                ECS::Traveling {
-                        .speed = {0.1, 0, 0}
-                }
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.1, 0, 0}
+            }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
@@ -139,7 +139,7 @@ namespace RT {
             *_entities.rbegin(),
             ECS::SkyBox {}
         );
-        _systems._systemSkyBox->init(*_entities.rbegin(), true, "./client/resources/images/skybox.hdr");
+        _systems._systemSkyBox->init(*_entities.rbegin(), true, "./client/resources/skybox/skybox_rtype_1.png");
 
 //        _entities.insert(_entities.end(), _coordinator->createEntity());
 //        _coordinator->addComponent(

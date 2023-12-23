@@ -50,7 +50,7 @@ namespace ECS {
                 if (isHdr) {
                     Texture2D panorama;
                     panorama = RL::ZTexture::load(path);
-                    element.skybox->getModel()->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = RL::ZTexture::genCubemap(*shdrCubemap->getShader(), panorama, 1024, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+                    element.skybox->getModel()->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = RL::ZTexture::genCubemap(*shdrCubemap->getShader(), panorama, 4096, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
                 } else {
                     RL::ZImage img(path);
                     element.skybox->getModel()->materials[0].maps[MATERIAL_MAP_CUBEMAP].texture = RL::ZTexture::loadCubemap(*img.getImage(), CUBEMAP_LAYOUT_AUTO_DETECT);
