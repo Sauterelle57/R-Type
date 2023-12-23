@@ -201,6 +201,7 @@ namespace rt {
        _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
+               0
            }
         );
 
@@ -240,6 +241,7 @@ namespace rt {
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
+               1
            }
         );
 

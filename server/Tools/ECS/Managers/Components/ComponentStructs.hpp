@@ -91,6 +91,7 @@ namespace ECS {
     }
 
     struct Collider {
+        uint8_t team;
     };
 
 }

@@ -42,7 +42,35 @@ namespace ECS {
                 _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::Collider {
+                            0
                         }
+                );
+            }
+            static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+                _entities.insert(_entities.end(), _coordinator->createEntity());
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Transform {
+                        .position = _pos,
+                        .rotation = {0, 0, 1, 90},
+                        .scale = 0.15f
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Projectile {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x - 0.5, pos._y, pos._z};
+                        },
+                        .damage = 1,
+                        .speed = 0.2f
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    ECS::Collider {
+                        1
+                    }
                 );
             }
 
