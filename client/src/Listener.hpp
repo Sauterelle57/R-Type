@@ -76,10 +76,13 @@ namespace RT {
                                 matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
                                 matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
                                 model->_model->transform = matr;
+                                static int i = 0;
+                                std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Model {
                                         .model = model,
+                                        .color = colors[i++ % colors.size()]
                                     }
                                 );
                             } else if (token == "ENEMY") {

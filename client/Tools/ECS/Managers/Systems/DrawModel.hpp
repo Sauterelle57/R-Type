@@ -73,7 +73,7 @@ namespace ECS {
                     if (IsKeyPressed(KEY_H)) // TODO ENLEVER CA
                         drawHitbox = !drawHitbox;
                     model.model->drawEx(transform.position, {static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)}, transform.rotation._a,
-                                    {transform.scale, transform.scale, transform.scale}, WHITE);
+                                    {transform.scale, transform.scale, transform.scale}, model.color);
                 }
                 // std::cout << "DrawModel: " << count << std::endl;
             }

@@ -64,6 +64,7 @@ namespace ECS {
     struct Model {
         std::shared_ptr<RL::IModel> model;
         std::shared_ptr<RL::ITexture> texture;
+        Color color = WHITE;
     };
 
     struct Player {
