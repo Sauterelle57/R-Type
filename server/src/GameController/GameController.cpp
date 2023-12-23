@@ -341,10 +341,6 @@ namespace rt {
     void GameController::_eventController_transform(std::shared_ptr<Client> client) {
         auto transform = _coordinator->getComponent<ECS::Transform>(client->getPlayerID());
 
-        //std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
-        //std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
-        //std::cout << "scale: " << transform.scale << std::endl;
-
         std::ostringstream responseStream;
         responseStream << client->getPlayerID() << " TRANSFORM " << std::fixed << std::setprecision(2)
                     << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
@@ -365,10 +361,6 @@ namespace rt {
     void GameController::_eventController_camera(std::shared_ptr<Client> client) {
         auto transform = _coordinator->getComponent<ECS::Transform>(_camera);
 
-        //std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
-        //std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
-        //std::cout << "scale: " << transform.scale << std::endl;
-
         std::ostringstream responseStream;
         responseStream << _camera << " TRANSFORM " << std::fixed << std::setprecision(2)
                     << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
@@ -376,16 +368,14 @@ namespace rt {
                     << transform.rotation._a << " " << transform.scale << " CAMERA";
 
         std::string response = responseStream.str();
+        auto clients = _clientController.getClients();
 
-        _wrapper->sendTo(response, client->getIpAdress(), client->getPort());
+        for (auto &clt : clients)
+            _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
     }
 
     void GameController::_eventController_ennemy(std::shared_ptr<Client> client) {
         auto transform = _coordinator->getComponent<ECS::Transform>(_ennemy);
-
-        //std::cout << "position: " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z << std::endl;
-        //std::cout << "rotation: " << transform.rotation._x << ", " << transform.rotation._y << ", " << transform.rotation._z << ", " << transform.rotation._a << std::endl;
-        //std::cout << "scale: " << transform.scale << std::endl;
 
         std::ostringstream responseStream;
         responseStream << _ennemy << " TRANSFORM " << std::fixed << std::setprecision(2)
@@ -394,8 +384,10 @@ namespace rt {
                     << transform.rotation._a << " " << transform.scale << " ENEMY";
 
         std::string response = responseStream.str();
+        auto clients = _clientController.getClients();
 
-        _wrapper->sendTo(response, client->getIpAdress(), client->getPort());
+        for (auto &clt : clients)
+            _wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
     }
 
     void GameController::_eventController() {
