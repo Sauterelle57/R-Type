@@ -22,6 +22,7 @@
 #include "Play.hpp"
 #include "MultipleLink.hpp"
 #include "Listener.hpp"
+#include "renderer/Audio.hpp"
 
 namespace RT {
 
@@ -69,6 +70,8 @@ namespace RT {
         }));
         _udpClient->send("CONNECTION_REQUEST");
         _clock = std::make_unique<tls::Clock>(0.01);
+        _audio = std::make_unique<RL::ZAudio>();
+        _audio->setMasterVolume(0.5f);
     }
 
     Core::~Core() {
@@ -146,6 +149,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Cam>();
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::MultipleLink>();
+        _coordinator->registerComponent<ECS::Sound>();
     }
 
     void Core::initSystem() {
@@ -156,7 +160,9 @@ namespace RT {
 //        _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
 //        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
+        _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
 //        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+
 
 //        {
 //            ECS::Signature signature;
@@ -207,6 +213,12 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::CamSystem>(signature);
         }
 
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Sound>());
+            _coordinator->setSystemSignature<ECS::SoundSystem>(signature);
+        }
+
 //        {
 //            ECS::Signature signature;
 //            signature.set(_coordinator->getComponentType<ECS::Transform>());
@@ -241,6 +253,7 @@ namespace RT {
                 _systems._systemDrawModel->update();
                 _systems._systemPlayer->update(_event, _udpClient);
                 _systems._systemParticles->update(_camera, shader);
+                _systems._systemSound->update();
 
                 _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();

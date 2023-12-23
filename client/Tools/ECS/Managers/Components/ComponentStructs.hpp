@@ -24,6 +24,7 @@
 #include "Components.hpp"
 #include "renderer/ICamera.hpp"
 #include "Coordinator.hpp"
+#include "renderer/ISound.hpp"
 
 namespace ECS {
     enum Direction {
@@ -141,6 +142,12 @@ namespace ECS {
     inline bool operator<(const UniqueLink& lhs, const UniqueLink& rhs) {
         return lhs.name < rhs.name;
     }
+
+    struct Sound {
+        std::shared_ptr<RL::ISound> sound;
+        bool loop = false;
+        bool alreadyPlayed = false;
+    };
 
 }
 

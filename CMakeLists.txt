@@ -209,6 +209,7 @@ add_executable(rtype_client
         client/Tools/Clock/Clock.hpp
         client/Tools/Error/Error.hpp
         server/Tools/ECS/Managers/Systems/Collider.hpp
+        client/Tools/ECS/Managers/Systems/Sound.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include "IListener.hpp"
+#include "renderer/Sound.hpp"
 
 namespace RT {
     class Listener : public IListener {
@@ -21,7 +22,7 @@ namespace RT {
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
-                    std::cout << "New event : " << front << std::endl;
+//                    std::cout << "New event : " << front << std::endl;
                     _queue.pop();
 
                     std::stringstream ss(front);
@@ -120,6 +121,14 @@ namespace RT {
                                         .spawnRate = 35,
                                         .spawnTimer = 0,
                                         .surviveChance = 5
+                                    }
+                                );
+                                std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                                sd->setSoundVolume(0.1f);
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Sound{
+                                        .sound = sd,
                                     }
                                 );
                             } else if (token == "CAMERA") {
