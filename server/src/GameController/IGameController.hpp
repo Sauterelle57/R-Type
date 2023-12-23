@@ -31,7 +31,7 @@ namespace rt {
             virtual int exec() = 0;
             virtual void addReceivedData(const std::string &data, const std::string &ip, const int port) = 0;
 
-            virtual void addWrapper(IWrapper &wrapper) = 0;
+            virtual void addWrapper(std::shared_ptr<IWrapper> wrapper) = 0;
     };
 
 }

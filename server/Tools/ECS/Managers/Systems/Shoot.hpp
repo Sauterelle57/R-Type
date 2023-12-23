@@ -19,7 +19,7 @@ namespace ECS {
 
     class Shoot : public System {
         public:
-            static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+            static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -40,13 +40,26 @@ namespace ECS {
                     }
                 );
                 _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::Collider {
-                            0
-                        }
+                    *_entities.rbegin(),
+                    ECS::Collider {
+                        0
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    ECS::Type {
+                        .name = "BASIC_SHOT"
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    ECS::ClientUpdater {
+                        .wrapper = _wrapper,
+                        .clientController = _clientController
+                    }
                 );
             }
-            static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+            static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -72,9 +85,22 @@ namespace ECS {
                         1
                     }
                 );
+                _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::Type {
+                                .name = "BASIC_ENEMY_SHOT"
+                        }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    ECS::ClientUpdater {
+                        .wrapper = _wrapper,
+                        .clientController = _clientController
+                    }
+                );
             }
 
-            static void doubleSinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+            static void doubleSinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         *t += 0.01f;
@@ -111,10 +137,23 @@ namespace ECS {
                             ECS::Collider {
                             }
                     );
+                    _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::Type {
+                                    .name = "BASIC_SHOT"
+                            }
+                    );
+                    _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::ClientUpdater {
+                                    .wrapper = _wrapper,
+                                    .clientController = _clientController
+                            }
+                    );
                 }
             }
 
-            static void sinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+            static void sinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -140,9 +179,22 @@ namespace ECS {
                         ECS::Collider {
                         }
                 );
+                _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::Type {
+                                .name = "BASIC_SHOT"
+                        }
+                );
+                _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::ClientUpdater {
+                                .wrapper = _wrapper,
+                                .clientController = _clientController
+                        }
+                );
             }
 
-            static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
+            static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
@@ -176,10 +228,23 @@ namespace ECS {
                             .speed = 0.5f
                         }
                     );
+                    _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::Type {
+                                    .name = "BASIC_SHOT"
+                            }
+                    );
+                    _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::ClientUpdater {
+                                    .wrapper = _wrapper,
+                                    .clientController = _clientController
+                            }
+                    );
                 }
             }
 
-            void update(std::map<ECS::Entity, bool> & _entitiesShoot) {
+            void update() {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
@@ -188,12 +253,14 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
+                    auto &updater = coordinatorPtr->getComponent<ClientUpdater>(entity);
 
-                    if (_entitiesShoot[entity]) {
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0});
-                        std::cout << "ECS/SHOOT: (" << entity << ") => Shooting..." << std::endl;
-                        _entitiesShoot[entity] = false;
-                    }
+                    if (1 == 0) // todo modifier
+                    weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
+//                    if (_entitiesShoot[entity]) {
+//                        std::cout << "ECS/SHOOT: (" << entity << ") => Shooting..." << std::endl;
+//                        _entitiesShoot[entity] = false;
+//                    }
                 }
             }
     };

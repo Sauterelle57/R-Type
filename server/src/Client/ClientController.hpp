@@ -28,21 +28,6 @@ namespace rt
             bool isClientExist(const std::string &ip, const int port) {
                 return _clients.find(ip + ":" + std::to_string(port)) != _clients.end();
             };
-            void addPlayerID(const std::string &ip, const int port, const int id) {
-                std::cout << "SERVER/CLIENTMGR: " << ip << ":" << port << " has been assigned ID: " << id << std::endl;
-                _clients[ip + ":" + std::to_string(port)]->setPlayerID(id);
-            };
-            int getPlayerID(const std::string &ip, const int port) {
-                return _clients[ip + ":" + std::to_string(port)]->getPlayerID();
-            };
-            int checkClientIDExist(const int id) {
-                for (auto const &client : _clients) {
-                    if (client.second->getPlayerID() == id) {
-                        return 1;
-                    }
-                }
-                return 0;
-            };
             std::vector<std::shared_ptr<Client>> getClients() const {
                 std::vector<std::shared_ptr<Client>> clients;
                 for (const auto &client : _clients) {

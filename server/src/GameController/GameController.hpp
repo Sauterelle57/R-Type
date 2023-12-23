@@ -21,6 +21,7 @@
 #include "Shoot.hpp"
 #include "Projectile.hpp"
 #include "Collider.hpp"
+#include "ClientUpdater.hpp"
 
 namespace rt {
 
@@ -33,25 +34,28 @@ namespace rt {
 
             void addReceivedData(const std::string &data, const std::string &ip, const int port);
 
-            void addWrapper(IWrapper &wrapper);
+            void addWrapper(std::shared_ptr<IWrapper> wrapper);
 
             void commandHandler(const std::string &data, const std::string &ip, const int port);
 
-            void command_ping(const std::string &data, const std::string &ip, const int port);
-            void command_move(const std::string &data, const std::string &ip, const int port);
-            void command_shoot(const std::string &data, const std::string &ip, const int port);
-            void command_request_connection(const std::string &data, const std::string &ip, const int port);
+            void commandPing(const std::string &data, const std::string &ip, const int port);
+            void commandMove(const std::string &data, const std::string &ip, const int port);
+            void commandShoot(const std::string &data, const std::string &ip, const int port);
+            void commandRequestConnection(const std::string &data, const std::string &ip, const int port);
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
                 std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
                 std::shared_ptr<ECS::Shoot> _systemShoot;
                 std::shared_ptr<ECS::ColliderSystem> _systemCollider;
+                std::shared_ptr<ECS::ClientUpdaterSystem> _systemClientUpdater;
             };
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
-            IWrapper *_wrapper;
+            std::shared_ptr<IWrapper> _wrapper;
+            std::shared_ptr<rt::ClientController> _clientController;
+
             std::map<std::string, std::function<void(const std::string &, const std::string &, const int)>> _commands;
 
             void _initializeCommands();
@@ -60,27 +64,16 @@ namespace rt {
             void _initializeECSSystems();
             void _initializeECSEntities();
 
-            ECS::Entity _createPlayer();
-            ECS::Entity _createEnnemy();
-            ECS::Entity _createTile();
-            ECS::Entity _createBreakableTile();
-            void _eventController();
-            void _eventController_transform(std::shared_ptr<Client> client);
-            void _eventController_camera();
-            void _eventController_ennemy();
-            void _eventController_tile();
-            void _eventController_breakable_tile();
-            
-            rt::ClientController _clientController;
+            void _createPlayer(std::string ip, int port);
+            void _createEnnemy();
+            void _createTile();
+            void _createBreakableTile();
+
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
-            std::map<ECS::Entity, bool> _entitiesShoot;
             bool _cameraInit;
             ECS::Entity _camera;
-            ECS::Entity _ennemy;
-            ECS::Entity _tile;
-            ECS::Entity _breakableTile;
 
             System _systems;
             tls::Clock _clock;

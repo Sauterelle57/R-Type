@@ -29,13 +29,13 @@ namespace rt
         return _port;
     }
 
-    void Client::setPlayerID(const int id)
-    {
-        _playerID = id;
-    }
-
-    int Client::getPlayerID() const
-    {
-        return _playerID;
-    }
+//    void Client::setPlayerID(const int id)
+//    {
+//        _playerID = id;
+//    }
+//
+//    int Client::getPlayerID() const
+//    {
+//        return _playerID;
+//    }
 }

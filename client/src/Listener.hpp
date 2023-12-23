@@ -47,7 +47,7 @@ namespace RT {
                                                     scale
                                             }
                                     );
-                                } else if (token == "PLAYER_1") {
+                                } else if (token == "PLAYER") {
                                     std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>(
                                             "./client/resources/models/ship.glb");
                                     Matrix matr = MatrixIdentity();
@@ -73,7 +73,7 @@ namespace RT {
                                                     .key_settings = KEY_F1,
                                             }
                                     );
-                                } else if (token == "PLAYER_2") {
+                                } else if (token == "PLAYER_NY") {
                                     std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>(
                                             "./client/resources/models/ship.glb");
                                     Matrix matr = MatrixIdentity();

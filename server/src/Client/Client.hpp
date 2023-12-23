@@ -20,8 +20,8 @@ namespace rt
             ~Client();
             std::string getIpAdress() const;
             int getPort() const;
-            void setPlayerID(const int id);
-            int getPlayerID() const;
+//            void setPlayerID(const int id);
+//            int getPlayerID() const;
         private:
             std::string _ipAdress;
             int _port;

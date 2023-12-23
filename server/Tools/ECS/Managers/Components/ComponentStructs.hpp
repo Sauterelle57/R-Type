@@ -20,6 +20,8 @@
 #include "Entity.hpp"
 #include "Components.hpp"
 #include "Coordinator.hpp"
+#include "ClientController.hpp"
+#include "IWrapper.hpp"
 
 namespace ECS {
     enum Direction {
@@ -64,7 +66,7 @@ namespace ECS {
         int damage;
         float speed;
         float durability;
-        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos)> create_projectile;
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper)> create_projectile;
     };
 
     struct Alive {
@@ -95,6 +97,23 @@ namespace ECS {
         bool breakable = true;
         bool movable = true;
         tls::Vec3 velocity;
+    };
+
+    struct ClientUpdater {
+        std::shared_ptr<rt::IWrapper> wrapper;
+        std::shared_ptr<rt::ClientController> clientController;
+    };
+
+    struct Type {
+        std::string name;
+        bool different = false;
+        std::string ip;
+        int port;
+    };
+
+    struct Player {
+        bool isShooting = false;
+        tls::Vec3 mooving = {0,0,0};
     };
 }
 
