@@ -198,6 +198,11 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicShot
            }
        );
+       _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Collider {
+           }
+        );
 
        _entitiesShoot[_player] = false;
 
@@ -212,7 +217,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {-0.01, 0, 0}
+                .speed = {0.005, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -223,6 +228,15 @@ namespace rt {
                 .scale = .1f
             }
         );
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Weapon {
+               .damage = 1,
+               .speed = 1,
+               .durability = 1,
+               .create_projectile = ECS::Shoot::basicShot
+           }
+       );
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
@@ -333,11 +347,17 @@ namespace rt {
         responseStream << client->getPlayerID() << " TRANSFORM " << std::fixed << std::setprecision(2)
                     << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                     << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                    << transform.rotation._a << " " << transform.scale << " PLAYER_1";
+                    << transform.rotation._a << " " << transform.scale << " ";
 
         std::string response = responseStream.str();
 
-        _wrapper->sendTo(response, client->getIpAdress(), client->getPort());
+        auto clients = _clientController.getClients();
+        for (auto &clt : clients) {
+            if (clt->getPlayerID() == client->getPlayerID())
+                _wrapper->sendTo(response + "PLAYER_1", clt->getIpAdress(), clt->getPort());
+            else
+                _wrapper->sendTo(response + "PLAYER_2", clt->getIpAdress(), clt->getPort());
+        }
     }
 
     void GameController::_eventController_camera(std::shared_ptr<Client> client) {
