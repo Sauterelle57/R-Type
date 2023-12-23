@@ -203,7 +203,7 @@ namespace rt {
             ECS::Transform {
                 .position = {40, 0, 0},
                 .rotation = {0, 0, 0, 0},
-                .scale = 5.f
+                .scale = 1.f
             }
         );
 

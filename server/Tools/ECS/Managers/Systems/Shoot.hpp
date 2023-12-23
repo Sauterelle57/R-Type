@@ -136,7 +136,7 @@ namespace ECS {
                 }
             }
 
-            void update(std::map<ECS::Entity, bool> _entitiesShoot) {
+            void update(std::map<ECS::Entity, bool> & _entitiesShoot) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
