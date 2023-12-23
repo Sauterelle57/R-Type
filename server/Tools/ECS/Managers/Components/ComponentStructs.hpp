@@ -90,6 +90,9 @@ namespace ECS {
         return lhs.name < rhs.name;
     }
 
+    struct Collider {
+    };
+
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

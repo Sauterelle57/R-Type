@@ -20,6 +20,7 @@
 #include "ClientController.hpp"
 #include "Shoot.hpp"
 #include "Projectile.hpp"
+#include "Collider.hpp"
 
 namespace rt {
 
@@ -45,6 +46,7 @@ namespace rt {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
                 std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
                 std::shared_ptr<ECS::Shoot> _systemShoot;
+                std::shared_ptr<ECS::ColliderSystem> _systemCollider;
             };
         private:
             int i = 0;

@@ -43,6 +43,7 @@ namespace rt {
                 _systems._systemTraveling->update();
                 _systems._systemProjectile->update(_camera, _clientController, _wrapper);
                 _systems._systemShoot->update(_entitiesShoot);
+                _systems._systemCollider->update(_clientController, _wrapper);
                 _eventController();
             }
         }
@@ -100,6 +101,7 @@ namespace rt {
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Projectile>();
+        _coordinator->registerComponent<ECS::Collider>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
     }
@@ -111,6 +113,7 @@ namespace rt {
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
         _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
         _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
+        _systems._systemCollider = _coordinator->registerSystem<ECS::ColliderSystem>();
 
         {
             ECS::Signature signature;
@@ -132,7 +135,14 @@ namespace rt {
            signature.set(_coordinator->getComponentType<ECS::Transform>());
            signature.set(_coordinator->getComponentType<ECS::Weapon>());
            _coordinator->setSystemSignature<ECS::Shoot>(signature);
-       }
+        }
+
+        {
+           ECS::Signature signature;
+           signature.set(_coordinator->getComponentType<ECS::Transform>());
+           signature.set(_coordinator->getComponentType<ECS::Collider>());
+           _coordinator->setSystemSignature<ECS::ColliderSystem>(signature);
+        }
 
         std::cout << "SERVER/ECS systems configured" << std::endl;
     }
@@ -210,8 +220,13 @@ namespace rt {
             ECS::Transform {
                 .position = {40, 0, 0},
                 .rotation = {0, 0, 0, 0},
-                .scale = 1.f
+                .scale = .1f
             }
+        );
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Collider {
+           }
         );
 
         _entitiesShoot[ennemy] = false;

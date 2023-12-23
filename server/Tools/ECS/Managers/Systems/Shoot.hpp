@@ -39,6 +39,11 @@ namespace ECS {
                         .speed = 0.5f
                     }
                 );
+                _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::Collider {
+                        }
+                );
             }
 
             static void doubleSinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos) {
@@ -73,6 +78,11 @@ namespace ECS {
                             .speed = 0.5f
                         }
                     );
+                    _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::Collider {
+                            }
+                    );
                 }
             }
 
@@ -96,6 +106,11 @@ namespace ECS {
                         .damage = 1,
                         .speed = 0.5f
                     }
+                );
+                _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::Collider {
+                        }
                 );
             }
 

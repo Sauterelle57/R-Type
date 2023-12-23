@@ -208,6 +208,7 @@ add_executable(rtype_client
         client/Tools/Vec4/Vec4.cpp
         client/Tools/Clock/Clock.hpp
         client/Tools/Error/Error.hpp
+        server/Tools/ECS/Managers/Systems/Collider.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

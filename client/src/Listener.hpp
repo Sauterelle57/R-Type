@@ -83,15 +83,17 @@ namespace RT {
                                     }
                                 );
                             } else if (token == "ENEMY") {
-                                std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/cyber_wasp.glb");
+                                std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj");
                                 Matrix matr = MatrixIdentity();
-                                matr = MatrixMultiply(matr, MatrixRotateX(-90 * DEG2RAD));
-                                matr = MatrixMultiply(matr, MatrixRotateY(-90 * DEG2RAD));
+//                                matr = MatrixMultiply(matr, MatrixRotateX(-90 * DEG2RAD));
+                                matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+//                                matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
                                 model->_model->transform = matr;
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Model {
                                         .model = model,
+                                        .texture = std::make_shared<RL::ZTexture>("./client/resources/images/duck_text.png"),
                                     }
                                 );
                             } else if (token == "BASIC_SHOT") {
