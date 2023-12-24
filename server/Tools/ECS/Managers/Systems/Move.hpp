@@ -23,11 +23,13 @@ namespace ECS {
 
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                    auto &player = coordinatorPtr->getComponent<Player>(entity);
+                    auto &coll = coordinatorPtr->getComponent<Collider>(entity);
+                    auto &trav = coordinatorPtr->getComponent<Traveling>(entity);
 
-                    // transform.position._y -= 0.1;
-                    // if (transform.position._y < 0) {
-                    //     transform.position._y = 20;
-                    // }
+                    transform.position += player.mooving;
+                    coll.velocity = trav.speed + player.mooving;
+                    player.mooving = {0, 0, 0};
                 }
             }
     };

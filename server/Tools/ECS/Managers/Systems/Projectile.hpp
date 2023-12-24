@@ -31,18 +31,20 @@ namespace ECS {
             projectiles.speed = weapon.speed;
         }
 
-        void update(ECS::Entity cameraEntity, rt::ClientController &clientCtrl, rt::IWrapper *wrapper) {
+        void update(ECS::Entity cameraEntity) {
             auto coordinatorPtr = _coordinator.lock();
             if (!coordinatorPtr) {
                 return;
             }
 
-            auto clientIDS = clientCtrl.getClients();
             auto camTransform = coordinatorPtr->getComponent<Transform>(cameraEntity);
 
             for (auto const &entity : _entities) {
                 auto &projectile = coordinatorPtr->getComponent<Projectile>(entity);
                 auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
+                auto clientIDS = clientUpdater.clientController->getClients();
+
                 tls::Vec3 position = transform.position;
 
                 transform.position = projectile.trajectory(transform.position, projectile.t);
@@ -58,7 +60,7 @@ namespace ECS {
                         std::ostringstream responseStream;
                         responseStream << entity << " DESTROY";
                         std::string response = responseStream.str();
-                        wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                        clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                     }
                     std::cout << "before destroy" << std::endl;
                     std::cout << entity << std::endl;
@@ -66,22 +68,6 @@ namespace ECS {
                     std::cout << "after destroy" << std::endl;
                     return;
                 }
-
-                std::ostringstream responseStream;
-                responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
-                            << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
-                            << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                            << transform.rotation._a << " " << transform.scale << " BASIC_SHOT";
-
-                std::string response = responseStream.str();
-
-                for (auto const &clientID : clientIDS) {
-                    //std::cout << "send info to client " << clientID->getIpAdress() << ", " << clientID->getPort() << std::endl;
-                    //std::cout << response << std::endl;
-                    wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
-                }
-
-//                initProjectile(entity, coordinatorPtr->getComponent<Weapon>(entity));
             }
         }
     };

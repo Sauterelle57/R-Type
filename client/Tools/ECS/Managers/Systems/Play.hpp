@@ -25,10 +25,17 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &controle = coordinatorPtr->getComponent<Player>(entity);
 
-                    if (_event->isKeyDown(controle.key_up)) udpClient->send("MOVE 0 1 0");
-                    if (_event->isKeyDown(controle.key_down)) udpClient->send("MOVE 0 -1 0");
-                    if (_event->isKeyDown(controle.key_left)) udpClient->send("MOVE -1 0 0");
-                    if (_event->isKeyDown(controle.key_right)) udpClient->send("MOVE 1 0 0");
+                    tls::Vec3 mooving = {0, 0, 0};
+
+                    if (_event->isKeyDown(controle.key_up)) mooving._y += 1;
+                    if (_event->isKeyDown(controle.key_down)) mooving._y -= 1;
+                    if (_event->isKeyDown(controle.key_left)) mooving._x -= 1;
+                    if (_event->isKeyDown(controle.key_right)) mooving._x += 1;
+                    std::cout << mooving._x << " " << mooving._y << " " << mooving._z << std::endl;
+                    if (mooving._x != 0 || mooving._y != 0 || mooving._z != 0) {
+                        std::string str = "MOVE " + std::to_string(static_cast<int>(mooving._x)) + " " + std::to_string(static_cast<int>(mooving._y)) + " " + std::to_string(static_cast<int>(mooving._z));
+                        udpClient->send(str);
+                    }
                     if (_event->isKeyPressed(controle.key_shoot)) {
                         std::cout << "shoot" << std::endl;
                         udpClient->send("SHOOT");

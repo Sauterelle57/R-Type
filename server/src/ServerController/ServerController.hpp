@@ -21,9 +21,9 @@ namespace rt {
 
             void handleReceivedData(const int error, std::size_t bytes_transferred);
 
-            IWrapper &getWrapper() { return asioWrapper; }
+            std::shared_ptr<AsioWrapper> getWrapper() { return _asioWrapper; }
         private:
-            AsioWrapper asioWrapper;
+            std::shared_ptr<AsioWrapper> _asioWrapper;
             std::shared_ptr<IGameController> _gameCtrl;
     };
 
