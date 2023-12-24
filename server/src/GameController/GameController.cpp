@@ -14,8 +14,8 @@ namespace rt {
         _initializeCommands();
         _initializeECS();
         _clock = tls::Clock(0.01);
-        _clockEnemySpawn = tls::Clock(5);
-        _waveEnemy = 0;
+        _clockEnemySpawn = tls::Clock(10);
+        _waveEnemy = 1;
         _clientController = std::make_shared<ClientController>();
     }
 
@@ -23,12 +23,6 @@ namespace rt {
         _commands["PING"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandPing(data, ip, port);
         };
-//        _commands["MOVE"] = [&](const std::string &data, const std::string &ip, const int port) {
-//            commandMove(data, ip, port);
-//        };
-//        _commands["SHOOT"] = [&](const std::string &data, const std::string &ip, const int port) {
-//            commandShoot(data, ip, port);
-//        };
         _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
@@ -52,11 +46,12 @@ namespace rt {
                 _systems._systemEnemy->update();
             }
             if (_clockEnemySpawn.isTimeElapsed()) {
-                _createEnnemy({static_cast<double>(75 + (_waveEnemy * 2)), static_cast<double>(-10 + (i * 5)), 0}, 2 - (_waveEnemy / 10));
-                if (_waveEnemy < 10)
+                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+                }
+
+                if (_waveEnemy < 8)
                     _waveEnemy++;
-                if (_clockEnemySpawn.getInterval() > 0.5)
-                    _clockEnemySpawn.setInterval(_clockEnemySpawn.getInterval() - 0.1);
             }
         }
     }

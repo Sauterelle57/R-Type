@@ -25,7 +25,9 @@ namespace ECS {
                     auto &sound = coordinatorPtr->getComponent<Sound>(entity);
 
                     if (!sound.alreadyPlayed || sound.loop) {
-                        sound.sound->playSound();
+                        if (!sound.sound->isSoundPlaying()) {
+                            sound.sound->playSound();
+                        }
                         sound.alreadyPlayed = true;
                     }
                 }
