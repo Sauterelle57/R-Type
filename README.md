@@ -19,7 +19,8 @@
     - [Cross-Platform Requirements](#cross-platform-requirements)
     - [Prerequisites](#prerequisites)
 3. [Launch](#play)
-4. [Contributors](#contributors)
+4. [Rtype parts](#project)
+5. [Contributors](#contributors)
 
 ## Introduction
 The goal of this project is to implement a multithreaded  and a graphical  for a well-known legacy video game called R-Type, using a game engine of your own design .
@@ -100,6 +101,11 @@ Launch the client
 ```
 ./rtype_client
 ```
+
+## Project
+
+- [Server](./server/README.md)  
+- [Client](./client/README.md)  
 
 ## Contributors
 
