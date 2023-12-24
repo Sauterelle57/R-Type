@@ -37,7 +37,7 @@ The R-Type solution is designed to be cross-platform, supporting various operati
 
 Before installing the R-Type solution, make sure you have the following prerequisites installed on your system:
 
-- **[C++]:** Have C++ installed (On Windows and Linux)
+- **[C++]:** Have C++ installed (On Windows and Linux) (minimum version C++ 20)
 - **[Cmake]:** Cmake must be installed on your host (minimun version 3.26).
 - **[VCPKG]** VCPKG must be installed & correctly configured on Windows.
     - VCPKG must be installed on your host directory like C:/Users/YOUR_USER/vcpkg
