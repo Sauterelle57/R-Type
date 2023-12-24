@@ -121,6 +121,7 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/Shoot.hpp
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
+        server/Tools/ECS/Managers/Systems/Enemy.hpp
 )
 
 add_executable(rtype_client

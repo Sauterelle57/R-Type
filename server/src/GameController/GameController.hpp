@@ -68,9 +68,9 @@ namespace rt {
             void _initializeECSEntities();
 
             void _createPlayer(std::string ip, int port);
-            void _createEnnemy();
-            void _createTile();
-            void _createBreakableTile();
+            void _createEnnemy(tls::Vec3 pos);
+            void _createTile(tls::Vec3 pos);
+            void _createBreakableTile(tls::Vec3 pos);
 
 
             std::shared_ptr<ECS::Coordinator> _coordinator;

@@ -90,7 +90,10 @@ namespace RT {
                                             }
                                     );
                                 } else if (token == "TILE_BREAKABLE") {
-                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/vivinsect.glb");
+                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                                    Matrix matr = MatrixIdentity();
+                                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+                                    model->_model->transform = matr;
                                     _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Model{
@@ -99,7 +102,10 @@ namespace RT {
                                         }
                                     );
                                 } else if (token == "TILE") {
-                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/vivinsect.glb");
+                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                                    Matrix matr = MatrixIdentity();
+                                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+                                    model->_model->transform = matr;
                                     _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Model{
@@ -112,6 +118,7 @@ namespace RT {
                                     Matrix matr = MatrixIdentity();
                                     //                                matr = MatrixMultiply(matr, MatrixRotateX(-90 * DEG2RAD));
                                     matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+                                    matr = MatrixMultiply(matr, MatrixTranslate(0, -20 , 0));
                                     //                                matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
                                     model->_model->transform = matr;
                                     _coordinator->addComponent(

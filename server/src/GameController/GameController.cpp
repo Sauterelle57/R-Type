@@ -221,8 +221,12 @@ namespace rt {
             }
         );
 
-        _createTile();
-        _createBreakableTile();
+        for (float i = -45; i < 55; i += 2) {
+            _createTile({i, 32, 0});
+            _createTile({i, -20, 0});
+        }
+        _createTile({30, 29, 0});
+        _createBreakableTile({10, 20, 0});
 
         std::cout << "SERVER/ECS entities configured" << std::endl;
     }
@@ -287,7 +291,7 @@ namespace rt {
         );
     }
 
-    void GameController::_createEnnemy() {
+    void GameController::_createEnnemy(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
@@ -299,7 +303,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {40, 0, 0},
+                .position = pos,
                 .rotation = {0, 0, 0, 0},
                 .scale = .1f
             }
@@ -337,21 +341,21 @@ namespace rt {
         );
     }
 
-    void GameController::_createTile() {
+    void GameController::_createTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.005, 0, 0}
+                .speed = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {40, 5, 0},
+                .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 5.0f
+                .scale = .3f
             }
         );
         _coordinator->addComponent(
@@ -360,7 +364,7 @@ namespace rt {
                 .team = 1,
                 .breakable = false,
                 .movable = false,
-                .velocity = {0.005, 0, 0}
+                .velocity = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -378,21 +382,21 @@ namespace rt {
         );
     }
 
-    void GameController::_createBreakableTile() {
+    void GameController::_createBreakableTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.005, 0, 0}
+                .speed = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {40, 10, 0},
+                .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 5.0f
+                .scale = .2f
             }
         );
         _coordinator->addComponent(
@@ -401,7 +405,7 @@ namespace rt {
                 .team = 1,
                 .breakable = true,
                 .movable = false,
-                .velocity = {0.005, 0, 0}
+                .velocity = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -432,7 +436,7 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnnemy();
+            _createEnnemy({40, 0, 0});
         }
     }
 }
