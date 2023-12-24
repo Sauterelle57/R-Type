@@ -185,7 +185,7 @@ namespace RT {
                                                     .direction = ECS::Direction::RIGHT,
                                                     .speed = 75.0f,
                                                     .scaleOffset = 3.0f,
-                                                    .positionOffset = {-0.5, 0, 0},
+                                                    .positionOffset = {0.5, 0, 0},
                                                     .lifeTime = 2,
                                                     .spawnRate = 35,
                                                     .spawnTimer = 0,
@@ -203,12 +203,28 @@ namespace RT {
                                     );
                                 } else if (token == "CAMERA") {
                                     _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Cam{
+                                            .camera = _cam
+                                        }
+                                    );
+                                    _coordinator->addComponent(
                                             *_entities->rbegin(),
-                                            ECS::Cam{
-                                                    .camera = _cam
+                                            ECS::Particles{
+                                                    .particles = std::vector<ECS::Particle>(1000),
+                                                    .texture = std::make_shared<RL::ZTexture>(
+                                                            "./client/resources/images/star.png"),
+                                                    .type = ECS::ParticleType::CONE,
+                                                    .direction = ECS::Direction::LEFT,
+                                                    .speed = 40.0f,
+                                                    .scaleOffset = .5f,
+                                                    .positionOffset = {95, 0, -120},
+                                                    .lifeTime = 360,
+                                                    .spawnRate = 1,
+                                                    .spawnTimer = 0,
+                                                    .surviveChance = 0
                                             }
                                     );
-
                                 } else {
                                     std::cout << "Unknown token : " << token << std::endl;
                                 }
