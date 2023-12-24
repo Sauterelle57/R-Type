@@ -3,5 +3,5 @@ cd build
 cmake ..
 cmake --build .
 cd ..
-cp .\Debug\* .
-cp .\build\Debug . 
+copy .\Debug\* .
+copy .\build\Debug . 
