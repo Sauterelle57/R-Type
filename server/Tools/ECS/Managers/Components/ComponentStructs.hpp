@@ -112,8 +112,16 @@ namespace ECS {
     };
 
     struct Player {
-        bool isShooting = false;
         tls::Vec3 mooving = {0,0,0};
+    };
+
+    struct Shooter {
+        bool isShooting = false;
+    };
+
+    struct Enemy {
+        bool isGoingUp = false;
+        tls::Clock clock;
     };
 }
 

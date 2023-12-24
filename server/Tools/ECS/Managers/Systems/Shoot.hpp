@@ -73,7 +73,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     Projectile {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x - 0.5, pos._y, pos._z};
+                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
                         },
                         .damage = 1,
                         .speed = 0.2f
@@ -254,11 +254,11 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
                     auto &updater = coordinatorPtr->getComponent<ClientUpdater>(entity);
-                    auto &player = coordinatorPtr->getComponent<Player>(entity);
+                    auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
 
-                    if (player.isShooting) {
+                    if (shooter.isShooting) {
                         weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
-                        player.isShooting = false;
+                        shooter.isShooting = false;
                     }
                 }
             }

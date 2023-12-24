@@ -34,9 +34,9 @@ namespace RT {
         auto &collision1 = coordinatorPtr->getComponent<ECS::Transform>(entity1);
         auto &collision2 = coordinatorPtr->getComponent<ECS::Transform>(entity2);
 
-        std::cout << collision1.position._x << " " << collision2.position._x << std::endl;
-        if (RL::Utils::checkCollisionBoxes(collision1.bounds, collision2.bounds))
-            std::cout << "Collision detected between entities" << std::endl;
+//        std::cout << collision1.position._x << " " << collision2.position._x << std::endl;
+//        if (RL::Utils::checkCollisionBoxes(collision1.bounds, collision2.bounds))
+//            std::cout << "Collision detected between entities" << std::endl;
     }
 
     Core::Core() {

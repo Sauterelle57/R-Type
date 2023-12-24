@@ -23,6 +23,7 @@ namespace ECS {
 
                 for (auto const &entity : _entities) {
                     auto &player = coordinatorPtr->getComponent<Player>(entity);
+                    auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     auto &transform = coordinatorPtr->getComponent<ECS::Transform>(entity);
@@ -48,7 +49,7 @@ namespace ECS {
                                 std::cerr << "Error extracting values from the string." << std::endl;
                             }
                         } else if (command == "SHOOT") {
-                            player.isShooting = true;
+                            shooter.isShooting = true;
                         }
                     }
                 }

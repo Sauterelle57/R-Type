@@ -31,7 +31,7 @@ namespace ECS {
                     if (_event->isKeyDown(controle.key_down)) mooving._y -= 1;
                     if (_event->isKeyDown(controle.key_left)) mooving._x -= 1;
                     if (_event->isKeyDown(controle.key_right)) mooving._x += 1;
-                    std::cout << mooving._x << " " << mooving._y << " " << mooving._z << std::endl;
+//                    std::cout << mooving._x << " " << mooving._y << " " << mooving._z << std::endl;
                     if (mooving._x != 0 || mooving._y != 0 || mooving._z != 0) {
                         std::string str = "MOVE " + std::to_string(static_cast<int>(mooving._x)) + " " + std::to_string(static_cast<int>(mooving._y)) + " " + std::to_string(static_cast<int>(mooving._z));
                         udpClient->send(str);
