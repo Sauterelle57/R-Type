@@ -23,7 +23,7 @@ namespace RT {
                 try {
                     while (!_queue.empty()) {
                         std::string front = _queue.front();
-                        std::cout << "New event : " << front << std::endl;
+//                        std::cout << "New event : " << front << std::endl;
                         _queue.pop();
 
                         std::stringstream ss(front);
@@ -90,7 +90,10 @@ namespace RT {
                                             }
                                     );
                                 } else if (token == "TILE_BREAKABLE") {
-                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/vivinsect.glb");
+                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                                    Matrix matr = MatrixIdentity();
+                                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+                                    model->_model->transform = matr;
                                     _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Model{
@@ -99,7 +102,10 @@ namespace RT {
                                         }
                                     );
                                 } else if (token == "TILE") {
-                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/vivinsect.glb");
+                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                                    Matrix matr = MatrixIdentity();
+                                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+                                    model->_model->transform = matr;
                                     _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Model{
@@ -112,6 +118,7 @@ namespace RT {
                                     Matrix matr = MatrixIdentity();
                                     //                                matr = MatrixMultiply(matr, MatrixRotateX(-90 * DEG2RAD));
                                     matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+                                    matr = MatrixMultiply(matr, MatrixTranslate(0, -20 , 0));
                                     //                                matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
                                     model->_model->transform = matr;
                                     _coordinator->addComponent(
@@ -138,6 +145,44 @@ namespace RT {
                                                             "./client/resources/images/particle.png"),
                                                     .type = ECS::ParticleType::CONE,
                                                     .direction = ECS::Direction::LEFT,
+                                                    .speed = 75.0f,
+                                                    .scaleOffset = 3.0f,
+                                                    .positionOffset = {-0.5, 0, 0},
+                                                    .lifeTime = 2,
+                                                    .spawnRate = 35,
+                                                    .spawnTimer = 0,
+                                                    .surviveChance = 5
+                                            }
+                                    );
+                                    std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>(
+                                            "./client/resources/sounds/pew.mp3");
+                                    sd->setSoundVolume(0.1f);
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Sound{
+                                                    .sound = sd,
+                                            }
+                                    );
+                                } else if (token == "BASIC_ENEMY_SHOT") {
+                                    std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>(
+                                            "./client/resources/models/boom.glb");
+                                    Matrix matr = MatrixIdentity();
+                                    matr = MatrixMultiply(matr, MatrixRotateY(180 * DEG2RAD));
+                                    model->_model->transform = matr;
+                                    _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Model{
+                                            .model = model,
+                                        }
+                                    );
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Particles{
+                                                    .particles = std::vector<ECS::Particle>(500),
+                                                    .texture = std::make_shared<RL::ZTexture>(
+                                                            "./client/resources/images/particle.png"),
+                                                    .type = ECS::ParticleType::CONE,
+                                                    .direction = ECS::Direction::RIGHT,
                                                     .speed = 75.0f,
                                                     .scaleOffset = 3.0f,
                                                     .positionOffset = {-0.5, 0, 0},

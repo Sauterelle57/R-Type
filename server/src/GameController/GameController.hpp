@@ -23,6 +23,7 @@
 #include "Collider.hpp"
 #include "ClientUpdater.hpp"
 #include "PlayerManager.hpp"
+#include "Enemy.hpp"
 
 namespace rt {
 
@@ -52,6 +53,7 @@ namespace rt {
                 std::shared_ptr<ECS::ClientUpdaterSystem> _systemClientUpdater;
                 std::shared_ptr<ECS::PlayerManager> _systemPlayerManager;
                 std::shared_ptr<ECS::Move> _systemMove;
+                std::shared_ptr<ECS::EnemySystem> _systemEnemy;
             };
         private:
             int i = 0;
@@ -68,9 +70,9 @@ namespace rt {
             void _initializeECSEntities();
 
             void _createPlayer(std::string ip, int port);
-            void _createEnnemy();
-            void _createTile();
-            void _createBreakableTile();
+            void _createEnnemy(tls::Vec3 pos, float clockSpeed);
+            void _createTile(tls::Vec3 pos);
+            void _createBreakableTile(tls::Vec3 pos);
 
 
             std::shared_ptr<ECS::Coordinator> _coordinator;

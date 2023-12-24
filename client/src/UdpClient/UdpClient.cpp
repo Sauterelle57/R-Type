@@ -23,7 +23,7 @@ namespace rt {
         if (socket.send(packet, serverEndpoint, serverPortNumber) != sf::Socket::Done) {
             std::cerr << "Error sending message" << std::endl;
         } else {
-            std::cout << "Sending message: " << message << std::endl;
+//            std::cout << "Sending message: " << message << std::endl;
         }
     }
 

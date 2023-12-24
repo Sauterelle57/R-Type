@@ -47,6 +47,7 @@ namespace rt {
                 _systems._systemCollider->update();
                 _systems._systemClientUpdater->update();
                 _systems._systemMove->update();
+                _systems._systemEnemy->update();
             }
         }
     }
@@ -107,6 +108,8 @@ namespace rt {
         _coordinator->registerComponent<ECS::Type>();
         _coordinator->registerComponent<ECS::ClientUpdater>();
         _coordinator->registerComponent<ECS::Player>();
+        _coordinator->registerComponent<ECS::Enemy>();
+        _coordinator->registerComponent<ECS::Shooter>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
     }
@@ -122,6 +125,7 @@ namespace rt {
         _systems._systemClientUpdater = _coordinator->registerSystem<ECS::ClientUpdaterSystem>();
         _systems._systemPlayerManager = _coordinator->registerSystem<ECS::PlayerManager>();
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
+        _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
 
         {
             ECS::Signature signature;
@@ -144,7 +148,7 @@ namespace rt {
            signature.set(_coordinator->getComponentType<ECS::Transform>());
            signature.set(_coordinator->getComponentType<ECS::Weapon>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
-            signature.set(_coordinator->getComponentType<ECS::Player>());
+            signature.set(_coordinator->getComponentType<ECS::Shooter>());
             _coordinator->setSystemSignature<ECS::Shoot>(signature);
         }
 
@@ -172,6 +176,7 @@ namespace rt {
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Collider>());
+            signature.set(_coordinator->getComponentType<ECS::Shooter>());
             _coordinator->setSystemSignature<ECS::PlayerManager>(signature);
         }
 
@@ -182,6 +187,15 @@ namespace rt {
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Collider>());
             _coordinator->setSystemSignature<ECS::Move>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Enemy>());
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Collider>());
+            signature.set(_coordinator->getComponentType<ECS::Shooter>());
+            _coordinator->setSystemSignature<ECS::EnemySystem>(signature);
         }
 
         std::cout << "SERVER/ECS systems configured" << std::endl;
@@ -221,8 +235,12 @@ namespace rt {
             }
         );
 
-        _createTile();
-        _createBreakableTile();
+        for (float i = -45; i < 55; i += 2) {
+            _createTile({i, 32, 0});
+            _createTile({i, -20, 0});
+        }
+        _createTile({30, 29, 0});
+        _createBreakableTile({10, 20, 0});
 
         std::cout << "SERVER/ECS entities configured" << std::endl;
     }
@@ -281,13 +299,18 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Player {
-                .isShooting = false,
                 .mooving = {0, 0, 0}
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Shooter {
+                .isShooting = false
             }
         );
     }
 
-    void GameController::_createEnnemy() {
+    void GameController::_createEnnemy(tls::Vec3 pos, float clockSpeed) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
@@ -299,7 +322,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {40, 0, 0},
+                .position = pos,
                 .rotation = {0, 0, 0, 0},
                 .scale = .1f
             }
@@ -310,7 +333,7 @@ namespace rt {
                .damage = 1,
                .speed = 1,
                .durability = 1,
-               .create_projectile = ECS::Shoot::basicShot
+               .create_projectile = ECS::Shoot::basicEnemyShot
            }
        );
         _coordinator->addComponent(
@@ -335,23 +358,36 @@ namespace rt {
                 .clientController = _clientController
             }
         );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Enemy {
+                .isGoingUp = false,
+                .clock = tls::Clock(clockSpeed)
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Shooter {
+                .isShooting = false
+            }
+        );
     }
 
-    void GameController::_createTile() {
+    void GameController::_createTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.005, 0, 0}
+                .speed = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {40, 5, 0},
+                .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 5.0f
+                .scale = .3f
             }
         );
         _coordinator->addComponent(
@@ -360,7 +396,7 @@ namespace rt {
                 .team = 1,
                 .breakable = false,
                 .movable = false,
-                .velocity = {0.005, 0, 0}
+                .velocity = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -378,21 +414,21 @@ namespace rt {
         );
     }
 
-    void GameController::_createBreakableTile() {
+    void GameController::_createBreakableTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.005, 0, 0}
+                .speed = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {40, 10, 0},
+                .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 5.0f
+                .scale = .2f
             }
         );
         _coordinator->addComponent(
@@ -401,7 +437,7 @@ namespace rt {
                 .team = 1,
                 .breakable = true,
                 .movable = false,
-                .velocity = {0.005, 0, 0}
+                .velocity = {0.01, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -432,7 +468,10 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnnemy();
+            _createEnnemy({40, 20, 0}, 1.5);
+            _createEnnemy({50, 10, 0}, 1.7);
+            _createEnnemy({55, 0, 0}, 1.2);
+            _createEnnemy({35, -6, 0}, 2);
         }
     }
 }
