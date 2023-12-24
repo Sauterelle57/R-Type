@@ -35,10 +35,11 @@ namespace ECS {
 
                     auto clients = clientUpdater.clientController->getClients();
 
+
                     for (auto &clt : clients) {
-                        if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort()))
-                            responseStream << "_NY";
                         std::string response = responseStream.str();
+                        if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort()))
+                            response += "_NY";
                         clientUpdater.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                     }
                 }
