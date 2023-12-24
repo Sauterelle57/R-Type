@@ -41,6 +41,8 @@ namespace RT {
 
     Core::Core() {
         _window = std::make_shared<RL::ZWindow>(_screenWidth, _screenHeight, "R TYPE");
+        _audio = std::make_unique<RL::ZAudio>();
+        _audio->setMasterVolume(0.5f);
 
         // _cursor = std::make_shared<RL::ZCursor>();
         // _cursor->disable();
@@ -70,8 +72,6 @@ namespace RT {
         }));
         _udpClient->send("CONNECTION_REQUEST");
         _clock = std::make_unique<tls::Clock>(0.01);
-        _audio = std::make_unique<RL::ZAudio>();
-        _audio->setMasterVolume(0.5f);
     }
 
     Core::~Core() {
