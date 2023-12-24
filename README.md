@@ -18,10 +18,8 @@
 2. [Installation](#installation)
     - [Cross-Platform Requirements](#cross-platform-requirements)
     - [Prerequisites](#prerequisites)
-3. [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Configuration](#configuration)
+3. [Launch](#play)
+4. [Contributors](#contributors)
 
 ## Introduction
 The goal of this project is to implement a multithreaded  and a graphical  for a well-known legacy video game called R-Type, using a game engine of your own design .
@@ -89,14 +87,22 @@ Follow these general steps to install the R-Type solution:
     ./prepare.sh
     ```
 
-6. Run the server
+## Play 
 
-    Launch the server
-    ```
-    ./rtype_server
-    ```
+Launch the server
+```
+./rtype_server
+```
 
-    Launch the client
-    ```
-    ./rtype_client
-    ```
+Launch the client
+```
+./rtype_client
+```
+
+## Contributors
+
+Axel Lievre - [Github] - axel.lievre@epitech.eu  
+Noah Gosciniak - [Github] - noah.gosciniak@epitech.eu  
+Marie Giacomel - [GitHub] - marie.giacomel@epitech.eu  
+Lucas Hoch - [GitHub] - lucas.hoch@epitech.eu  
+Quentin Erdinger - [GitHub] - quentin.erdinger@epitech.eu  
