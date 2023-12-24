@@ -24,6 +24,8 @@
 ## Introduction
 The goal of this project is to implement a multithreaded  and a graphical  for a well-known legacy video game called R-Type, using a game engine of your own design .
 
+Check our website at : https://marie-2.gitbook.io/rtype/
+
 ## Installation
 The R-Type solution is designed to be cross-platform, supporting various operating systems. Follow the instructions below based on your platform of choice.
 
