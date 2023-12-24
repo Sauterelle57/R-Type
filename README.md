@@ -39,9 +39,9 @@ Before installing the R-Type solution, make sure you have the following prerequi
 
 - **[C++]:** Have C++ installed (On Windows and Linux)
 - **[Cmake]:** Cmake must be installed on your host (minimun version 3.26).
+- **[VCPKG]** VCPKG must be installed & correctly configured on Windows.
     - VCPKG must be installed on your host directory like C:/Users/YOUR_USER/vcpkg
     - Set vcpkg path in your environment variable.
-- **[VCPKG]** VCPKG must be installed on Windows.
 
 ## Installation
 
