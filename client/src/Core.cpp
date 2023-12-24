@@ -65,7 +65,8 @@ namespace RT {
         _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
-        _udpClient->setup("127.0.0.1", 1234, _receivedMessages);
+        _messageQueueMutex = std::make_shared<std::mutex>();
+        _udpClient->setup("127.0.0.1", 1234, _receivedMessages, _messageQueueMutex);
 
         _udpClientThread = std::make_unique<std::thread>(([&]() {
             _udpClient->run(_isRunning);
@@ -239,6 +240,7 @@ namespace RT {
 
         while (!_window->shouldClose()) {
             while (!_receivedMessages->empty()) {
+                std::lock_guard<std::mutex> lock(*_messageQueueMutex);
                 std::string message = _receivedMessages->front().message;
                 _listener->addEvent(message);
                 _receivedMessages->pop();
