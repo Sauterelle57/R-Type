@@ -82,6 +82,8 @@ namespace rt {
 
             System _systems;
             tls::Clock _clock;
+            tls::Clock _clockEnemySpawn;
+            int _waveEnemy;
     };
 
 }

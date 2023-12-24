@@ -35,7 +35,6 @@ namespace ECS {
 
                     auto clients = clientUpdater.clientController->getClients();
 
-
                     for (auto &clt : clients) {
                         std::string response = responseStream.str();
                         if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort()))

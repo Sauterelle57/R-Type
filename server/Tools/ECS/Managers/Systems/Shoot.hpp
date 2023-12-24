@@ -86,10 +86,10 @@ namespace ECS {
                     }
                 );
                 _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::Type {
-                                .name = "BASIC_ENEMY_SHOT"
-                        }
+                    *_entities.rbegin(),
+                    ECS::Type {
+                        .name = "BASIC_ENEMY_SHOT"
+                    }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -133,22 +133,22 @@ namespace ECS {
                         }
                     );
                     _coordinator->addComponent(
-                            *_entities.rbegin(),
-                            ECS::Collider {
-                            }
+                        *_entities.rbegin(),
+                        ECS::Collider {
+                        }
                     );
                     _coordinator->addComponent(
-                            *_entities.rbegin(),
-                            ECS::Type {
-                                    .name = "BASIC_SHOT"
-                            }
+                        *_entities.rbegin(),
+                        ECS::Type {
+                            .name = "SIN_SHOT"
+                        }
                     );
                     _coordinator->addComponent(
-                            *_entities.rbegin(),
-                            ECS::ClientUpdater {
-                                    .wrapper = _wrapper,
-                                    .clientController = _clientController
-                            }
+                        *_entities.rbegin(),
+                        ECS::ClientUpdater {
+                            .wrapper = _wrapper,
+                            .clientController = _clientController
+                        }
                     );
                 }
             }
@@ -175,35 +175,35 @@ namespace ECS {
                     }
                 );
                 _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::Collider {
-                        }
+                    *_entities.rbegin(),
+                    ECS::Collider {
+                    }
                 );
                 _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::Type {
-                                .name = "BASIC_SHOT"
-                        }
+                    *_entities.rbegin(),
+                    ECS::Type {
+                        .name = "SIN_SHOT"
+                    }
                 );
                 _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::ClientUpdater {
-                                .wrapper = _wrapper,
-                                .clientController = _clientController
-                        }
+                    *_entities.rbegin(),
+                    ECS::ClientUpdater {
+                        .wrapper = _wrapper,
+                        .clientController = _clientController
+                    }
                 );
             }
 
             static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                        return tls::Vec3{pos._x + 0.1, pos._y, pos._z};
+                        return tls::Vec3{pos._x + 1, pos._y, pos._z};
                     },
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                        return tls::Vec3{pos._x + 0.1, pos._y + 0.1, pos._z};
+                        return tls::Vec3{pos._x + 0.5, pos._y + 0.5, pos._z};
                     },
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                        return tls::Vec3{pos._x + 0.1, pos._y - 0.1, pos._z};
+                        return tls::Vec3{pos._x + 0.5, pos._y - 0.5, pos._z};
                     }
                 };
                 std::vector<tls::Vec4> rotations = {{0,0,1,-90}, {0,0,1,-45}, {0,0,1,-135}};
@@ -229,17 +229,22 @@ namespace ECS {
                         }
                     );
                     _coordinator->addComponent(
-                            *_entities.rbegin(),
-                            ECS::Type {
-                                    .name = "BASIC_SHOT"
-                            }
+                        *_entities.rbegin(),
+                        ECS::Type {
+                            .name = "BASIC_SHOT"
+                        }
                     );
                     _coordinator->addComponent(
-                            *_entities.rbegin(),
-                            ECS::ClientUpdater {
-                                    .wrapper = _wrapper,
-                                    .clientController = _clientController
-                            }
+                        *_entities.rbegin(),
+                        ECS::ClientUpdater {
+                            .wrapper = _wrapper,
+                            .clientController = _clientController
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        ECS::Collider {
+                        }
                     );
                 }
             }

@@ -13,7 +13,9 @@ namespace rt {
         _cameraInit = false;
         _initializeCommands();
         _initializeECS();
-        _clock = tls::Clock(0.006);
+        _clock = tls::Clock(0.01);
+        _clockEnemySpawn = tls::Clock(5);
+        _waveEnemy = 0;
         _clientController = std::make_shared<ClientController>();
     }
 
@@ -49,6 +51,13 @@ namespace rt {
                 _systems._systemMove->update();
                 _systems._systemEnemy->update();
             }
+            if (_clockEnemySpawn.isTimeElapsed()) {
+                _createEnnemy({static_cast<double>(75 + (_waveEnemy * 2)), static_cast<double>(-10 + (i * 5)), 0}, 2 - (_waveEnemy / 10));
+                if (_waveEnemy < 10)
+                    _waveEnemy++;
+                if (_clockEnemySpawn.getInterval() > 0.5)
+                    _clockEnemySpawn.setInterval(_clockEnemySpawn.getInterval() - 0.1);
+            }
         }
     }
 
@@ -76,7 +85,7 @@ namespace rt {
         try {
             std::cout << "[" << command << "] " << data.length() << std::endl;
             if (command == "SHOOT" || command == "MOVE")
-                _systems._systemPlayerManager->update(data, ip, port);
+                _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
             else
                 _commands.at(command)(data, ip, port);
         } catch (const std::out_of_range &e) {
@@ -126,6 +135,7 @@ namespace rt {
         _systems._systemPlayerManager = _coordinator->registerSystem<ECS::PlayerManager>();
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
+        _systems._systemEnemy->init();
 
         {
             ECS::Signature signature;
@@ -173,10 +183,8 @@ namespace rt {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Player>());
             signature.set(_coordinator->getComponentType<ECS::Type>());
-            signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Collider>());
             signature.set(_coordinator->getComponentType<ECS::Shooter>());
+            signature.set(_coordinator->getComponentType<ECS::Weapon>());
             _coordinator->setSystemSignature<ECS::PlayerManager>(signature);
         }
 
@@ -316,7 +324,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {0.005, 0, 0}
+                .speed = {-0.01, 0, 0}
             }
         );
         _coordinator->addComponent(

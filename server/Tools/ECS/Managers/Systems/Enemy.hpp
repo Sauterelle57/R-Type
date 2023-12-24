@@ -16,15 +16,17 @@
 namespace ECS {
     class EnemySystem : public System {
         public:
+            void init() {
+                rng = std::mt19937(dev());
+                dist1 = std::uniform_int_distribution<std::mt19937::result_type>(1, 50);
+            }
+
             void update() {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
                 }
 
-                std::random_device dev;
-                std::mt19937 rng(dev());
-                std::uniform_int_distribution<std::mt19937::result_type> dist1(1, 50);
 
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
@@ -44,6 +46,10 @@ namespace ECS {
                     }
                 }
             }
+
+            std::random_device dev;
+            std::mt19937 rng;
+            std::uniform_int_distribution<std::mt19937::result_type> dist1;
     };
 }
 

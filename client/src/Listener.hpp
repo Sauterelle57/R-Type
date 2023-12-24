@@ -163,6 +163,32 @@ namespace RT {
                                                     .sound = sd,
                                             }
                                     );
+                                } else if (token == "SIN_SHOT") {
+                                    _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Particles{
+                                            .particles = std::vector<ECS::Particle>(500),
+                                            .texture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"),
+                                            .type = ECS::ParticleType::CONE,
+                                            .direction = ECS::Direction::LEFT,
+                                            .speed = 500.0f,
+                                            .scaleOffset = 3.0f,
+                                            .positionOffset = {-0.5, 0, 0},
+                                            .lifeTime = 10,
+                                            .spawnRate = 2,
+                                            .spawnTimer = 0,
+                                            .surviveChance = 0
+                                        }
+                                    );
+                                    std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>(
+                                            "./client/resources/sounds/pew.mp3");
+                                    sd->setSoundVolume(0.1f);
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Sound{
+                                                    .sound = sd,
+                                            }
+                                    );
                                 } else if (token == "BASIC_ENEMY_SHOT") {
                                     std::shared_ptr<RL::ZModel> model = std::make_shared<RL::ZModel>(
                                             "./client/resources/models/boom.glb");

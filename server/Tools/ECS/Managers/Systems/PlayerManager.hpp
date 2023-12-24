@@ -15,7 +15,7 @@
 namespace ECS {
     class PlayerManager : public System {
         public:
-            void update(const std::string &data, const std::string &ip, const int port) {
+            void update(const std::string &data, const std::string &ip, const int port, int wave) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
@@ -24,10 +24,17 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &player = coordinatorPtr->getComponent<Player>(entity);
                     auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
+                    auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
-                    auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
-                    auto &transform = coordinatorPtr->getComponent<ECS::Transform>(entity);
-                    auto &collider = coordinatorPtr->getComponent<ECS::Collider>(entity);
+                    if (wave == 4) {
+                        weapon.create_projectile = Shoot::sinShot;
+                    }
+                    if (wave == 6) {
+                        weapon.create_projectile = Shoot::doubleSinShot;
+                    }
+                    if (wave == 8) {
+                        weapon.create_projectile = Shoot::tripleShot;
+                    }
 
 
                     if (type.ip == ip && type.port == port) {
