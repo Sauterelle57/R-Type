@@ -22,23 +22,23 @@ int main()
     std::signal(SIGINT, signalHandler);
 
     std::cout << "Starting client..." << std::endl;
-    rt::UdpClient udpClient;
+    // rt::UdpClient udpClient;
 
-    std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
-    udpClient.setup("127.0.0.1", 1234, receivedMessages);
+    // std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
+    // udpClient.setup("127.0.0.1", 1234, receivedMessages);
 
-    rt::ProtocolController pc;
-    pc.init();
-    rt::Protocol protocol = pc.setSender(rt::CLIENT).setProtocol(rt::CONNECTION_REQUEST).getProtocol();
+    // rt::ProtocolController pc;
+    // pc.init();
+    // rt::Protocol protocol = pc.setSender(rt::CLIENT).setProtocol(rt::CONNECTION_REQUEST).getProtocol();
 
-    std::cout << "sending..." << std::endl;
-    udpClient.sendStruct(protocol);
-    std::cout << "OK" << std::endl;
-    std::cout << "receiving..." << std::endl;
-    rt::Protocol p = udpClient.receiveStruct();
-    std::cout << "OK" << std::endl;
-    std::cout << "Received: " << p.sender << " " << p.protocol << std::endl;
-    return 0;
+    // std::cout << "sending..." << std::endl;
+    // udpClient.sendStruct(protocol);
+    // std::cout << "OK" << std::endl;
+    // std::cout << "receiving..." << std::endl;
+    // rt::Protocol p = udpClient.receiveStruct();
+    // std::cout << "OK" << std::endl;
+    // std::cout << "Received: " << p.sender << " " << p.protocol << std::endl;
+    // return 0;
     std::unique_ptr<RT::Core> core = std::make_unique<RT::Core>();
     core->loop();
 //    std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
