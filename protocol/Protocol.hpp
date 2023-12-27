@@ -1,5 +1,6 @@
 #ifndef PROTOCOL_HPP_
 #define PROTOCOL_HPP_
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -9,122 +10,155 @@
 #include "Vec3.hpp"
 #include "Vec4.hpp"
 
-    namespace rt
+namespace rt
+{
+    enum SENDER_TYPE
     {
-        enum SENDER_TYPE
+        CLIENT,
+        SERVER
+    };
+
+    enum PROTOCOL_TYPE
+    {
+        PING,
+        CONNECTION_REQUEST,
+        MOVE,
+        SHOOT,
+        CONNECTION_ACCEPTED,
+        CONNECTION_REFUSED,
+        OK,
+        ENTITIES
+    };
+
+    struct Entity
+    {
+        std::uint32_t ECSEntity;
+        tls::Vec3 position;
+        tls::Vec4 rotation;
+        float scale;
+        std::string type;
+    };
+
+    struct Protocol
+    {
+        SENDER_TYPE sender;
+        PROTOCOL_TYPE protocol;
+        std::vector<Entity> entities;
+    };
+
+    class ProtocolController
+    {
+    public:
+        ProtocolController() { init(); };
+        ~ProtocolController() = default;
+
+        ProtocolController& init()
         {
-            CLIENT,
-            SERVER
-        };
+            _protocol = std::make_shared<Protocol>();
+            return *this;
+        }
 
-        enum PROTOCOL_TYPE
+        ProtocolController& setSender(rt::SENDER_TYPE sender)
         {
-            // Server Part Server => Client
-            PING,
-            CONNECTION_REQUEST,
-            MOVE,
-            SHOOT,
+            _protocol->sender = sender;
+            return *this;
+        }
 
-            // Client Part Client => Server
-            CONNECTION_ACCEPTED,
-            CONNECTION_REFUSED,
-            OK,
-            ENTITIES
-        };
-
-        struct Entity
+        ProtocolController& setProtocol(rt::PROTOCOL_TYPE protocol)
         {
-            std::uint32_t ECSEntity;
+            _protocol->protocol = protocol;
+            return *this;
+        }
 
-            tls::Vec3 position;
-            tls::Vec4 rotation;
-            float scale;
-
-            std::string type;
-        };
-
-        struct Protocol
+        ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, std::string type)
         {
-            // Variables
-            SENDER_TYPE sender;
-            PROTOCOL_TYPE protocol;
+            Entity entity;
+            entity.ECSEntity = ECSId;
+            entity.position = position;
+            entity.rotation = rotation;
+            entity.scale = scale;
+            entity.type = type;
+            _protocol->entities.push_back(entity);
+            return *this;
+        }
 
-            std::vector<Entity> entities;
-        };
-
-        class ProtocolController
+        std::string serialize() const
         {
-            public:
-                ProtocolController() {
-                    init();
-                };
+            std::ostringstream oss;
+            oss.write(reinterpret_cast<const char*>(&_protocol->sender), sizeof(_protocol->sender));
+            oss.write(reinterpret_cast<const char*>(&_protocol->protocol), sizeof(_protocol->protocol));
 
-                ~ProtocolController() = default;
+            for (const auto& entity : _protocol->entities)
+            {
+                serializeEntity(oss, entity);
+            }
 
-                ProtocolController& init() {
-                    _protocol = std::make_shared<Protocol>();
-                    return *this;
-                }
+            return oss.str();
+        }
 
-                ProtocolController& setSender(rt::SENDER_TYPE sender) {
-                    _protocol->sender = sender;
-                    return *this;
-                }
+        std::string serialize(const Protocol &protocol) const
+        {
+            std::ostringstream oss;
+            oss.write(reinterpret_cast<const char*>(&protocol.sender), sizeof(protocol.sender));
+            oss.write(reinterpret_cast<const char*>(&protocol.protocol), sizeof(protocol.protocol));
 
-                ProtocolController& setProtocol(rt::PROTOCOL_TYPE protocol) {
-                    _protocol->protocol = protocol;
-                    return *this;
-                }
+            for (const auto& entity : protocol.entities)
+            {
+                serializeEntity(oss, entity);
+            }
 
-                ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, std::string type) {
-                    Entity entity;
+            return oss.str();
+        }
 
-                    entity.ECSEntity = ECSId;
-                    entity.position = position;
-                    entity.rotation = rotation;
-                    entity.scale = scale;
-                    entity.type = type;
+        static Protocol deserialize(const std::string& data)
+        {
+            std::istringstream iss(data);
+            Protocol deserializedData;
 
-                    _protocol->entities.push_back(entity);
-                    return *this;
-                }
+            iss.read(reinterpret_cast<char*>(&deserializedData.sender), sizeof(deserializedData.sender));
+            iss.read(reinterpret_cast<char*>(&deserializedData.protocol), sizeof(deserializedData.protocol));
 
-                std::string serialize() const {
-                    rt::Protocol pt = *_protocol.get();
-                    return _serializeStruct(pt);
-                }
+            while (iss.peek() != EOF)
+            {
+                Entity entity;
+                deserializeEntity(iss, entity);
+                deserializedData.entities.push_back(entity);
+            }
 
-                std::string serialize(const Protocol &protocol) const {
-                    return _serializeStruct(protocol);
-                }
+            return deserializedData;
+        }
 
-                static Protocol deserialize(const std::string& data) {
-                    std::istringstream iss(data);
-                    Protocol deserializedData;
+        Protocol getProtocol() const { return *_protocol.get(); }
 
-                    iss.read(reinterpret_cast<char*>(&deserializedData.sender), sizeof(deserializedData.sender));
-                    iss.read(reinterpret_cast<char*>(&deserializedData.protocol), sizeof(deserializedData.protocol));
-                    iss.read(reinterpret_cast<char*>(&deserializedData.entities), sizeof(deserializedData.entities));
+    private:
+        std::shared_ptr<Protocol> _protocol;
 
-                    return deserializedData;
-                }
+        void serializeEntity(std::ostringstream& oss, const Entity& entity) const
+        {
+            oss.write(reinterpret_cast<const char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
+            oss.write(reinterpret_cast<const char*>(&entity.position), sizeof(entity.position));
+            oss.write(reinterpret_cast<const char*>(&entity.rotation), sizeof(entity.rotation));
+            oss.write(reinterpret_cast<const char*>(&entity.scale), sizeof(entity.scale));
 
-                rt::Protocol getProtocol() const {
-                    return *_protocol.get();
-                }
+            std::size_t typeSize = entity.type.size();
+            oss.write(reinterpret_cast<const char*>(&typeSize), sizeof(typeSize));
+            oss.write(entity.type.c_str(), typeSize);
+        }
 
-            private:
-                std::shared_ptr<Protocol> _protocol;
+        static void deserializeEntity(std::istringstream& iss, Entity& entity)
+        {
+            iss.read(reinterpret_cast<char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
+            iss.read(reinterpret_cast<char*>(&entity.position), sizeof(entity.position));
+            iss.read(reinterpret_cast<char*>(&entity.rotation), sizeof(entity.rotation));
+            iss.read(reinterpret_cast<char*>(&entity.scale), sizeof(entity.scale));
 
-                std::string _serializeStruct(const Protocol& protocol) const {
-                    std::ostringstream oss;
+            std::size_t typeSize;
+            iss.read(reinterpret_cast<char*>(&typeSize), sizeof(typeSize));
+            entity.type.resize(typeSize);
+            iss.read(&entity.type[0], typeSize);
+        }
+    };
 
-                    oss.write(reinterpret_cast<const char*>(&protocol.sender), sizeof(protocol.sender));
-                    oss.write(reinterpret_cast<const char*>(&protocol.protocol), sizeof(protocol.protocol));
-                    oss.write(reinterpret_cast<const char*>(&protocol.entities), sizeof(protocol.entities));
-                    return oss.str();
-                }
-        };
-    }
+} // namespace rt
 
 #endif /* !PROTOCOL_HPP_ */

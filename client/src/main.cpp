@@ -31,8 +31,12 @@ int main()
     pc.init();
     rt::Protocol protocol = pc.setSender(rt::CLIENT).setProtocol(rt::CONNECTION_REQUEST).getProtocol();
 
+    std::cout << "sending..." << std::endl;
     udpClient.sendStruct(protocol);
+    std::cout << "OK" << std::endl;
+    std::cout << "receiving..." << std::endl;
     rt::Protocol p = udpClient.receiveStruct();
+    std::cout << "OK" << std::endl;
     std::cout << "Received: " << p.sender << " " << p.protocol << std::endl;
     return 0;
     std::unique_ptr<RT::Core> core = std::make_unique<RT::Core>();
