@@ -6,7 +6,6 @@
 */
 
 #include <thread>
-#include "../Tools/ECS/Managers/Systems/Shoot.hpp"
 #include "../Tools/ECS/Managers/Components/ComponentStructs.hpp"
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"

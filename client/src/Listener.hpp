@@ -13,14 +13,12 @@
 #include <sstream>
 #include "IListener.hpp"
 #include "renderer/Sound.hpp"
+#include <vector>
 
 namespace RT {
     class Listener : public IListener {
         public:
             Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {
-                {
-                    _starTexture = std::make_shared<RL::ZTexture>("./client/resources/images/star.png");
-                }
                 {
                     _playerModel = std::make_shared<RL::ZModel>(
                             "./client/resources/models/ship.glb");
@@ -60,7 +58,13 @@ namespace RT {
                     _modelEnemyShot->_model->transform = matr;
                 }
                 {
-                    _particleTexture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png");
+                    _particleTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
+                    _particleTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"));
+                }
+                {
+                    _starTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
+                    _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/star.png"));
+                    _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/planet.png"));
                 }
             };
             ~Listener() = default;
@@ -157,15 +161,14 @@ namespace RT {
                                         ECS::Particles{
                                                 .particles = std::vector<ECS::Particle>(500),
                                                 .texture = _particleTexture,
-                                                .type = ECS::ParticleType::CONE,
-                                                .direction = ECS::Direction::LEFT,
                                                 .speed = 75.0f,
                                                 .scaleOffset = 3.0f,
                                                 .positionOffset = {-0.5, 0, 0},
                                                 .lifeTime = 2,
                                                 .spawnRate = 35,
-                                                .spawnTimer = 0,
-                                                .surviveChance = 5
+                                                .surviveChance = 5,
+                                                .initParticle = ECS::ParticleSystem::initParticleConeLeft,
+                                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault
                                         }
                                 );
                                 _coordinator->addComponent(
@@ -180,17 +183,16 @@ namespace RT {
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(500),
-                                        .texture = _particleTexture,
-                                        .type = ECS::ParticleType::CONE,
-                                        .direction = ECS::Direction::LEFT,
-                                        .speed = 500.0f,
-                                        .scaleOffset = 3.0f,
-                                        .positionOffset = {-0.5, 0, 0},
-                                        .lifeTime = 10,
-                                        .spawnRate = 2,
-                                        .spawnTimer = 0,
-                                        .surviveChance = 0
+                                            .particles = std::vector<ECS::Particle>(500),
+                                            .texture = _particleTexture,
+                                            .speed = 500.0f,
+                                            .scaleOffset = 3.0f,
+                                            .positionOffset = {-0.5, 0, 0},
+                                            .lifeTime = 10,
+                                            .spawnRate = 2,
+                                            .surviveChance = 0,
+                                            .initParticle = ECS::ParticleSystem::initParticleLineLeft,
+                                            .drawParticle = ECS::ParticleSystem::drawParticlesDefault
                                     }
                                 );
                                 _coordinator->addComponent(
@@ -213,15 +215,14 @@ namespace RT {
                                     ECS::Particles{
                                         .particles = std::vector<ECS::Particle>(500),
                                         .texture = _particleTexture,
-                                        .type = ECS::ParticleType::CONE,
-                                        .direction = ECS::Direction::RIGHT,
                                         .speed = 75.0f,
                                         .scaleOffset = 3.0f,
                                         .positionOffset = {0.5, 0, 0},
                                         .lifeTime = 2,
                                         .spawnRate = 35,
-                                        .spawnTimer = 0,
-                                        .surviveChance = 5
+                                        .surviveChance = 5,
+                                        .initParticle = ECS::ParticleSystem::initParticleConeRight,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault
                                     }
                                 );
                                 _coordinator->addComponent(
@@ -242,15 +243,14 @@ namespace RT {
                                     ECS::Particles{
                                         .particles = std::vector<ECS::Particle>(1000),
                                         .texture = _starTexture,
-                                        .type = ECS::ParticleType::CONE,
-                                        .direction = ECS::Direction::LEFT,
                                         .speed = 40.0f,
                                         .scaleOffset = .5f,
                                         .positionOffset = {95, 0, -120},
                                         .lifeTime = 360,
                                         .spawnRate = 1,
-                                        .spawnTimer = 0,
-                                        .surviveChance = 0
+                                        .surviveChance = 0,
+                                        .initParticle = ECS::ParticleSystem::initParticleStarfieldBackground,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesStarfieldBackground
                                     }
                                 );
                             } else {
@@ -288,7 +288,6 @@ namespace RT {
             std::shared_ptr<std::set<Entity>> _entities;
             std::unordered_map<Entity, Entity> _serverToClient;
             std::shared_ptr<RL::ICamera> _cam;
-            std::shared_ptr<RL::ZTexture> _starTexture;
             std::shared_ptr<RL::ZModel> _playerModel;
             std::shared_ptr<RL::ZModel> _tileBMmodel;
             std::shared_ptr<RL::ZModel> _tileModel;
@@ -296,7 +295,8 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _modelShot;
             std::shared_ptr<RL::ZModel> _modelEnemyShot;
             std::shared_ptr<RL::ZTexture> _textureEnemy;
-            std::shared_ptr<RL::ZTexture> _particleTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _particleTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
     };
 }
 
