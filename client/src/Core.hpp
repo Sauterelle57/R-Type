@@ -28,6 +28,7 @@
 #include "IUdpClient.hpp"
 #include "UdpClient.hpp"
 #include "Sound.hpp"
+#include <mutex>
 
 namespace RT {
 
@@ -74,6 +75,8 @@ namespace RT {
             std::unique_ptr<tls::IClock> _clock;
 
             std::unique_ptr<RL::IAudio> _audio;
+
+            std::shared_ptr<std::mutex> _messageQueueMutex;
     };
 };
 

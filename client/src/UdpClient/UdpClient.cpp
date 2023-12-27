@@ -5,10 +5,11 @@
 #include "UdpClient.hpp"
 
 namespace rt {
-    void UdpClient::setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages) {
+    void UdpClient::setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex) {
         serverEndpoint = sf::IpAddress(serverIP);
         serverPortNumber = serverPort;
         this->receivedMessages = receivedMessages;
+        this->_messageQueueMutex = messageQueueMutex;
 
         if (socket.bind(0) != sf::Socket::Done) {
             std::cerr << "Error binding to a port" << std::endl;
@@ -55,6 +56,7 @@ namespace rt {
         while (*running) {
             std::string message = receive();
             //std::cout << "message..." << std::endl;
+            std::lock_guard<std::mutex> lock(*_messageQueueMutex);
             receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
         }
     }

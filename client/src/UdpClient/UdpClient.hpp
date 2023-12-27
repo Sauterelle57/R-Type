@@ -13,7 +13,7 @@ namespace rt {
         UdpClient() = default;
         ~UdpClient() = default;
 
-        void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
+        void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex);
 
         void send(const std::string& message);
 
@@ -26,6 +26,7 @@ namespace rt {
         sf::IpAddress serverEndpoint;
         unsigned short serverPortNumber{};
         std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
+        std::shared_ptr<std::mutex> _messageQueueMutex;
     };
 
 } // namespace rt
