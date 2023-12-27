@@ -20,6 +20,21 @@ void signalHandler(int signum) {
 int main()
 {
     std::signal(SIGINT, signalHandler);
+
+    std::cout << "Starting client..." << std::endl;
+    rt::UdpClient udpClient;
+
+    std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
+    udpClient.setup("127.0.0.1", 1234, receivedMessages);
+
+    rt::ProtocolController pc;
+    pc.init();
+    rt::Protocol protocol = pc.setSender(rt::CLIENT).setProtocol(rt::CONNECTION_REQUEST).getProtocol();
+
+    udpClient.sendStruct(protocol);
+    rt::Protocol p = udpClient.receiveStruct();
+    std::cout << "Received: " << p.sender << " " << p.protocol << std::endl;
+    return 0;
     std::unique_ptr<RT::Core> core = std::make_unique<RT::Core>();
     core->loop();
 //    std::shared_ptr<std::queue<rt::ReceivedMessage>> receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();

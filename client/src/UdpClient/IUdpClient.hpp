@@ -13,6 +13,8 @@
 #include <memory>
 #include <queue>
 
+#include "Protocol.hpp"
+
 namespace rt {
     struct ReceivedMessage {
         std::string message;
@@ -25,7 +27,10 @@ namespace rt {
         virtual ~IUdpClient() = default;
         virtual void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages) = 0;
         virtual void send(const std::string& message) = 0;
+        virtual void sendStruct(const rt::Protocol &protocol) = 0;
+
         virtual std::string receive() = 0;
+        virtual rt::Protocol receiveStruct() = 0;
         virtual void run(std::shared_ptr<bool> running) = 0;
     };
 

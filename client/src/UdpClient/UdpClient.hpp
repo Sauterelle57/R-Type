@@ -2,6 +2,7 @@
 #define UDP_CLIENT_HPP_
 
 #include "IUdpClient.hpp"
+#include "Protocol.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <queue>
@@ -16,8 +17,10 @@ namespace rt {
         void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
 
         void send(const std::string& message);
+        void sendStruct(const rt::Protocol &protocol);
 
         std::string receive();
+        rt::Protocol receiveStruct();
 
         void run(std::shared_ptr<bool> running);
 
