@@ -243,10 +243,10 @@ namespace RT {
                                     ECS::Particles{
                                         .particles = std::vector<ECS::Particle>(1000),
                                         .texture = _starTexture,
-                                        .speed = 40.0f,
+                                        .speed = 60.0f,
                                         .scaleOffset = .5f,
                                         .positionOffset = {95, 0, -120},
-                                        .lifeTime = 360,
+                                        .lifeTime = 550,
                                         .spawnRate = 1,
                                         .surviveChance = 0,
                                         .initParticle = ECS::ParticleSystem::initParticleStarfieldBackground,

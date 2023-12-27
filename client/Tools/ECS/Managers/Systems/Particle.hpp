@@ -84,8 +84,18 @@ namespace ECS {
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                   RL::Utils::getRandomValue(-20, 0) / particles.speed};
                 auto rdmValue = RL::Utils::getRandomValue(0, 100);
-                if (rdmValue < 8)
-                    particle.id = rdmValue;
+                if (rdmValue < 50) {
+                    particle.id = rdmValue % 4;
+                    particle.speed = {RL::Utils::getRandomValue(25, 35) / particles.speed,
+                                      RL::Utils::getRandomValue(-10, 10) / particles.speed,
+                                      RL::Utils::getRandomValue(-20, 0) / particles.speed};
+                }
+                if (particle.speed._x == 0)
+                    particle.speed._x = .1;
+                if (particle.speed._y == 0)
+                    particle.speed._y = .1;
+                if (particle.speed._z == 0)
+                    particle.speed._z = .1;
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
             }
@@ -200,15 +210,23 @@ namespace ECS {
                 auto &particles = coordinator->getComponent<Particles>(entity);
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
-                std::vector<Color> colors = {RED, GREEN, BLUE, YELLOW, MAGENTA, ORANGE, PINK, WHITE};
+                std::vector<Color> colors = {SKYBLUE, MAGENTA, PINK, SKYBLUE};
 
                 for (auto &particle : particles.particles) {
                     if (particle.active) {
                         if (particles.texture.size() > 1) {
-                            if (particle.id != 0) {
-                                camera->drawBillboard(*particles.texture[1]->getTexture(), particle.position, transform.scale * (particles.scaleOffset * 7), colors[particle.id]);
+                            if (RL::Utils::getRandomValue(0, 100) < 2) {
+                                if (particle.id != 0) {
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * (particles.scaleOffset) * 4, colors[particle.id]);
+                                } else {
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * particles.scaleOffset * 4, WHITE);
+                                }
                             } else {
-                                camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * particles.scaleOffset, WHITE);
+                                if (particle.id != 0) {
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * (particles.scaleOffset), colors[particle.id]);
+                                } else {
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * particles.scaleOffset, WHITE);
+                                }
                             }
                         }
                     }
