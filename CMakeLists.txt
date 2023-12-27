@@ -232,6 +232,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/protocol
 )
 
 target_include_directories(rtype_client PRIVATE

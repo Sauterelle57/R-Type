@@ -9,6 +9,7 @@
 #include <string>
 
 #include "IWrapper.hpp"
+#include "Protocol.hpp"
 
 namespace rt {
 
@@ -26,6 +27,9 @@ namespace rt {
 
             const std::array<char, 1024>& getRecvBuffer() const;
             std::pair<std::string, int> getRemoteEndpoint() const;
+            
+            static std::string _serializeData(const rt::Protocol& protocol);
+            static rt::Protocol _deserializeData(const std::string& data);
 
         private:
             boost::asio::io_service ioService;

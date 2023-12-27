@@ -72,4 +72,27 @@ namespace rt {
         return {remoteEndpoint.address().to_string(), static_cast<int>(remoteEndpoint.port())};
     }
 
+    std::string AsioWrapper::_serializeData(const rt::Protocol& protocol)
+    {
+        std::ostringstream oss;
+
+        // Serialize each member of rt::Protocol into binary
+        oss.write(reinterpret_cast<const char*>(&protocol.id), sizeof(protocol.id));
+        oss.write(reinterpret_cast<const char*>(&protocol.event), sizeof(protocol.event));
+
+        return oss.str();
+    }
+
+    rt::Protocol AsioWrapper::_deserializeData(const std::string& data)
+    {
+        std::istringstream iss(data);
+        rt::Protocol deserializedData;
+
+        // Deserialize each member of rt::Protocol from binary
+        iss.read(reinterpret_cast<char*>(&deserializedData.id), sizeof(deserializedData.id));
+        iss.read(reinterpret_cast<char*>(&deserializedData.event), sizeof(deserializedData.event));
+
+        return deserializedData;
+    }
+
 } // namespace rt
