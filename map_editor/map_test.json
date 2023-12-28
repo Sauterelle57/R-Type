@@ -1,21 +1,27 @@
 {
-    "niveau": 1,
-    "evenements": [
-      {
-        "type": "apparition_ennemi",
-        "position_cam_x": 500,
-        "ennemis": [
-          {"type": "ennemi1", "x": 100, "y": 50},
-          {"type": "ennemi2", "x": 200, "y": 100}
-        ]
+  "niveau": 1,
+  "paliers": [
+    {
+      "position_x": 500,
+      "conditions": {
+        "score_min": 1000,
+        "nb_ennemis_detruits": 20
       },
-      {
-        "type": "apparition_bonus",
-        "position_x": 1000,
-        "position_y": 75,
-        "bonus": [
-          {"type": "bonus1", "x": 150, "y": 75}
-        ]
-      }
-    ]
-  }
+      "entites": [
+        {"type": "ennemi1", "x": 100, "y": 50},
+        {"type": "ennemi2", "x": 200, "y": 100},
+        {"type": "bonus1", "x": 150, "y": 75}
+      ]
+    },
+    {
+      "position_x": 1000,
+      "conditions": {
+        "score_minimum": 2000,
+        "nombre_ennemis_detruits": 40
+      },
+      "entites": [
+        {"type": "autre_type_entite", "x": 300, "y": 120}
+      ]
+    }
+  ]
+}
