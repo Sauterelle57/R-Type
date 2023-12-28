@@ -66,6 +66,11 @@ namespace RT {
                     _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/star.png"));
                     _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/planet.png"));
                 }
+                {
+                    _explosionTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
+                    for (int i = 1; i <= 9; i++)
+                        _explosionTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/explosion " + std::to_string(i) + ".png"));
+                }
             };
             ~Listener() = default;
             void onEvent() {
@@ -270,7 +275,36 @@ namespace RT {
                                         scale
                                 };
                             } else if (token == "DESTROY") {
+                                auto transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[std::stoi(id)]);
                                 _coordinator->destroyEntity(_serverToClient[std::stoi(id)]);
+
+                                _entities->insert(_entities->end(), _coordinator->createEntity());
+                                transform.scale = 1;
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    transform
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Particles{
+                                        .particles = std::vector<ECS::Particle>(10),
+                                        .texture = _explosionTexture,
+                                        .speed = 400.0f,
+                                        .scaleOffset = .3f,
+                                        .positionOffset = {0, 0, 0},
+                                        .lifeTime = 6000,
+                                        .spawnRate = 1,
+                                        .surviveChance = 30,
+                                        .initParticle = ECS::ParticleSystem::initParticleExplosion,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesExplosion
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::SelfDestruct{
+                                        .timer = tls::Clock(.4)
+                                    }
+                                );
                             } else {
 //                                std::cout << "[UPDATE] Unknown token : " << token << std::endl;
                             }
@@ -297,6 +331,7 @@ namespace RT {
             std::shared_ptr<RL::ZTexture> _textureEnemy;
             std::vector<std::shared_ptr<RL::ZTexture>> _particleTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _explosionTexture;
     };
 }
 
