@@ -12,23 +12,22 @@
 #include <optional>
 #include <memory>
 #include <queue>
-#include "Protocol.hpp"
-#include <string>
+#include <mutex>
 
 namespace rt {
     struct ReceivedMessage {
         std::string message;
-        std::string senderIp;
-        unsigned short senderPort;
+        std::string address;
+        unsigned short port;
     };
 
     class IUdpClient {
-        public:
-            virtual ~IUdpClient() = default;
-
-            virtual void send(const Protocol& message) = 0;
-            virtual Protocol receive() = 0;
-            virtual void run() = 0;
+    public:
+        virtual ~IUdpClient() = default;
+        virtual void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex) = 0;
+        virtual void send(const std::string& message) = 0;
+        virtual std::string receive() = 0;
+        virtual void run(std::shared_ptr<bool> running) = 0;
     };
 
 }

@@ -23,6 +23,13 @@
 #include "Particle.hpp"
 #include "Projectile.hpp"
 #include "Shoot.hpp"
+#include "Cam.hpp"
+#include "Traveling.hpp"
+#include "IListener.hpp"
+#include "IUdpClient.hpp"
+#include "UdpClient.hpp"
+#include "Sound.hpp"
+#include <mutex>
 
 namespace RT {
 
@@ -33,12 +40,15 @@ namespace RT {
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
         std::shared_ptr<ECS::Shoot> _systemShoot;
         std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
+        std::shared_ptr<ECS::CamSystem> _systemCamera;
+        std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
+        std::shared_ptr<ECS::SoundSystem> _systemSound;
     };
 
     class Core {
         public:
             Core();
-            ~Core() = default;
+            ~Core();
             void loop();
             void initEntities();
             void initComponents();
@@ -53,8 +63,22 @@ namespace RT {
             std::shared_ptr<RL::IEvent> _event;
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
-            std::set<ECS::Entity> _entities;
+            std::shared_ptr<std::set<ECS::Entity>> _entities;
             System _systems;
+
+            std::unique_ptr<IListener> _listener;
+
+            std::shared_ptr<std::queue<rt::ReceivedMessage>> _receivedMessages;
+            std::shared_ptr<rt::UdpClient> _udpClient;
+            std::unique_ptr<std::thread> _udpClientThread;
+
+            std::shared_ptr<bool> _isRunning;
+
+            std::unique_ptr<tls::IClock> _clock;
+
+            std::unique_ptr<RL::IAudio> _audio;
+
+            std::shared_ptr<std::mutex> _messageQueueMutex;
     };
 };
 

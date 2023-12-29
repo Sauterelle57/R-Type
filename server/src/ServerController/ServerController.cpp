@@ -5,11 +5,10 @@
 
 namespace rt {
 
-    ServerController::ServerController(short port, std::shared_ptr<IGameController> &gameCtrl)
-        : asioWrapper(port, AsioWrapper::ReceiveHandler([this](int error, std::size_t bytes_transferred) {
+    ServerController::ServerController(short port, std::shared_ptr<IGameController> &gameCtrl) {
+        _asioWrapper = std::make_shared<AsioWrapper>(port, AsioWrapper::ReceiveHandler([this](int error, std::size_t bytes_transferred) {
             handleReceivedData(error, bytes_transferred);
-        }))
-    {
+        }));
         _gameCtrl = gameCtrl;
     }
 
@@ -17,16 +16,17 @@ namespace rt {
     {
         std::cout << "Server is running..." << std::endl;
 
-        asioWrapper.run();
+        _asioWrapper->run();
     }
 
     void ServerController::handleReceivedData(const int error, std::size_t bytes_transferred)
     {
         if (!error) {
-            auto receivedData = asioWrapper.getReceivedDataByStruct();
-            std::cout << "(<) Received data: [" << receivedData.id << "]" << std::endl;
+            auto x = _asioWrapper->getRecvBuffer();
+            std::string result = std::string(x.data(), bytes_transferred);
+            std::cout << "(<) Received data: [" << result << "]" << std::endl;
             //asioWrapper.sendTo("data", asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
-            //_gameCtrl->addReceivedData(asioWrapper.getReceivedData().data(), asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
+            _gameCtrl->addReceivedData(result, _asioWrapper->getRemoteEndpoint().first, _asioWrapper->getRemoteEndpoint().second);
         } else {
             std::cerr << "Error receiving data: " << error << std::endl;
         }

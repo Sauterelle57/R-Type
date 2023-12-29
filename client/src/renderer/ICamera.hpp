@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <memory>
+#include "Vec3.hpp"
 
 struct Ray;
 struct Matrix;
@@ -33,7 +34,7 @@ namespace RL {
             virtual void drawBillboard(Texture2D texture, Vector3 position, float size, Color tint) = 0;
             virtual void drawBillboardRec(Texture2D texture, Rectangle source, Vector3 position, Vector2 size, Color tint) = 0;
             virtual void drawBillboardPro(Texture2D texture, Rectangle source, Vector3 position, Vector3 up, Vector2 size, Vector2 origin, float rotation, Color tint) = 0;
-            virtual Vector3 getPosition() = 0;
+            virtual tls::Vec3 getPosition() = 0;
             virtual void setPosition(Vector3 position) = 0;
             virtual Vector3 getTarget() = 0;
             virtual void setTarget(Vector3 target) = 0;

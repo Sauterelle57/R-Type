@@ -1,0 +1,30 @@
+# R-Type Protocol
+
+## Protocol (Client => Server)
+
+| COMMAND            | ARGS      | RESULT |
+| ------------------ | --------- | ------ |
+| CONNECTION_REQUEST | []        | []     |
+| PING               | []        | "OK"   |
+| MOVE               | [x y z]   | []     |
+| SHOOT              | []        | []     |
+
+## Protocol Event (Server => Client)
+
+1. Display / update entity
+    ```text
+    "[ID] TRANSFORM [PX] [PY] [PZ] [RX] [RY] [RZ] [RA] [SCALE] [TYPE]"
+
+    ID: ECS's ID
+    PX, PY, PZ: Entity position
+    RX, RY, RZ, RA: Entity rotation
+    SCALE: Entity scale
+    TYPE: Entity type (ex: PLAYER, ENEMY, ...)
+    ```
+
+2. Destroy entity
+    ```text
+    "[ID] DESTROY"
+
+    ID: ECS's ID
+    ```

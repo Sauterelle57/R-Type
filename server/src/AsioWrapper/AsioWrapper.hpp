@@ -13,28 +13,31 @@
 namespace rt {
 
     class AsioWrapper : public IWrapper {
-    public:
-        using ReceiveHandler = std::function<void(int, std::size_t)>;
+        public:
+            using ReceiveHandler = std::function<void(int, std::size_t)>;
 
-        AsioWrapper(short port, ReceiveHandler receiveHandler);
+            AsioWrapper(short port, ReceiveHandler receiveHandler);
 
-        void run() override;
-        void startReceive() override;
-        void sendToByStruct(const Protocol& message, const std::string& ipAddress, unsigned short port) override;
-        std::vector<char> getReceivedData() const override;
-        Protocol getReceivedDataByStruct() const override;
-        std::pair<std::string, int> getRemoteEndpoint() const override;
+            void run();
+            void startReceive();
+            void sendTo(const std::string& message, const std::string& ipAddress, unsigned short port);
 
-    private:
-        boost::asio::io_service ioService;
-        boost::asio::ip::udp::socket socket;
-        boost::asio::ip::udp::endpoint remoteEndpoint;
-        std::vector<char> recvBuffer;  // Store received data dynamically
-        ReceiveHandler receiveHandler;
+            std::vector<char> getReceivedData() const;
 
-        void handleReceive(const boost::system::error_code& error, std::size_t bytes_transferred);
+            const std::array<char, 1024>& getRecvBuffer() const;
+            std::pair<std::string, int> getRemoteEndpoint() const;
+
+        private:
+            boost::asio::io_service ioService;
+            boost::asio::ip::udp::socket socket;
+            boost::asio::ip::udp::endpoint remoteEndpoint;
+            std::array<char, 1024> recvBuffer;
+
+            ReceiveHandler receiveHandler;
+
+            void handleReceive(const boost::system::error_code& error, std::size_t bytes_transferred);
     };
 
 } // namespace rt
 
-#endif /* ASIOWRAPPER_HPP_ */
+#endif
