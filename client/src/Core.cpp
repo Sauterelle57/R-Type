@@ -163,7 +163,7 @@ namespace RT {
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
-//        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
 
 
 //        {
@@ -227,12 +227,12 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::SelfDestructSystem>(signature);
         }
 
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Traveling>());
-//            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
-//        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
     }
 
     void Core::loop() {

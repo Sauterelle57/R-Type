@@ -71,6 +71,11 @@ namespace RT {
                     for (int i = 1; i <= 9; i++)
                         _explosionTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/explosion " + std::to_string(i) + ".png"));
                 }
+                {
+                    _nebTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
+                    for (int i = 1; i <= 9; i++)
+                        _nebTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/neb " + std::to_string(i) + ".png"));
+                }
             };
             ~Listener() = default;
             void onEvent() {
@@ -258,6 +263,40 @@ namespace RT {
                                         .drawParticle = ECS::ParticleSystem::drawParticlesStarfieldBackground
                                     }
                                 );
+
+                                Entity nebEntity = _coordinator->createEntity();
+                                _entities->insert(_entities->end(), nebEntity);
+                                _coordinator->addComponent(
+                                        nebEntity,
+                                        ECS::Transform{
+                                                {0, 0, 0},
+                                                {0, 0, 0, 0},
+                                                1
+                                        }
+                                );
+//                                _coordinator->addComponent(
+//                                        nebEntity,
+//                                        ECS::Traveling{
+//                                                {0.1, 0, 0},
+//                                        }
+//                                );
+                                _coordinator->addComponent(
+                                        nebEntity,
+                                        ECS::Particles{
+                                                .particles = std::vector<ECS::Particle>(50000),
+                                                .texture = _nebTexture,
+                                                .speed = 100.0f,
+                                                .scaleOffset = .8f,
+                                                .positionOffset = {0, 0, -120},
+                                                .lifeTime = 100,
+                                                .spawnRate = 1,
+                                                .surviveChance = 25,
+                                                .initParticle = ECS::ParticleSystem::initParticleNeb,
+                                                .drawParticle = ECS::ParticleSystem::drawParticlesNeb
+                                        }
+                                );
+
+
                             } else {
                                 std::cout << "Unknown token : " << token << std::endl;
                             }
@@ -332,6 +371,7 @@ namespace RT {
             std::vector<std::shared_ptr<RL::ZTexture>> _particleTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _explosionTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _nebTexture;
     };
 }
 

@@ -101,6 +101,32 @@ namespace ECS {
                 particle.active = true;
             }
 
+            static void initParticleNeb(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
+                if (!coordinator) {
+                    return;
+                }
+
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+                particle.position = transform.position + particles.positionOffset;
+                particle.scale = transform.scale * particles.scaleOffset;
+                float angleRadians = RL::Utils::getRandomValue(0, 360) * (M_PI / 180);
+
+                particle.speed = {
+                        cos(angleRadians) * (0.55 / particles.speed),
+                        sin(angleRadians) *  (0.45 / particles.speed),
+                        -0.1
+                };
+
+                particle.speed += particle.speed * RL::Utils::getRandomValue(-10, 10) / 100;
+
+                particle.id = RL::Utils::getRandomValue(1, 9);
+                particle.alpha = particles.lifeTime;
+                particle.active = true;
+            }
+
+
             static void initParticleStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
                 if (!coordinator) {
                     return;
@@ -292,13 +318,34 @@ namespace ECS {
                             if (particle.scale < 0.1) {
                                 particle.scale = 0.1;
                             }
-                            std::cout << particle.id << " " << particle.scale << std::endl;
                             camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale,  RL::Utils::fade(WHITE, particle.alpha));
                         }
                     }
                 }
                 mode.endBlend();
                 shader->endMode();
+            }
+
+            static void drawParticlesNeb(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+//                RL::ZMode mode;
+
+                shader->beginMode();
+//                mode.beginBlend(BLEND_ALPHA);
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+
+                for (auto &particle : particles.particles) {
+                    if (particle.active) {
+                        if (particles.texture.size() > 8) {
+                            particle.scale += 0.01 + (RL::Utils::getRandomValue(0, 10) / 40);
+                            camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale,
+                                                  {255, 255, 255, 100});
+                        }
+                    }
+                }
+//                mode.endBlend();
+//                shader->endMode();
             }
 
             void update(std::shared_ptr<RL::ICamera> _camera, std::shared_ptr<RL::IShader> _shader) {
