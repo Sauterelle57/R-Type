@@ -11,18 +11,18 @@
     };
 
     struct Conditions {
-        int score_minimum;
-        int nombre_ennemis_detruits;
+        int score_min;
+        int destroyed;
     };
 
     struct Palier {
-        int position_x;
+        int pos_x;
         Conditions conditions;
         std::vector<Entite> entites;
     };
 
     struct stage_value {
-        int niveau;
+        int stage;
         std::vector<Palier> paliers;
     };
 

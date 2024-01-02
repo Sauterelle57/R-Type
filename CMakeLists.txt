@@ -6,12 +6,21 @@ set(CMAKE_CXX_STANDARD 20)
 include(FetchContent)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(
+
         SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
         GIT_TAG 2.6.1
 )
 
 FetchContent_MakeAvailable(SFML)
+
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.10.2
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
 
 if (UNIX)
     set(RAYLIB_VERSION 5.0)
@@ -213,6 +222,8 @@ add_executable(rtype_client
         client/Tools/Error/Error.hpp
         server/Tools/ECS/Managers/Systems/Collider.hpp
         client/Tools/ECS/Managers/Systems/Sound.hpp
+
+        map_editor/test_lib_json.hpp ## test
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -232,6 +243,8 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+
+        ${CMAKE_SOURCE_DIR}/map_editor/test_lib_json ## test
 )
 
 target_include_directories(rtype_client PRIVATE
@@ -261,6 +274,10 @@ target_include_directories(rtype_client PRIVATE
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
+
+add_library(nlohmann_json INTERFACE)
+target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR}/single_include)
+target_link_libraries(rtype_server PRIVATE nlohmann_json::nlohmann_json)
 
 
 # Web Configurations

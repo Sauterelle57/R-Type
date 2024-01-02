@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include "test_lib_json.hpp"
+
 #define DEBUG_GAMECONTROLLER 0 // Only for testing purposes
 
 namespace rt {
@@ -45,16 +47,11 @@ namespace rt {
                 _systems._systemMove->update();
                 _systems._systemEnemy->update();
             }
-            if (_clockEnemySpawn.isTimeElapsed()) {
-                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-                }
-
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
-            }
+            // update map a partir des infos du player ici
         }
     }
+
+
 
     void GameController::addReceivedData(const std::string &data, const std::string &ip, const int port) {
         _receivedData.push({data, ip, port});
@@ -471,10 +468,8 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnnemy({40, 20, 0}, 1.5);
-            _createEnnemy({50, 10, 0}, 1.7);
-            _createEnnemy({55, 0, 0}, 1.2);
-            _createEnnemy({35, -6, 0}, 2);
+//            creatEnmemy here
+//            do the initialisation of map here ?
         }
     }
 }
