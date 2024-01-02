@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <array>
 #include <cstdint>
 #include <bitset>
 #include "Vec3.hpp"

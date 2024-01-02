@@ -142,7 +142,8 @@ int main() {
     pc.setSender(rt::SENDER_TYPE::SERVER).setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
 
     pc.addEntity(1, {1, 2, 3}, {0, 1, 1, 90}, .25f, rt::ENTITY_TYPE::PLAYER);
-
+    pc.addEntity(2, {10, 11, 12}, {90, 0, 90, 180}, 1, rt::ENTITY_TYPE::ENEMY);
+    pc.addEntity(3, {13, 14, 15}, {1, 1, 0, 180}, 2, rt::ENTITY_TYPE::ENEMY);
     auto str = pc.serialize();
     std::cout << str << std::endl;
 
