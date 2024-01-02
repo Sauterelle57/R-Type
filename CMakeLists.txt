@@ -138,6 +138,9 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/Enemy.hpp
         server/map_parser/test_lib_json.cpp
         server/map_parser/test_lib_json.hpp
+
+        server/map_parser/IParser.hpp
+        server/map_parser/Parser.hpp
 )
 
 add_executable(rtype_client
@@ -250,6 +253,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
 
         ${CMAKE_SOURCE_DIR}/server/map_parser/ ## test
+        ${CMAKE_SOURCE_DIR}/server/map_editor/
 )
 
 target_include_directories(rtype_client PRIVATE

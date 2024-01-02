@@ -1,4 +1,5 @@
 #include "test_lib_json.hpp"
+#include "Parser.hpp"
 
 using json = nlohmann::json;
 
@@ -40,24 +41,29 @@ lvl::StageValue json_parsing(const std::string& path) {
     return result;
 }
 
-//int main() {
-//    const std::string path = "map_editor/map_test.json";
-//    lvl::StageValue data = json_parsing(path);
-//
-//    std::cout << "Niveau : " << data.stage << std::endl;
-//
-//    for (const auto& step : data.step) {
-//        std::cout << "Position X du palier : " << step.pos_x << std::endl;
-//
-//        std::cout << "Conditions du palier :" << std::endl;
-//        std::cout << "Score minimum : " << step.conditions.score_min << std::endl;
-//        std::cout << "Nombre d'ennemis detruits minimum : " << step.conditions.destroyed << std::endl;
-//
-//        std::cout << "Entités du palier :" << std::endl;
-//        for (const auto& entity : step.entity) {
-//            std::cout << "  Type : " << entity.type << ", Position : (" << entity.x << ", " << entity.y << ")" << std::endl;
-//        }
-//    }
-//
-//    return 0;
-//}
+int main() {
+
+    lvl::Parser json("map_editor/map_test.json");
+
+
+
+    const std::string path = "map_editor/map_test.json";
+    lvl::StageValue data = json_parsing(path);
+
+    std::cout << "Niveau : " << data.stage << std::endl;
+
+    for (const auto& step : data.step) {
+        std::cout << "Position X du palier : " << step.pos_x << std::endl;
+
+        std::cout << "Conditions du palier :" << std::endl;
+        std::cout << "Score minimum : " << step.conditions.score_min << std::endl;
+        std::cout << "Nombre d'ennemis detruits minimum : " << step.conditions.destroyed << std::endl;
+
+        std::cout << "Entités du palier :" << std::endl;
+        for (const auto& entity : step.entity) {
+            std::cout << "  Type : " << entity.type << ", Position : (" << entity.x << ", " << entity.y << ")" << std::endl;
+        }
+    }
+
+    return 0;
+}
