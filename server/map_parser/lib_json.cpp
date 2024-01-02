@@ -5,9 +5,9 @@ lvl::StageValue json_parsing(const std::string& path) {
     lvl::JsonParser json_parser(path);
 
     lvl::StageValue result;
-    result.stage = json_parser.get_key<int>("stage");
+    result.stage = json_parser.get<int>("stage");
 
-    auto steps = json_parser.get_list<nlohmann::json>("step");
+    auto steps = json_parser.get<nlohmann::json>("step");
     for (const auto& step : steps) {
         lvl::Step p;
         p.pos_x = step["pos_x"].get<int>();
