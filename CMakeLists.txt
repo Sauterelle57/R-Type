@@ -15,12 +15,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SFML)
 
 FetchContent_Declare(
-        nlohmann_json
+        json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.10.2
+        GIT_TAG v3.10.5
 )
 
-FetchContent_MakeAvailable(nlohmann_json)
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
 
 if (UNIX)
     set(RAYLIB_VERSION 5.0)
@@ -131,6 +136,7 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
         server/Tools/ECS/Managers/Systems/Enemy.hpp
+        map_editor/test_lib_json.cpp
 )
 
 add_executable(rtype_client
@@ -244,7 +250,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
 
-        ${CMAKE_SOURCE_DIR}/map_editor/test_lib_json ## test
+        ${CMAKE_SOURCE_DIR}/map_editor/ ## test
 )
 
 target_include_directories(rtype_client PRIVATE
@@ -274,9 +280,6 @@ target_include_directories(rtype_client PRIVATE
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
-
-add_library(nlohmann_json INTERFACE)
-target_include_directories(nlohmann_json INTERFACE ${nlohmann_json_SOURCE_DIR}/single_include)
 target_link_libraries(rtype_server PRIVATE nlohmann_json::nlohmann_json)
 
 

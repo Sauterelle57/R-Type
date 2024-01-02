@@ -1,11 +1,11 @@
 {
-  "niveau": 1,
+  "stage": 1,
   "paliers": [
     {
-      "position_x": 500,
+      "pos_x": 500,
       "conditions": {
         "score_min": 1000,
-        "nb_ennemis_detruits": 20
+        "destroyed": 20
       },
       "entites": [
         {"type": "ennemi1", "x": 100, "y": 50},
@@ -14,10 +14,10 @@
       ]
     },
     {
-      "position_x": 1000,
+      "pos_x": 1000,
       "conditions": {
-        "score_minimum": 2000,
-        "nombre_ennemis_detruits": 40
+        "score_min": 2000,
+        "destroyed": 40
       },
       "entites": [
         {"type": "autre_type_entite", "x": 300, "y": 120}
