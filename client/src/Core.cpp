@@ -7,6 +7,7 @@
 
 #include <thread>
 #include "../Tools/ECS/Managers/Components/ComponentStructs.hpp"
+#include "../Tools/ECS/Managers/Systems/Sound.hpp"
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/Cursor.hpp"
@@ -15,13 +16,13 @@
 #include "renderer/Texture.hpp"
 #include "renderer/Utils.hpp"
 #include "Core.hpp"
-#include "Utils.hpp"
 #include "Move.hpp"
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "MultipleLink.hpp"
 #include "Listener.hpp"
 #include "renderer/Audio.hpp"
+#include "Menu.hpp"
 
 namespace RT {
 
@@ -236,6 +237,10 @@ namespace RT {
         int glowIntensityLoc = shader->getLocation("glowIntensity");
         float glowIntensity = 3.0f;
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
+
+        Menu menu;
+        menu.loop(_window, _event, false);
+        // _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex);
 
         while (!_window->shouldClose()) {
             while (!_receivedMessages->empty()) {
