@@ -151,6 +151,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::MultipleLink>();
         _coordinator->registerComponent<ECS::Sound>();
         _coordinator->registerComponent<ECS::SelfDestruct>();
+        _coordinator->registerComponent<ECS::Animation>();
     }
 
     void Core::initSystem() {
@@ -164,6 +165,7 @@ namespace RT {
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemAnimation = _coordinator->registerSystem<ECS::ModelAnimationSystem>();
 
 
 //        {
@@ -233,6 +235,13 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Traveling>());
             _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            signature.set(_coordinator->getComponentType<ECS::Animation>());
+            _coordinator->setSystemSignature<ECS::ModelAnimationSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -264,6 +273,7 @@ namespace RT {
                 _systems._systemParticles->update(_camera, shader);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
+                _systems._systemAnimation->update();
 
                 _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();

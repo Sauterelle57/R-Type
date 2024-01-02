@@ -26,6 +26,7 @@
 #include "Coordinator.hpp"
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
+#include "renderer/ModelAnimation.hpp"
 
 namespace ECS {
     enum Direction {
@@ -152,6 +153,12 @@ namespace ECS {
         tls::Clock timer;
     };
 
+    struct Animation {
+        int animsCount = 0;
+        unsigned int animIndex = 0;
+        int animCurrentFrame = 0;
+        std::shared_ptr<RL::ZModelAnimation> modelAnimation;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

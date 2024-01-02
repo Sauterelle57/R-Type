@@ -45,14 +45,14 @@ namespace rt {
                 _systems._systemMove->update();
                 _systems._systemEnemy->update();
             }
-            if (_clockEnemySpawn.isTimeElapsed()) {
-                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-                }
-
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
-            }
+//            if (_clockEnemySpawn.isTimeElapsed()) {
+//                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+//                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+//                }
+//
+//                if (_waveEnemy < 8)
+//                    _waveEnemy++;
+//            }
         }
     }
 
@@ -114,6 +114,7 @@ namespace rt {
         _coordinator->registerComponent<ECS::Player>();
         _coordinator->registerComponent<ECS::Enemy>();
         _coordinator->registerComponent<ECS::Shooter>();
+        _coordinator->registerComponent<ECS::ButterFlyBoss>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
     }
@@ -376,6 +377,69 @@ namespace rt {
         );
     }
 
+    void GameController::_createButterFlyBoss(tls::Vec3 pos) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Traveling {
+                    .speed = {0.01, 0, 0}
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Transform {
+                        .position = pos,
+                        .rotation = {0, 0, 0, 0},
+                        .scale = .1f
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Weapon {
+                        .damage = 1,
+                        .speed = 1,
+                        .durability = 1,
+                        .create_projectile = ECS::Shoot::basicEnemyShot
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Collider {
+                        .team = 1,
+                        .breakable = true,
+                        .movable = false,
+                        .velocity = {0.005, 0, 0}
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Type {
+                        .name = "BUTTERFLY_BOSS"
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::ClientUpdater {
+                        .wrapper = _wrapper,
+                        .clientController = _clientController
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::ButterFlyBoss {
+                        .clock = tls::Clock(.1)
+                }
+        );
+        _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Shooter {
+                        .isShooting = false
+                }
+        );
+    }
+
+
     void GameController::_createTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
@@ -471,10 +535,11 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnnemy({40, 20, 0}, 1.5);
-            _createEnnemy({50, 10, 0}, 1.7);
-            _createEnnemy({55, 0, 0}, 1.2);
-            _createEnnemy({35, -6, 0}, 2);
+//            _createEnnemy({40, 20, 0}, 1.5);
+//            _createEnnemy({50, 10, 0}, 1.7);
+//            _createEnnemy({55, 0, 0}, 1.2);
+//            _createEnnemy({35, -6, 0}, 2);
+            _createButterFlyBoss({0, 10, 0});
         }
     }
 }

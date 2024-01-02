@@ -76,6 +76,15 @@ namespace RT {
                     for (int i = 1; i <= 9; i++)
                         _nebTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/neb " + std::to_string(i) + ".png"));
                 }
+                {
+                    _modelButterflyBoss = std::make_shared<RL::ZModel>("./client/resources/models/untitled2.fbx");
+                    Matrix matr = MatrixIdentity();
+//                    matr = MatrixMultiply(matr, MatrixRotateX(-90 * DEG2RAD));
+//                    matr = MatrixMultiply(matr, MatrixRotateY(-90 * DEG2RAD));
+                    _modelButterflyBoss->_model->transform = matr;
+
+                    _modelButterflyBossAnimation = std::make_shared<RL::ZModelAnimation>("./client/resources/models/untitled2.fbx", &_modelButterflyBossAnimationCount);
+                }
             };
             ~Listener() = default;
             void onEvent() {
@@ -155,6 +164,22 @@ namespace RT {
                                         ECS::Model{
                                                 .model = _modelEnemy,
                                                 .texture = _textureEnemy
+                                        }
+                                );
+                            } else if (token == "BUTTERFLY_BOSS") {
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Model{
+                                                .model = _modelButterflyBoss,
+                                        }
+                                );
+
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Animation {
+                                            .animsCount = _modelButterflyBossAnimationCount,
+                                            .animIndex = 2,
+                                            .modelAnimation = _modelButterflyBossAnimation,
                                         }
                                 );
                             } else if (token == "BASIC_SHOT") {
@@ -372,6 +397,9 @@ namespace RT {
             std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _explosionTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _nebTexture;
+            std::shared_ptr<RL::ZModel> _modelButterflyBoss;
+            std::shared_ptr<RL::ZModelAnimation> _modelButterflyBossAnimation;
+            int _modelButterflyBossAnimationCount = 0;
     };
 }
 

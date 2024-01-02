@@ -73,6 +73,8 @@ namespace rt {
             void _createEnnemy(tls::Vec3 pos, float clockSpeed);
             void _createTile(tls::Vec3 pos);
             void _createBreakableTile(tls::Vec3 pos);
+            void _createButterFlyBoss(tls::Vec3 pos);
+
 
 
             std::shared_ptr<ECS::Coordinator> _coordinator;

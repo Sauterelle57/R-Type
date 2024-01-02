@@ -123,6 +123,10 @@ namespace ECS {
         bool isGoingUp = false;
         tls::Clock clock;
     };
+
+    struct ButterFlyBoss {
+        tls::Clock clock;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

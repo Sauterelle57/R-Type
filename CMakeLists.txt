@@ -214,6 +214,7 @@ add_executable(rtype_client
         server/Tools/ECS/Managers/Systems/Collider.hpp
         client/Tools/ECS/Managers/Systems/Sound.hpp
         client/Tools/ECS/Managers/Systems/SelfDestruct.hpp
+        client/Tools/ECS/Managers/Systems/ModelAnimation.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
