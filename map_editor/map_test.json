@@ -1,15 +1,15 @@
 {
   "stage": 1,
-  "paliers": [
+  "step": [
     {
       "pos_x": 500,
       "conditions": {
         "score_min": 1000,
         "destroyed": 20
       },
-      "entites": [
-        {"type": "ennemi1", "x": 100, "y": 50},
-        {"type": "ennemi2", "x": 200, "y": 100},
+      "entity": [
+        {"type": "enemy", "x": 100, "y": 50},
+        {"type": "enemy2", "x": 200, "y": 100},
         {"type": "bonus1", "x": 150, "y": 75}
       ]
     },
@@ -19,8 +19,8 @@
         "score_min": 2000,
         "destroyed": 40
       },
-      "entites": [
-        {"type": "autre_type_entite", "x": 300, "y": 120}
+      "entity": [
+        {"type": "other_entity_type", "x": 300, "y": 120}
       ]
     }
   ]

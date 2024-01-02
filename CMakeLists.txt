@@ -136,7 +136,8 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
         server/Tools/ECS/Managers/Systems/Enemy.hpp
-        map_editor/test_lib_json.cpp
+        server/map_parser/test_lib_json.cpp
+        server/map_parser/test_lib_json.hpp
 )
 
 add_executable(rtype_client
@@ -228,8 +229,6 @@ add_executable(rtype_client
         client/Tools/Error/Error.hpp
         server/Tools/ECS/Managers/Systems/Collider.hpp
         client/Tools/ECS/Managers/Systems/Sound.hpp
-
-        map_editor/test_lib_json.hpp ## test
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -250,7 +249,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
 
-        ${CMAKE_SOURCE_DIR}/map_editor/ ## test
+        ${CMAKE_SOURCE_DIR}/server/map_parser/ ## test
 )
 
 target_include_directories(rtype_client PRIVATE
