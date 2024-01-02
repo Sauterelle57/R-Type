@@ -223,14 +223,10 @@ namespace rt
                 x.set(i + 546, typeBits[i]);
         }
 
-        static void convertBitsetToEntity(std::bitset<578> x)
+        static void convertBitsetToEntity(std::bitset<578> x, std::uint32_t &ecsID, tls::Vec3 &pos, tls::Vec4 &rotation, float &scale, int &type)
         {
             std::bitset<32> ecsIdBits;
             std::array<bool, 2> signatureBits;
-            tls::Vec3 pos;
-            tls::Vec4 rotation;
-            float scale;
-            int type;
 
             // Extracting bits individually
             for (int i = 0; i < 32; ++i)
@@ -261,7 +257,7 @@ namespace rt
                 typeBits[i] = x[i + 546];
 
             // Converting back to original types
-            std::uint32_t ecsId = static_cast<std::uint32_t>(ecsIdBits.to_ulong());
+            ecsID = static_cast<std::uint32_t>(ecsIdBits.to_ulong());
             signatureBits[0] = signatureBits[1] = false;
             signatureBits[0] = x[33];
             signatureBits[1] = x[32];
@@ -278,13 +274,6 @@ namespace rt
             scale = *reinterpret_cast<float*>(&scaleBits);
 
             type = static_cast<int>(typeBits.to_ulong());
-
-            std::cout << "id : " << ecsId << std::endl;
-            std::cout << "signature : " << signatureBits[0] << ", " << signatureBits[1] << std::endl;
-            std::cout << "pos : " << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
-            std::cout << "rot : " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
-            std::cout << "scale : " << scale << std::endl;
-            std::cout << "type : " << type << std::endl;
         }
 
         Protocol getProtocol() const { return *_protocol.get(); }

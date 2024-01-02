@@ -145,7 +145,7 @@ int main() {
     pc.addEntity(2, {10, 11, 12}, {90, 0, 90, 180}, 1, rt::ENTITY_TYPE::ENEMY);
     pc.addEntity(3, {13, 14, 15}, {1, 1, 0, 180}, 2, rt::ENTITY_TYPE::ENEMY);
     auto str = pc.serialize();
-    std::cout << str << std::endl;
+    std::cout << "size : " << str.length() << std::endl;
 
     auto uncompressed = rt::ProtocolController::deserialize(str);
 
@@ -153,9 +153,18 @@ int main() {
     std::cout << uncompressed.protocol << std::endl;
     for (auto x : uncompressed.server.entities) {
         std::cout << x << std::endl;
-        rt::ProtocolController::convertBitsetToEntity(x);
+        std::uint32_t id;
+        tls::Vec3 pos;
+        tls::Vec4 rotation;
+        float scale;
+        int type;
+        rt::ProtocolController::convertBitsetToEntity(x, id, pos, rotation, scale, type);
+        std::cout << id << std::endl;
+        std::cout << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
+        std::cout << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+        std::cout << scale << std::endl;
+        std::cout << type << std::endl;
     }
-
     return 0;
     // rt::ProtocolController pc;
     // pc.init();
