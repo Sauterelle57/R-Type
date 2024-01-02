@@ -258,6 +258,7 @@ target_include_directories(rtype_client PRIVATE
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Entities
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Systems
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Coordinator
+        ${CMAKE_SOURCE_DIR}/protocol
 )
 #set(raylib_VERBOSE 1)
 

@@ -39,6 +39,7 @@ namespace rt
     struct Entity
     {
         std::uint32_t ECSEntity;
+        
         tls::Vec3 position;
         tls::Vec4 rotation;
         float scale;
