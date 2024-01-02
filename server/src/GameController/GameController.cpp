@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "test_lib_json.hpp"
+#include "lib_json.hpp"
 
 #define DEBUG_GAMECONTROLLER 0 // Only for testing purposes
 
