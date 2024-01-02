@@ -1,85 +1,49 @@
-//
-// Created by axell on 02/01/2024.
-//
+#ifndef RTYPE_JSONPARSER_HPP
+#define RTYPE_JSONPARSER_HPP
 
-#ifndef RTYPE_PARSER_HPP
-#define RTYPE_PARSER_HPP
-
-
-#include <iostream>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <string>
+#include <memory>
+#include <exception>
 
 namespace lvl {
 
-    template <typename T>
-    class JsonValue {
+    class JsonParser {
         public:
-            JsonValue() : _data(nullptr) {}
-
-            JsonValue(const nlohmann::json* data) : _data(data) {}
-
-            T get() const {
-                try {
-                    return _data->get<T>();
-                } catch (const nlohmann::json::type_error& e) {
-                    std::cerr << "Invalid conversion: " << e.what() << std::endl;
-                    return T();
-                }
-            }
-
-        private:
-            const nlohmann::json* _data;
-    };
-
-    class Parser {
-        public:
-            Parser(const std::string& filename) {
+            JsonParser(const std::string& filename) {
                 std::ifstream file(filename);
-                if (file.is_open()) {
-                    file >> _data;
-                    file.close();
-                } else {
-                    throw std::runtime_error("Erreur lors de l'ouverture du fichier JSON.");
+                if (!file.is_open()) {
+                    throw std::runtime_error("Error opening: " + filename + " file");
                 }
+                file >> _data;
             }
+
             template <typename T>
-            JsonValue<T> get_key(const std::string& key) const {
-                auto it = _data.find(key);
-                if (it != _data.end()) {
-                    if constexpr (std::is_same<T, int>::value ||
-                                  std::is_same<T, double>::value ||
-                                  std::is_same<T, std::string>::value ||
-                                  std::is_same<T, bool>::value) {
-                        return JsonValue<T>(&it.value());
-                    } else {
-                        static_assert(std::is_same<T, int>::value || std::is_same<T, double>::value ||
-                                      std::is_same<T, std::string>::value || std::is_same<T, bool>::value,
-                                      "Unsupported type");
-                    }
-                } else {
-                    std::cerr << key << " key not found in JSON." << std::endl;
-                    return JsonValue<T>();
+            T get_key(const std::string& key) const {
+                try {
+                    return _data.at(key).get<T>();
+                } catch (...) {
+                    throw std::runtime_error("JSON parsing error on " + key);
                 }
             }
 
-            template <>
-            JsonValue<nlohmann::json> get_key(const std::string& key) const {
-                auto it = _data.find(key);
-                if (it != _data.end()) {
-                    return JsonValue<nlohmann::json>(&it.value());
-                } else {
-                    std::cerr << key << " key not found in JSON." << std::endl;
-                    return JsonValue<nlohmann::json>();
+            template <typename T>
+            std::vector<T> get_list(const std::string& key) const {
+                try {
+                    std::vector<T> list;
+                    for (const auto& item : _data.at(key)) {
+                        list.push_back(item.get<T>());
+                    }
+                    return list;
+                } catch (...) {
+                    throw std::runtime_error("JSON parsing error on " + key);
                 }
             }
 
         private:
             nlohmann::json _data;
     };
+
 } // namespace lvl
 
-
-
-
-#endif //RTYPE_PARSER_HPP
+#endif //RTYPE_JSONPARSER_HPP

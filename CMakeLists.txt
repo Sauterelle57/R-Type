@@ -139,6 +139,7 @@ add_executable(rtype_server
         server/map_parser/lib_json.cpp
         server/map_parser/lib_json.hpp
         server/map_parser/Parser.hpp
+        server/map_parser/IParser.hpp
 )
 
 add_executable(rtype_client

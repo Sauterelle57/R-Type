@@ -1,14 +1,13 @@
 #include "lib_json.hpp"
 #include "Parser.hpp"
 
-
 lvl::StageValue json_parsing(const std::string& path) {
-    lvl::Parser json_parser(path);
+    lvl::JsonParser json_parser(path);
 
     lvl::StageValue result;
-    result.stage = json_parser.get_key<int>("stage").get();
+    result.stage = json_parser.get_key<int>("stage");
 
-    auto steps = json_parser.get_key<nlohmann::json>("step").get();
+    auto steps = json_parser.get_list<nlohmann::json>("step");
     for (const auto& step : steps) {
         lvl::Step p;
         p.pos_x = step["pos_x"].get<int>();
@@ -19,7 +18,8 @@ lvl::StageValue json_parsing(const std::string& path) {
             p.conditions.destroyed = conditions.value("destroyed", 0);
         }
 
-        for (const auto& entity : step["entity"]) {
+        auto entities = step["entity"].get<std::vector<nlohmann::json>>();
+        for (const auto& entity : entities) {
             lvl::Entity e;
             e.type = entity["type"].get<std::string>();
             e.x = entity["x"].get<int>();
