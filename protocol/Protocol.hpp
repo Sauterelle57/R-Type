@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <cstdint>
+#include <bitset>
 #include "Vec3.hpp"
 #include "Vec4.hpp"
 
@@ -53,7 +54,7 @@ namespace rt
 
     // Server
     struct p_server {
-        std::vector<Entity> entities; // List entities from server to client
+        std::vector<std::bitset<578>> entities; // List entities from server to client
     };
 
     struct Protocol
@@ -114,13 +115,9 @@ namespace rt
             _protocol->sender = rt::SENDER_TYPE::SERVER;
             _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
-            Entity entity;
-            entity.ECSEntity = ECSId;
-            entity.position = position;
-            entity.rotation = rotation;
-            entity.scale = scale;
-            entity.entityType = type;
-            _protocol->server.entities.push_back(entity);
+            auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
+            std::cout << bits << std::endl;
+            _protocol->server.entities.push_back(bits);
             return *this;
         }
 
@@ -164,7 +161,7 @@ namespace rt
 
             while (iss.peek() != EOF)
             {
-                Entity entity;
+                std::bitset<578> entity;
                 deserializeEntity(iss, entity);
                 deserializedData.server.entities.push_back(entity);
             }
@@ -172,28 +169,138 @@ namespace rt
             return deserializedData;
         }
 
+        std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, float scale, int type)
+        {
+            std::bitset<32> ecsIdBits(ecsId);
+            std::bitset<2> signatureBits((signature[0] << 1) | signature[1]);
+
+            std::bitset<64> posXBits(*reinterpret_cast<uint64_t*>(&pos._x));
+            std::bitset<64> posYBits(*reinterpret_cast<uint64_t*>(&pos._y));
+            std::bitset<64> posZBits(*reinterpret_cast<uint64_t*>(&pos._z));
+
+            std::bitset<64> rotationXBits(*reinterpret_cast<uint64_t*>(&rotation._x));
+            std::bitset<64> rotationYBits(*reinterpret_cast<uint64_t*>(&rotation._y));
+            std::bitset<64> rotationZBits(*reinterpret_cast<uint64_t*>(&rotation._z));
+            std::bitset<64> rotationABits(*reinterpret_cast<uint64_t*>(&rotation._a));
+
+            std::bitset<64> scaleBits(*reinterpret_cast<uint64_t*>(&scale));
+
+            std::bitset<32> typeBits(type);
+
+            std::bitset<578> result;
+
+            // Setting bits individually
+            for (int i = 0; i < 32; ++i)
+                result.set(i, ecsIdBits[i]);
+
+            for (int i = 0; i < 2; ++i)
+                result.set(i + 32, signatureBits[i]);
+
+            for (int i = 0; i < 64; ++i)
+            {
+                result.set(i + 34, posXBits[i]);
+                result.set(i + 98, posYBits[i]);
+                result.set(i + 162, posZBits[i]);
+                result.set(i + 226, rotationXBits[i]);
+                result.set(i + 290, rotationYBits[i]);
+                result.set(i + 354, rotationZBits[i]);
+                result.set(i + 418, rotationABits[i]);
+                result.set(i + 482, scaleBits[i]);
+            }
+
+            for (int i = 0; i < 32; ++i)
+                result.set(i + 546, typeBits[i]);
+
+            return result;
+        }
+
+        void changeEntityTypeInBitset(std::bitset<578> &x, rt::ENTITY_TYPE type)
+        {
+            std::bitset<32> typeBits(type);
+
+            for (int i = 0; i < 32; ++i)
+                x.set(i + 546, typeBits[i]);
+        }
+
+        static void convertBitsetToEntity(std::bitset<578> x)
+        {
+            std::bitset<32> ecsIdBits;
+            std::array<bool, 2> signatureBits;
+            tls::Vec3 pos;
+            tls::Vec4 rotation;
+            float scale;
+            int type;
+
+            // Extracting bits individually
+            for (int i = 0; i < 32; ++i)
+                ecsIdBits[i] = x[i];
+
+            for (int i = 0; i < 2; ++i)
+                signatureBits[i] = x[i + 32];
+
+            std::bitset<64> posXBits, posYBits, posZBits;
+            std::bitset<64> rotationXBits, rotationYBits, rotationZBits, rotationABits;
+            std::bitset<64> scaleBits;
+
+            for (int i = 0; i < 64; ++i)
+            {
+                posXBits[i] = x[i + 34];
+                posYBits[i] = x[i + 98];
+                posZBits[i] = x[i + 162];
+                rotationXBits[i] = x[i + 226];
+                rotationYBits[i] = x[i + 290];
+                rotationZBits[i] = x[i + 354];
+                rotationABits[i] = x[i + 418];
+                scaleBits[i] = x[i + 482];
+            }
+
+            std::bitset<32> typeBits;
+
+            for (int i = 0; i < 32; ++i)
+                typeBits[i] = x[i + 546];
+
+            // Converting back to original types
+            std::uint32_t ecsId = static_cast<std::uint32_t>(ecsIdBits.to_ulong());
+            signatureBits[0] = signatureBits[1] = false;
+            signatureBits[0] = x[33];
+            signatureBits[1] = x[32];
+
+            pos._x = *reinterpret_cast<double*>(&posXBits);
+            pos._y = *reinterpret_cast<double*>(&posYBits);
+            pos._z = *reinterpret_cast<double*>(&posZBits);
+
+            rotation._x = *reinterpret_cast<double*>(&rotationXBits);
+            rotation._y = *reinterpret_cast<double*>(&rotationYBits);
+            rotation._z = *reinterpret_cast<double*>(&rotationZBits);
+            rotation._a = *reinterpret_cast<double*>(&rotationABits);
+
+            scale = *reinterpret_cast<float*>(&scaleBits);
+
+            type = static_cast<int>(typeBits.to_ulong());
+
+            std::cout << "id : " << ecsId << std::endl;
+            std::cout << "signature : " << signatureBits[0] << ", " << signatureBits[1] << std::endl;
+            std::cout << "pos : " << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
+            std::cout << "rot : " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+            std::cout << "scale : " << scale << std::endl;
+            std::cout << "type : " << type << std::endl;
+        }
+
         Protocol getProtocol() const { return *_protocol.get(); }
 
     private:
         std::shared_ptr<Protocol> _protocol;
 
-        void serializeEntity(std::ostringstream& oss, const Entity& entity) const
+        void serializeEntity(std::ostringstream& oss, const std::bitset<578>& entity) const
         {
-            oss.write(reinterpret_cast<const char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
-            oss.write(reinterpret_cast<const char*>(&entity.position), sizeof(entity.position));
-            oss.write(reinterpret_cast<const char*>(&entity.rotation), sizeof(entity.rotation));
-            oss.write(reinterpret_cast<const char*>(&entity.scale), sizeof(entity.scale));
-            oss.write(reinterpret_cast<const char*>(&entity.entityType), sizeof(entity.entityType));
+            oss.write(reinterpret_cast<const char*>(&entity), entity.size() / 8);
         }
 
-        static void deserializeEntity(std::istringstream& iss, Entity& entity)
+        static void deserializeEntity(std::istringstream& iss, std::bitset<578>& entity)
         {
-            iss.read(reinterpret_cast<char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
-            iss.read(reinterpret_cast<char*>(&entity.position), sizeof(entity.position));
-            iss.read(reinterpret_cast<char*>(&entity.rotation), sizeof(entity.rotation));
-            iss.read(reinterpret_cast<char*>(&entity.scale), sizeof(entity.scale));
-            iss.read(reinterpret_cast<char*>(&entity.entityType), sizeof(entity.ECSEntity));
+            iss.read(reinterpret_cast<char*>(&entity), entity.size() / 8);
         }
+
     };
 
 } // namespace rt

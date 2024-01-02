@@ -58,20 +58,6 @@ namespace ECS {
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     auto clients = clientUpdater.clientController->getClients();
 
-                    for (auto &clt : clients) {
-                        rt::Protocol clientPc = pc.getProtocol();
-
-                        for (auto &cl : clientPc.server.entities) {
-                            if (type.different && (type.ip != clt->getIpAdress() || clt->getPort()))
-                                cl.entityType = rt::ENEMY;
-                        }
-
-                        auto ser = pc.serialize(clientPc);
-                        std::cout << "send of size : " << ser.size() << std::endl;
-                        clientUpdater.wrapper->sendTo(ser, clt->getIpAdress(), clt->getPort());
-                        
-                        std::cout << "Serialization done !" << std::endl;
-                    }
                 }
 
                 // auto clients = clientUpdater.clientController->getClients();

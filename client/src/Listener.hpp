@@ -83,7 +83,7 @@ namespace RT {
                         std::cout << "[EXEC]: ENTITIES" << std::endl;
 
                         for (auto &x : receivedData.server.entities) {
-                            std::cout << "entity: " << x.ECSEntity << " " << x.entityType << std::endl;
+                            std::cout << "entity: " << std::endl;
                         }
                     }
 

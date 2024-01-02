@@ -24,7 +24,7 @@ void signalHandler(int signum) {
     }
 }
 
-std::bitset<578> convertToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, float scale, int type)
+std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, float scale, int type)
 {
     std::bitset<32> ecsIdBits(ecsId);
     std::bitset<2> signatureBits((signature[0] << 1) | signature[1]);
@@ -69,7 +69,7 @@ std::bitset<578> convertToBitset(std::uint32_t ecsId, std::array<bool, 2> signat
     return result;
 }
 
-void convertBitset(std::bitset<578> x)
+void convertBitsetToEntity(std::bitset<578> x)
 {
     std::bitset<32> ecsIdBits;
     std::array<bool, 2> signatureBits;
@@ -131,17 +131,30 @@ void convertBitset(std::bitset<578> x)
     std::cout << "rot : " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
     std::cout << "scale : " << scale << std::endl;
     std::cout << "type : " << type << std::endl;
-
-    // Now you have the original values extracted from the bitset
 }
 
 
 
 
 int main() {
-    auto bits = convertToBitset(258, {true, true}, {3.25f, 2, 3}, {0, 1, 1, 180}, 0.25f, 3);
-    std::cout << bits << std::endl;
-    convertBitset(bits);
+    rt::ProtocolController pc;
+
+    pc.setSender(rt::SENDER_TYPE::SERVER).setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
+
+    pc.addEntity(1, {1, 2, 3}, {0, 1, 1, 90}, .25f, rt::ENTITY_TYPE::PLAYER);
+
+    auto str = pc.serialize();
+    std::cout << str << std::endl;
+
+    auto uncompressed = rt::ProtocolController::deserialize(str);
+
+    std::cout << uncompressed.sender << std::endl;
+    std::cout << uncompressed.protocol << std::endl;
+    for (auto x : uncompressed.server.entities) {
+        std::cout << x << std::endl;
+        rt::ProtocolController::convertBitsetToEntity(x);
+    }
+
     return 0;
     // rt::ProtocolController pc;
     // pc.init();
@@ -151,7 +164,7 @@ int main() {
 
     // pc.addEntity(1, {1, 2, 3}, {0, 0, 0, 90}, 0.25f, rt::ENTITY_TYPE::PLAYER);
     // pc.addEntity(2, {10, 11, 12}, {90, 0, 90, 180}, 1, rt::ENTITY_TYPE::ENEMY);
-    // pc.addEntity(3, {13, 14, 15}, {1, 1, 0, 180}, 2, rt::ENTITY_TYPE::ENEMY);
+    // pc.addEntéity(3, {13, 14, 15}, {1, 1, 0, 180}, 2, rt::ENTITY_TYPE::ENEMY);
 
     // auto result = pc.serialize();
 
