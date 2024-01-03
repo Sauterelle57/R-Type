@@ -41,7 +41,7 @@ namespace rt
     struct Entity
     {
         std::uint32_t ECSEntity;
-        
+
         tls::Vec3 position;
         tls::Vec4 rotation;
         float scale;
@@ -113,12 +113,14 @@ namespace rt
 
         ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type)
         {
+            std::cout << "1" << std::endl;
+            // std::cout << "addr : " << _protocol << std::endl;
             _protocol->sender = rt::SENDER_TYPE::SERVER;
-            _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
+            std::cout << "2" << std::endl;
 
-            auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
-            std::cout << bits << std::endl;
-            _protocol->server.entities.push_back(bits);
+            // auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
+            // std::cout << bits << std::endl;
+            // _protocol.server.entities.push_back(bits);
             return *this;
         }
 
@@ -221,6 +223,17 @@ namespace rt
 
             for (int i = 0; i < 32; ++i)
                 x.set(i + 546, typeBits[i]);
+        }
+
+        static std::uint32_t getECSIdFromBitset(std::bitset<578> x)
+        {
+            std::bitset<32> ecsIdBits;
+            std::uint32_t ecsID;
+
+            for (int i = 0; i < 32; ++i)
+                ecsIdBits[i] = x[i];
+        
+            return ecsID;
         }
 
         static void convertBitsetToEntity(std::bitset<578> x, std::uint32_t &ecsID, tls::Vec3 &pos, tls::Vec4 &rotation, float &scale, int &type)

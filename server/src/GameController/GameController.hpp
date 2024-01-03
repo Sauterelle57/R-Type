@@ -84,6 +84,8 @@ namespace rt {
             tls::Clock _clock;
             tls::Clock _clockEnemySpawn;
             int _waveEnemy;
+
+            std::shared_ptr<ProtocolController> _pc;
     };
 
 }

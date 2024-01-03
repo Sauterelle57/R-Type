@@ -17,6 +17,10 @@ namespace rt {
         _clockEnemySpawn = tls::Clock(10);
         _waveEnemy = 1;
         _clientController = std::make_shared<ClientController>();
+        _pc = std::make_shared<ProtocolController>();
+        _pc->init();
+        _pc->setSender(rt::SENDER_TYPE::SERVER);
+        _pc->setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
     }
 
     void GameController::_initializeCommands() {
@@ -233,6 +237,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
+                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -295,6 +300,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
+                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -357,6 +363,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
+                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -411,6 +418,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
+                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -452,6 +460,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
+                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }

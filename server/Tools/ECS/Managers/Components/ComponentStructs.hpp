@@ -100,6 +100,7 @@ namespace ECS {
     };
 
     struct ClientUpdater {
+        std::shared_ptr<rt::ProtocolController> _pc;
         std::shared_ptr<rt::IWrapper> wrapper;
         std::shared_ptr<rt::ClientController> clientController;
     };

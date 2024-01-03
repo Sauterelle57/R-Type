@@ -137,35 +137,34 @@ void convertBitsetToEntity(std::bitset<578> x)
 
 
 int main() {
-    rt::ProtocolController pc;
+    // rt::ProtocolController pc;
 
-    pc.setSender(rt::SENDER_TYPE::SERVER).setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
+    // pc.setSender(rt::SENDER_TYPE::SERVER).setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
 
-    pc.addEntity(1, {1, 2, 3}, {0, 1, 1, 90}, .25f, rt::ENTITY_TYPE::PLAYER);
-    pc.addEntity(2, {10, 11, 12}, {90, 0, 90, 180}, 1, rt::ENTITY_TYPE::ENEMY);
-    pc.addEntity(3, {13, 14, 15}, {1, 1, 0, 180}, 2, rt::ENTITY_TYPE::ENEMY);
-    auto str = pc.serialize();
-    std::cout << "size : " << str.length() << std::endl;
+    // pc.addEntity(1, {1, 2, 3}, {0, 1, 1, 90}, .25f, rt::ENTITY_TYPE::PLAYER);
+    // pc.addEntity(2, {10, 11, 12}, {90, 0, 90, 180}, 1, rt::ENTITY_TYPE::ENEMY);
+    // pc.addEntity(3, {13, 14, 15}, {1, 1, 0, 180}, 2, rt::ENTITY_TYPE::ENEMY);
+    // auto str = pc.serialize();
+    // std::cout << "size : " << str.length() << std::endl;
 
-    auto uncompressed = rt::ProtocolController::deserialize(str);
+    // auto uncompressed = rt::ProtocolController::deserialize(str);
 
-    std::cout << uncompressed.sender << std::endl;
-    std::cout << uncompressed.protocol << std::endl;
-    for (auto x : uncompressed.server.entities) {
-        std::cout << x << std::endl;
-        std::uint32_t id;
-        tls::Vec3 pos;
-        tls::Vec4 rotation;
-        float scale;
-        int type;
-        rt::ProtocolController::convertBitsetToEntity(x, id, pos, rotation, scale, type);
-        std::cout << id << std::endl;
-        std::cout << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
-        std::cout << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
-        std::cout << scale << std::endl;
-        std::cout << type << std::endl;
-    }
-    return 0;
+    // std::cout << uncompressed.sender << std::endl;
+    // std::cout << uncompressed.protocol << std::endl;
+    // for (auto x : uncompressed.server.entities) {
+    //     std::cout << x << std::endl;
+    //     std::uint32_t id;
+    //     tls::Vec3 pos;
+    //     tls::Vec4 rotation;
+    //     float scale;
+    //     int type;
+    //     rt::ProtocolController::convertBitsetToEntity(x, id, pos, rotation, scale, type);
+    //     std::cout << id << std::endl;
+    //     std::cout << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
+    //     std::cout << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+    //     std::cout << scale << std::endl;
+    //     std::cout << type << std::endl;
+    // }
     // rt::ProtocolController pc;
     // pc.init();
 

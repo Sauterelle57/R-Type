@@ -54,6 +54,7 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::ClientUpdater {
+                        // ._pc
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }

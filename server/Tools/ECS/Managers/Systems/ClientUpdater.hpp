@@ -24,15 +24,19 @@ namespace ECS {
                 }
 
                 //TODO: Enable this to enable serialization
-                rt::ProtocolController pc;
-                pc.setSender(rt::SENDER_TYPE::SERVER);
-                pc.setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
-                ECS::ClientUpdater updater;
+                // rt::ProtocolController pc;
+                // pc.setSender(rt::SENDER_TYPE::SERVER);
+                // pc.setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
+
+                // ClientUpdater clu;
+                // bool clu_available = false;
 
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
+                    // clu = clientUpdater;
+                    // clu_available = true;
 
                     std::ostringstream responseStream;
                     responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
@@ -40,10 +44,10 @@ namespace ECS {
                                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
                                    << transform.rotation._a << " " << transform.scale << " " << type.name;
 
-                    std::cout << "ENTITY : " << entity << " " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z <<  std::endl;
+                    std::cout << "ENTITY : " << entity << " " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z  << "," <<  std::endl;
 
-                    pc.addEntity(entity, transform.position, transform.rotation, transform.scale, rt::ENTITY_TYPE::PLAYER);
-                    updater = clientUpdater;
+                    std::cout << _entities.size() << std::endl;
+                    clientUpdater._pc->addEntity(1, {1, 2, 3}, {1, 1, 1, 1}, 1, rt::ENTITY_TYPE::PLAYER);
                     // auto clients = clientUpdater.clientController->getClients();
                     // for (auto &clt : clients) {
                     //     std::string response = responseStream.str();
@@ -53,12 +57,14 @@ namespace ECS {
                     // }
                 }
 
-                for (auto const &entity : _entities) { 
-                    auto &type = coordinatorPtr->getComponent<Type>(entity);
-                    auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
-                    auto clients = clientUpdater.clientController->getClients();
+                // if (!clu_available)
+                //     return;
+                // auto proto = clu._pc->getProtocol();
 
-                }
+                // for (auto &x : proto.server.entities) {
+                //     std::cout << "entity" << std::endl;
+                // }
+                
 
                 // auto clients = clientUpdater.clientController->getClients();
 
@@ -71,6 +77,22 @@ namespace ECS {
                 //             entity.entityType = rt::ENTITY_TYPE::ENEMY;
                     
                 // }
+            }
+
+            void send() {
+                auto coordinatorPtr = _coordinator.lock();
+                if (!coordinatorPtr) {
+                    std::cout << "ClientUpdaterSystem: coordinatorPtr is null" << std::endl;
+                    return;
+                }
+
+                for (auto const &entity : _entities) {
+                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                    auto &type = coordinatorPtr->getComponent<Type>(entity);
+                    auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
+                    break;
+                } 
+                
             }
     };
 }
