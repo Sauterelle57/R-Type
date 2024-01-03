@@ -20,6 +20,9 @@ endif()
 
 add_executable(map_editor
         src/map_editor.cpp
-        src/map_editor.hpp)
+        src/map_editor.hpp
+        src/LevelGenerator.hpp
+        src/LevelGenerator.cpp
+        src/ILevelGenerator.hpp)
 
 target_link_libraries(map_editor PRIVATE nlohmann_json::nlohmann_json)
