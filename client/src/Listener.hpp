@@ -11,6 +11,7 @@
 #include <queue>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 #include "IListener.hpp"
 #include "renderer/Sound.hpp"
 #include "Protocol.hpp"
@@ -67,15 +68,6 @@ namespace RT {
 
             ~Listener() = default;
             
-            static void interpreter(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
-                std::cout << "interpreter" << std::endl;
-                std::cout << "entity: " << ecsID << std::endl;
-                std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
-                std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
-                std::cout << "scale: " << scale << std::endl;
-                std::cout << "type: " << type << std::endl;
-            }
-            
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
@@ -100,7 +92,7 @@ namespace RT {
                             float scale = 0;
                             int type = rt::ENTITY_TYPE::PLAYER;
                             rt::ProtocolController::convertBitsetToEntity(x, ecsID, position, rotation, scale, type);
-                            interpreter(ecsID, position, rotation, scale, type);
+                            _interpreter(ecsID, position, rotation, scale, type);
                         }
                     }
 
@@ -318,6 +310,27 @@ namespace RT {
 
             void addEvent(const std::string &event) {
                 _queue.push(event);
+            }
+
+            void _interpreter(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
+                std::cout << "interpreter" << std::endl;
+                std::cout << "entity: " << ecsID << std::endl;
+                std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
+                std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+                std::cout << "scale: " << scale << std::endl;
+                std::cout << "type: " << type << std::endl;
+
+                if (_serverToClient.find(ecsID) == _serverToClient.end()) {
+                    //
+                } else {
+                    auto &transform = _coordinator->getComponent<ECS::Transform>(
+                            _serverToClient[ecsID]);
+                    transform = ECS::Transform{
+                            {position._x, position._y, position._z},
+                            {rotation._x, rotation._y, rotation._z, rotation._a},
+                            scale
+                    };
+                }
             }
 
             std::queue<std::string> _queue;
