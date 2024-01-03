@@ -62,11 +62,13 @@ namespace RT {
         _camera->setUp({ 0.0f, 1.0f, 0.0f });
         _camera->setFovy(30.0f);
         _camera->setProjection(CAMERA_PERSPECTIVE);
-        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _messageQueueMutex = std::make_shared<std::mutex>();
-        _udpClient->setup("127.0.0.1", 1234, _receivedMessages, _messageQueueMutex);
+        Menu menu;
+        menu.loop(_window, _event, false);
+        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
+        _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex);
 
         _udpClientThread = std::make_unique<std::thread>(([&]() {
             _udpClient->run(_isRunning);
@@ -238,8 +240,6 @@ namespace RT {
         float glowIntensity = 3.0f;
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
-        Menu menu;
-        menu.loop(_window, _event, false);
         // _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex);
 
         while (!_window->shouldClose()) {
