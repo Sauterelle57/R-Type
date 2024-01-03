@@ -232,6 +232,84 @@ add_executable(rtype_client
         client/Tools/ECS/Managers/Systems/Sound.hpp
 )
 
+
+add_executable(map_editor
+        client/src/renderer/Audio.hpp
+        client/src/renderer/AudioStream.hpp
+        client/src/renderer/Cursor.hpp
+        client/src/renderer/Camera.hpp
+        client/src/renderer/Camera2D.hpp
+        client/src/renderer/Event.hpp
+        client/src/renderer/Font.hpp
+        client/src/renderer/IAudio.hpp
+        client/src/renderer/IAudioStream.hpp
+        client/src/renderer/ICamera.hpp
+        client/src/renderer/ICamera2D.hpp
+        client/src/renderer/ICursor.hpp
+        client/src/renderer/IEvent.hpp
+        client/src/renderer/IFont.hpp
+        client/src/renderer/IImage.hpp
+        client/src/renderer/Image.hpp
+        client/src/renderer/IMaterial.hpp
+        client/src/renderer/IMesh.hpp
+        client/src/renderer/IMode.hpp
+        client/src/renderer/IModel.hpp
+        client/src/renderer/IModelAnimation.hpp
+        client/src/renderer/IMusic.hpp
+        client/src/renderer/IRay.hpp
+        client/src/renderer/IRenderTexture.hpp
+        client/src/renderer/IShader.hpp
+        client/src/renderer/ISound.hpp
+        client/src/renderer/ITexture.hpp
+        client/src/renderer/IWave.hpp
+        client/src/renderer/IWindow.hpp
+        client/src/renderer/Material.hpp
+        client/src/renderer/Mesh.hpp
+        client/src/renderer/Mode.hpp
+        client/src/renderer/Model.hpp
+        client/src/renderer/ModelAnimation.hpp
+        client/src/renderer/Music.hpp
+        client/src/renderer/Ray.hpp
+        client/src/renderer/renderer.hpp
+        client/src/renderer/RenderTexture.hpp
+        client/src/renderer/Shader.hpp
+        client/src/renderer/Sound.hpp
+        client/src/renderer/Texture.hpp
+        client/src/renderer/Utils.hpp
+        client/src/renderer/Wave.hpp
+        client/src/renderer/Window.hpp
+
+
+        map_editor/src/map_editor.cpp
+        map_editor/src/map_editor.hpp
+        map_editor/src/LevelGenerator.hpp
+        map_editor/src/LevelGenerator.cpp
+        map_editor/src/ILevelGenerator.hpp
+        map_editor/src/main.cpp
+        map_editor/Tools/Clock/Clock.hpp
+        map_editor/Tools/Clock/IClock.hpp
+        map_editor/Tools/Error/Error.hpp
+        map_editor/Tools/Utils/Utils.cpp
+        map_editor/Tools/Utils/Utils.hpp
+        map_editor/Tools/Vec3/IVec3.hpp
+        map_editor/Tools/Vec3/Vec3.hpp
+        map_editor/Tools/Vec3/Vec3.cpp
+        map_editor/Tools/Vec4/IVec4.hpp
+        map_editor/Tools/Vec4/Vec4.hpp
+        map_editor/Tools/Vec4/Vec4.cpp)
+
+
+target_include_directories(map_editor PRIVATE
+        ${CMAKE_SOURCE_DIR}/client/src/renderer
+        ${CMAKE_SOURCE_DIR}/map_editor/src
+        ${CMAKE_SOURCE_DIR}/map_editor/Tools/Vec3
+        ${CMAKE_SOURCE_DIR}/map_editor/Tools/Vec4
+        ${CMAKE_SOURCE_DIR}/map_editor/Tools/Utils
+        ${CMAKE_SOURCE_DIR}/map_editor/Tools/Error
+        ${CMAKE_SOURCE_DIR}/map_editor/Tools/Clock
+)
+
+
 target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/src
         ${CMAKE_SOURCE_DIR}/server/src/ServerController
@@ -282,6 +360,7 @@ target_include_directories(rtype_client PRIVATE
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
 target_link_libraries(rtype_server PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(map_editor PRIVATE raylib nlohmann_json::nlohmann_json)
 
 
 # Web Configurations
@@ -300,3 +379,4 @@ endif()
 set_target_properties(rtype_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(rtype_server INTERFACE ${Boost_LIBRARIES})
 #target_link_libraries(rtype_client INTERFACE ${Boost_LIBRARIES})
+set_target_properties(map_editor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
