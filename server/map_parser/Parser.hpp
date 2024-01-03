@@ -5,25 +5,27 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include "nlohmann/json.hpp"
 
 namespace lvl {
 
+    template<typename JsonLibrary>
     class JsonHandler {
         public:
             JsonHandler(const std::string& content) {
-                _data = nlohmann::json::parse(content);
+                _data = JsonLibrary::parse(content);
             }
 
             template <typename T>
             T get(const std::string& key) const {
-                return _data.at(key).get<T>();
+                return _data.at(key).template get<T>();
             }
 
         private:
-            nlohmann::json _data;
+            JsonLibrary _data;
     };
 
+
+    template<typename JsonLibrary>
     class JsonParser {
         public:
             JsonParser(const std::string& filename) {
@@ -32,20 +34,20 @@ namespace lvl {
                     throw std::runtime_error("Error opening: " + filename + " file");
                 }
                 std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-                _handler = std::make_shared<JsonHandler>(content);
+                _handler = std::make_shared<JsonHandler<JsonLibrary>>(content);
             }
 
             template <typename T>
             T get(const std::string& key) const {
                 try {
-                    return _handler->get<T>(key);
+                    return _handler->template get<T>(key);
                 } catch (...) {
                     throw std::runtime_error("JSON parsing error on " + key);
                 }
             }
 
         private:
-            std::shared_ptr<JsonHandler> _handler;
+            std::shared_ptr<JsonHandler<JsonLibrary>> _handler;
     };
 
 } // namespace lvl

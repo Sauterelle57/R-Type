@@ -1,8 +1,9 @@
 #include "lib_json.hpp"
 #include "Parser.hpp"
+#include "nlohmann/json.hpp"
 
 lvl::StageValue json_parsing(const std::string& path) {
-    lvl::JsonParser json_parser(path);
+    lvl::JsonParser<nlohmann::json> json_parser(path);
 
     lvl::StageValue result;
     result.stage = json_parser.get<int>("stage");
