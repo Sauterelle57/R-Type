@@ -12,6 +12,7 @@
 #include "Coordinator.hpp"
 #include "../Components/ComponentStructs.hpp"
 #include "Protocol.hpp"
+#include <map>
 
 namespace ECS {
     class ClientUpdaterSystem : public System {
@@ -43,10 +44,20 @@ namespace ECS {
                                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
                                    << transform.rotation._a << " " << transform.scale << " " << type.name;
+                    
+                    static std::map<std::string, rt::ENTITY_TYPE> nameToId = {
+                        {"CAMERA", rt::ENTITY_TYPE::CAMERA},
+                        {"PLAYER", rt::ENTITY_TYPE::PLAYER},
+                        {"ENEMY", rt::ENTITY_TYPE::ENEMY},
+                        {"TILE", rt::ENTITY_TYPE::TILE},
+                        {"TILE_BREAKABLE", rt::ENTITY_TYPE::TILE_BREAKABLE},
+                        {"BASIC_SHOT", rt::ENTITY_TYPE::BASIC_SHOT},
+                        {"BASIC_ENEMY_SHOT", rt::ENTITY_TYPE::BASIC_ENEMY_SHOT},
+                        {"SIN_SHOT", rt::ENTITY_TYPE::SIN_SHOT},
+                    };
 
                     std::cout << "ENTITY : " << entity << " " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z  << "," <<  std::endl;
-
-                    clientUpdater._pc->addEntity(entity, transform.position, transform.rotation, transform.scale, rt::ENTITY_TYPE::PLAYER);
+                    clientUpdater._pc->addEntity(entity, transform.position, transform.rotation, transform.scale, nameToId[type.name]);
                     // auto clients = clientUpdater.clientController->getClients();
                     // for (auto &clt : clients) {
                     //     std::string response = responseStream.str();
@@ -69,7 +80,7 @@ namespace ECS {
 
                         if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort())) {
                             std::cout << "ENTITY : " << id << " is different" << std::endl;
-                            clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::ENEMY);
+                            clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::PLAYER_NY);
                         }
                         // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                     }

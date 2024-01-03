@@ -35,7 +35,17 @@ namespace rt
     enum ENTITY_TYPE
     {
         PLAYER,
+        PLAYER_NY,
+
         ENEMY,
+        CAMERA,
+
+        TILE,
+        TILE_BREAKABLE,
+
+        BASIC_SHOT,
+        BASIC_ENEMY_SHOT,
+        SIN_SHOT
     };
 
     struct Entity

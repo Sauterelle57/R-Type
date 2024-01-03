@@ -313,16 +313,196 @@ namespace RT {
             }
 
             void _interpreter(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
-                std::cout << "interpreter" << std::endl;
-                std::cout << "entity: " << ecsID << std::endl;
-                std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
-                std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
-                std::cout << "scale: " << scale << std::endl;
-                std::cout << "type: " << type << std::endl;
+                // std::cout << "interpreter" << std::endl;
+                // std::cout << "entity: " << ecsID << std::endl;
+                // std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
+                // std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+                // std::cout << "scale: " << scale << std::endl;
+                // std::cout << "type: " << type << std::endl;
 
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
-                    //
+                    ECS::Entity entity = _coordinator->createEntity();
+
+                    _entities->insert(_entities->end(), entity);
+                    _serverToClient[ecsID] = entity;
+
+                    _coordinator->addComponent(
+                        *_entities->rbegin(),
+                        ECS::Transform{
+                                {position._x, position._y, position._z},
+                                {rotation._x, rotation._y, rotation._z, rotation._a},
+                                scale
+                        }
+                    );
+
+                    if (type == rt::ENTITY_TYPE::PLAYER) {
+                        std::cout << "Create player ! with [" << ecsID << "]" << std::endl;
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _playerModel,
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Player{
+                                .key_up = KEY_W,
+                                .key_down = KEY_S,
+                                .key_left = KEY_A,
+                                .key_right = KEY_D,
+                                .key_shoot = KEY_SPACE,
+                                .key_validate = KEY_ENTER,
+                                .key_cancel = KEY_ESCAPE,
+                                .key_settings = KEY_F1,
+                            }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::PLAYER_NY) {
+                        static int i = 0;
+                        std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelEnemy,
+                                .texture = _textureEnemy,
+                                .color = colors[i++ % colors.size()]
+                            }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::CAMERA) {
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Cam{
+                                .camera = _cam
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(1000),
+                                .texture = _starTexture,
+                                .type = ECS::ParticleType::CONE,
+                                .direction = ECS::Direction::LEFT,
+                                .speed = 40.0f,
+                                .scaleOffset = .5f,
+                                .positionOffset = {95, 0, -120},
+                                .lifeTime = 360,
+                                .spawnRate = 1,
+                                .spawnTimer = 0,
+                                .surviveChance = 0
+                            }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::TILE_BREAKABLE) {
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _tileBMmodel,
+                                .color = RED
+                            }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::TILE) {
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _tileModel,
+                            }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::ENEMY) {
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Model{
+                                        .model = _modelEnemy,
+                                        .texture = _textureEnemy
+                                }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::BASIC_SHOT) {
+                        std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                        sd->setSoundVolume(0.5f);
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Model{
+                                        .model = _modelShot
+                                }
+                        );
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Particles{
+                                        .particles = std::vector<ECS::Particle>(500),
+                                        .texture = _particleTexture,
+                                        .type = ECS::ParticleType::CONE,
+                                        .direction = ECS::Direction::LEFT,
+                                        .speed = 75.0f,
+                                        .scaleOffset = 3.0f,
+                                        .positionOffset = {-0.5, 0, 0},
+                                        .lifeTime = 2,
+                                        .spawnRate = 35,
+                                        .spawnTimer = 0,
+                                        .surviveChance = 5
+                                }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Sound{
+                                .sound = sd,
+                            }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::SIN_SHOT) {
+                        std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                        sd->setSoundVolume(0.5f);
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(500),
+                                .texture = _particleTexture,
+                                .type = ECS::ParticleType::CONE,
+                                .direction = ECS::Direction::LEFT,
+                                .speed = 500.0f,
+                                .scaleOffset = 3.0f,
+                                .positionOffset = {-0.5, 0, 0},
+                                .lifeTime = 10,
+                                .spawnRate = 2,
+                                .spawnTimer = 0,
+                                .surviveChance = 0
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Sound{
+                                .sound = sd,
+                            }
+                        );
+                    } else if (type == rt::BASIC_ENEMY_SHOT) {
+                        std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                        sd->setSoundVolume(0.5f);
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelEnemyShot,
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(500),
+                                .texture = _particleTexture,
+                                .type = ECS::ParticleType::CONE,
+                                .direction = ECS::Direction::RIGHT,
+                                .speed = 75.0f,
+                                .scaleOffset = 3.0f,
+                                .positionOffset = {0.5, 0, 0},
+                                .lifeTime = 2,
+                                .spawnRate = 35,
+                                .spawnTimer = 0,
+                                .surviveChance = 5
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Sound{
+                                .sound = sd,
+                            }
+                        );
+                    }
                 } else {
+                    // std::cout << "Changing pos of : " << _serverToClient[ecsID] << std::endl;
                     auto &transform = _coordinator->getComponent<ECS::Transform>(
                             _serverToClient[ecsID]);
                     transform = ECS::Transform{
