@@ -73,7 +73,9 @@ namespace ECS {
                         }
                         // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                     }
-                    auto response = clu._pc->serialize();
+                    auto newProto = proto;
+                    newProto.server.entities = ents;
+                    auto response = clu._pc->serialize(newProto);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                 }
 

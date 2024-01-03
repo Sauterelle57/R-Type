@@ -64,7 +64,18 @@ namespace RT {
                     _particleTexture = std::make_shared<RL::ZTexture>("./client/resources/images/particle.png");
                 }
             };
+
             ~Listener() = default;
+            
+            static void interpreter(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
+                std::cout << "interpreter" << std::endl;
+                std::cout << "entity: " << ecsID << std::endl;
+                std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
+                std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+                std::cout << "scale: " << scale << std::endl;
+                std::cout << "type: " << type << std::endl;
+            }
+            
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
@@ -89,10 +100,7 @@ namespace RT {
                             float scale = 0;
                             int type = rt::ENTITY_TYPE::PLAYER;
                             rt::ProtocolController::convertBitsetToEntity(x, ecsID, position, rotation, scale, type);
-                            std::cout << "entity: " << ecsID << std::endl;
-                            std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
-                            std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
-                            std::cout << "scale: " << scale << std::endl;
+                            interpreter(ecsID, position, rotation, scale, type);
                         }
                     }
 
@@ -100,6 +108,7 @@ namespace RT {
                     // std::string id;
                     // ss >> id;
                     // std::string token;
+////////////////
 //                     if (_serverToClient.find(std::stoi(id)) == _serverToClient.end()) {
 //                         Entity entity = _coordinator->createEntity();
 //                         _entities->insert(_entities->end(), entity);
@@ -303,6 +312,7 @@ namespace RT {
 //                             }
 //                         }
 //                     }
+////////////////////////////////////////////////////////////////
                 }
             }
 
