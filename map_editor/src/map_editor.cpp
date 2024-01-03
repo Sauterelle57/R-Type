@@ -119,29 +119,29 @@ void generateLevels(map::LevelGenerator& generator, int totalLevels) {
     }
 }
 
-int main() {
-    map::LevelGenerator generator;
-
-    std::cout << "Welcome to the Level Generator!\n";
-
-    int totalLevels = getTotalLevels();
-    generateLevels(generator, totalLevels);
-
-    std::string filename;
-    clearInputBuffer();
-    std::cout << "\nEnter the desired filename for the final JSON file (default: levels.json): ";
-    std::getline(std::cin, filename);
-
-    if (filename.empty()) {
-        filename = "levels.json";
-    } else if (filename.find(".json") == std::string::npos) {
-        filename += ".json";
-    }
-    generator.generateJSON(filename);
-    std::cout << "\nJSON file generated successfully: " << filename << "\n";
-    std::cout << "\nPress Enter to exit...";
-    clearInputBuffer();
-    std::cin.get();
-
-    return 0;
-}
+//int main() {
+//    map::LevelGenerator generator;
+//
+//    std::cout << "Welcome to the Level Generator!\n";
+//
+//    int totalLevels = getTotalLevels();
+//    generateLevels(generator, totalLevels);
+//
+//    std::string filename;
+//    clearInputBuffer();
+//    std::cout << "\nEnter the desired filename for the final JSON file (default: levels.json): ";
+//    std::getline(std::cin, filename);
+//
+//    if (filename.empty()) {
+//        filename = "levels.json";
+//    } else if (filename.find(".json") == std::string::npos) {
+//        filename += ".json";
+//    }
+//    generator.generateJSON(filename);
+//    std::cout << "\nJSON file generated successfully: " << filename << "\n";
+//    std::cout << "\nPress Enter to exit...";
+//    clearInputBuffer();
+//    std::cin.get();
+//
+//    return 0;
+//}
