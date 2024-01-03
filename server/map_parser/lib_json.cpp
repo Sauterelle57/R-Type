@@ -1,37 +1,30 @@
-#include "test_lib_json.hpp"
+#include "lib_json.hpp"
 #include "Parser.hpp"
-
-using json = nlohmann::json;
+#include "nlohmann/json.hpp"
 
 lvl::StageValue json_parsing(const std::string& path) {
-    std::ifstream jsonFile(path);
-    if (!jsonFile.is_open()) {
-        std::cerr << "Error loading JSON file." << std::endl;
-        return lvl::StageValue{};
-    }
-
-    json data;
-    jsonFile >> data;
+    lvl::JsonParser<nlohmann::json> json_parser(path);
 
     lvl::StageValue result;
-    result.stage = data["stage"];
+    result.stage = json_parser.get<int>("stage");
 
-    for (const auto& step : data["step"]) {
+    auto steps = json_parser.get<nlohmann::json>("step");
+    for (const auto& step : steps) {
         lvl::Step p;
-        p.pos_x = step["pos_x"];
+        p.pos_x = step["pos_x"].get<int>();
 
         if (step.find("conditions") != step.end()) {
             auto conditions = step["conditions"];
             p.conditions.score_min = conditions.value("score_min", 0);
             p.conditions.destroyed = conditions.value("destroyed", 0);
-            // Add other conditions as needed
         }
 
-        for (const auto& entity : step["entity"]) {
+        auto entities = step["entity"].get<std::vector<nlohmann::json>>();
+        for (const auto& entity : entities) {
             lvl::Entity e;
-            e.type = entity["type"];
-            e.x = entity["x"];
-            e.y = entity["y"];
+            e.type = entity["type"].get<std::string>();
+            e.x = entity["x"].get<int>();
+            e.y = entity["y"].get<int>();
             p.entity.push_back(e);
         }
 
@@ -42,11 +35,6 @@ lvl::StageValue json_parsing(const std::string& path) {
 }
 
 int main() {
-
-    lvl::Parser json("map_editor/map_test.json");
-
-
-
     const std::string path = "map_editor/map_test.json";
     lvl::StageValue data = json_parsing(path);
 

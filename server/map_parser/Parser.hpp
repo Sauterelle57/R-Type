@@ -1,27 +1,55 @@
-//
-// Created by axell on 02/01/2024.
-//
+#ifndef RTYPE_JSONPARSER_HPP
+#define RTYPE_JSONPARSER_HPP
 
-#ifndef RTYPE_PARSER_HPP
-#define RTYPE_PARSER_HPP
-
-#include "IParser.hpp"
-#include <iostream>
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <string>
+#include <memory>
+#include <vector>
 
 namespace lvl {
 
-    class Parser : public::IParser {
-        private:
-            std::unique_ptr<nlohmann::json> _data;
-
+    template<typename JsonLibrary>
+    class JsonHandler {
         public:
-            Parser(const std::string& filename);
-            int get_key(const std::string& key) const;
-            int operator[](const std::string& key) const;
+            JsonHandler(const std::string& content) {
+                _data = JsonLibrary::parse(content);
+            }
+
+            template <typename T>
+            T get(const std::string& key) const {
+                return _data.at(key).template get<T>();
+            }
+
+        private:
+            JsonLibrary _data;
     };
 
-} // lvl
 
-#endif //RTYPE_PARSER_HPP
+    template<typename JsonLibrary>
+    class JsonParser {
+        public:
+            JsonParser(const std::string& filename) {
+                std::ifstream file(filename);
+                if (!file.is_open()) {
+                    throw std::runtime_error("Error opening: " + filename + " file");
+                }
+                std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+                _handler = std::make_shared<JsonHandler<JsonLibrary>>(content);
+            }
+
+            template <typename T>
+            T get(const std::string& key) const {
+                try {
+                    return _handler->template get<T>(key);
+                } catch (...) {
+                    throw std::runtime_error("JSON parsing error on " + key);
+                }
+            }
+
+        private:
+            std::shared_ptr<JsonHandler<JsonLibrary>> _handler;
+    };
+
+} // namespace lvl
+
+#endif //RTYPE_JSONPARSER_HPP

@@ -136,10 +136,8 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
         server/Tools/ECS/Managers/Systems/Enemy.hpp
-        server/map_parser/test_lib_json.cpp
-        server/map_parser/test_lib_json.hpp
-
-        server/map_parser/IParser.hpp
+        server/map_parser/lib_json.cpp
+        server/map_parser/lib_json.hpp
         server/map_parser/Parser.hpp
 )
 
