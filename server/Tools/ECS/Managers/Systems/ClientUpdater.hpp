@@ -28,15 +28,15 @@ namespace ECS {
                 // pc.setSender(rt::SENDER_TYPE::SERVER);
                 // pc.setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
 
-                // ClientUpdater clu;
-                // bool clu_available = false;
+                ClientUpdater clu;
+                bool clu_available = false;
 
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
-                    // clu = clientUpdater;
-                    // clu_available = true;
+                    clu = clientUpdater;
+                    clu_available = true;
 
                     std::ostringstream responseStream;
                     responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
@@ -46,8 +46,7 @@ namespace ECS {
 
                     std::cout << "ENTITY : " << entity << " " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z  << "," <<  std::endl;
 
-                    std::cout << _entities.size() << std::endl;
-                    clientUpdater._pc->addEntity(1, {1, 2, 3}, {1, 1, 1, 1}, 1, rt::ENTITY_TYPE::PLAYER);
+                    clientUpdater._pc->addEntity(entity, transform.position, transform.rotation, transform.scale, rt::ENTITY_TYPE::PLAYER);
                     // auto clients = clientUpdater.clientController->getClients();
                     // for (auto &clt : clients) {
                     //     std::string response = responseStream.str();
@@ -57,13 +56,34 @@ namespace ECS {
                     // }
                 }
 
-                // if (!clu_available)
-                //     return;
-                // auto proto = clu._pc->getProtocol();
+                if (!clu_available)
+                    return;
+                auto proto = clu._pc->getProtocol();
+
+                for (auto &clt : clu.clientController->getClients()) {
+                    auto ents = proto.server.entities;
+
+                    for (auto &ent : ents) {
+                        auto id = rt::ProtocolController::getECSIdFromBitset(ent);
+                        auto &type = coordinatorPtr->getComponent<Type>(id);
+
+                        if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort())) {
+                            std::cout << "ENTITY : " << id << " is different" << std::endl;
+                            clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::ENEMY);
+                        }
+                        // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
+                    }
+                    auto response = clu._pc->serialize();
+                    clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
+                }
 
                 // for (auto &x : proto.server.entities) {
-                //     std::cout << "entity" << std::endl;
+                //     auto id = rt::ProtocolController::getECSIdFromBitset(x);
+                //     std::cout << "ENTITY : " << id << std::endl;
+
                 // }
+
+                clu._pc->init();
                 
 
                 // auto clients = clientUpdater.clientController->getClients();

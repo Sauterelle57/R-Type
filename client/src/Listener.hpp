@@ -83,7 +83,16 @@ namespace RT {
                         std::cout << "[EXEC]: ENTITIES" << std::endl;
 
                         for (auto &x : receivedData.server.entities) {
-                            std::cout << "entity: " << std::endl;
+                            std::uint32_t ecsID = 0;
+                            tls::Vec3 position;
+                            tls::Vec4 rotation;
+                            float scale = 0;
+                            int type = rt::ENTITY_TYPE::PLAYER;
+                            rt::ProtocolController::convertBitsetToEntity(x, ecsID, position, rotation, scale, type);
+                            std::cout << "entity: " << ecsID << std::endl;
+                            std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
+                            std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
+                            std::cout << "scale: " << scale << std::endl;
                         }
                     }
 

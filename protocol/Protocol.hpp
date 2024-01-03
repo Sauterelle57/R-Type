@@ -113,14 +113,12 @@ namespace rt
 
         ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type)
         {
-            std::cout << "1" << std::endl;
-            // std::cout << "addr : " << _protocol << std::endl;
             _protocol->sender = rt::SENDER_TYPE::SERVER;
-            std::cout << "2" << std::endl;
+            _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
-            // auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
+            auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
             // std::cout << bits << std::endl;
-            // _protocol.server.entities.push_back(bits);
+            _protocol->server.entities.push_back(bits);
             return *this;
         }
 
@@ -232,6 +230,8 @@ namespace rt
 
             for (int i = 0; i < 32; ++i)
                 ecsIdBits[i] = x[i];
+            
+            ecsID = static_cast<std::uint32_t>(ecsIdBits.to_ulong());
         
             return ecsID;
         }
