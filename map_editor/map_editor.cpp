@@ -1,9 +1,5 @@
-//
-// Created by axell on 02/01/2024.
-//
-
-#include "map_editor.h"
+#include "map_editor.hpp"
 
 int main() {
-    std::cout << "hello world" << std::endl;
+    std::cout << "hello" << std::endl;
 }
