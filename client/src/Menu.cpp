@@ -6,6 +6,7 @@
 */
 
 #include <algorithm>
+#include <vector>
 #include "Menu.hpp"
 #include "renderer/Texture.hpp"
 #include "renderer/Image.hpp"
@@ -18,11 +19,11 @@ namespace RT {
         imgBackground->resize(1920, 1080);
 
         _background = std::make_shared<RL::ZTexture>(*imgBackground->getImage());
-        for (char c = 0; c <= '9'; c++) {
-            std::string path = "./client/resources/menu/numbers/.png";
-            RL::ZImage img(path.insert(32, 1, c));
+        for (int c = 0; c <= 9; c++) {
+            std::string path = "./client/resources/menu/numbers/" + std::to_string(c) + ".png";
+            RL::ZImage img(path);
             img.resize(200/3.5, 200/3.5);
-            _numberMap[c] = std::make_shared<RL::ZTexture>(*img.getImage());
+            _numberMap[c + 48] = std::make_shared<RL::ZTexture>(*img.getImage());
         }
         RL::ZImage img("./client/resources/menu/numbers/point.png");
         img.resize(200/3.5, 200/3.5);
@@ -62,7 +63,7 @@ namespace RT {
 
     void Menu::loop(std::shared_ptr<RL::IWindow> &window, std::shared_ptr<RL::IEvent> &events, bool error) {
         bool status = true;
-        std::string errorText = "Invalid target connexion";
+        std::string errorText = "Can't reach server at " + getHost() + ":" + std::to_string(getPort());
         Color errorColor = {255, 0, 0, static_cast<unsigned char>((error ? 255 : 0))};
 
         while (status) {
@@ -141,11 +142,14 @@ namespace RT {
             int lenError = RL::Utils::measureText(errorText, 20);
             _background->draw(0, 0, WHITE);
             _cursor->draw(200, _focus == HOST ? 695 : _focus == PORT ? 745 : 800, WHITE);
+
             displayText(_numberMap, _host, 250, 700, _focus == HOST ? WHITE : GRAY);
             displayText(_numberMap, port, 250, 750, _focus == PORT ? WHITE : GRAY);
+
+            if (error) {
+                window->drawText(errorText, 265, 875, 20, errorColor);
+            }
             _enterGame->draw(250, 800, _focus == ENTER ? WHITE : GRAY);
-
-
             window->endDrawing();
         }
     }
