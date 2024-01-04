@@ -92,7 +92,11 @@ namespace RT {
                             float scale = 0;
                             int type = rt::ENTITY_TYPE::PLAYER;
                             rt::ProtocolController::convertBitsetToEntity(x, ecsID, position, rotation, scale, type);
-                            _interpreter(ecsID, position, rotation, scale, type);
+                            _interpreterCreateEntity(ecsID, position, rotation, scale, type);
+                        }
+
+                        for (auto &ecsID : receivedData.server.destroyedEntities) {
+                            _coordinator->destroyEntity(_serverToClient[ecsID]);
                         }
                     }
 
@@ -312,7 +316,7 @@ namespace RT {
                 _queue.push(event);
             }
 
-            void _interpreter(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
+            void _interpreterCreateEntity(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
                 // std::cout << "interpreter" << std::endl;
                 // std::cout << "entity: " << ecsID << std::endl;
                 // std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;

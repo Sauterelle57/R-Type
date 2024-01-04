@@ -45,9 +45,9 @@ namespace rt {
                 _systems._systemProjectile->update(_camera);
                 _systems._systemShoot->update();
                 _systems._systemCollider->update();
-                _systems._systemClientUpdater->update();
                 _systems._systemMove->update();
                 _systems._systemEnemy->update();
+                _systems._systemClientUpdater->update();
             }
             if (_clockEnemySpawn.isTimeElapsed()) {
                 for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {

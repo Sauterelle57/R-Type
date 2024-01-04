@@ -28,7 +28,7 @@ namespace rt {
         }
     }
 
-    void UdpClient::sendStruct(const rt::Protocol &protocol) {
+    void UdpClient::sendStruct(rt::Protocol &protocol) {
         sf::Packet packet;
         rt::ProtocolController pc;
         std::string serializedData = pc.serialize(protocol);

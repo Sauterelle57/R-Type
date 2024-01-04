@@ -17,7 +17,7 @@ namespace rt {
         void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex);
 
         void send(const std::string& message);
-        void sendStruct(const rt::Protocol &protocol);
+        void sendStruct(rt::Protocol &protocol);
 
         std::string receive();
         rt::Protocol receiveStruct();

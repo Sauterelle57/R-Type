@@ -56,7 +56,6 @@ namespace ECS {
                         {"SIN_SHOT", rt::ENTITY_TYPE::SIN_SHOT},
                     };
 
-                    std::cout << "ENTITY : " << entity << " " << transform.position._x << ", " << transform.position._y << ", " << transform.position._z  << "," <<  std::endl;
                     clientUpdater._pc->addEntity(entity, transform.position, transform.rotation, transform.scale, nameToId[type.name]);
                     // auto clients = clientUpdater.clientController->getClients();
                     // for (auto &clt : clients) {
