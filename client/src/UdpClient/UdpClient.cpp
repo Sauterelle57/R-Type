@@ -89,7 +89,7 @@ namespace rt {
     }
 
     void UdpClient::run(std::shared_ptr<bool> running) {
-        std::cout << "Receiving messages..." << std::endl;
+        // std::cout << "Receiving messages..." << std::endl;
         while (*running) {
             std::string message = receive();
             //std::cout << "message..." << std::endl;

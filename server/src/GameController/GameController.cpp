@@ -70,11 +70,11 @@ namespace rt {
 
     void GameController::commandHandler(const std::string &data, const std::string &ip, const int port) {
 
-        std::cout << "-------------------" << std::endl;
-        std::cout << "COMMAND HANDLER" << std::endl;
-        std::cout << "from: " << ip << ":" << port << std::endl;
-        std::cout << "data: " << data << std::endl;
-        std::cout << "-------------------" << std::endl;
+        // std::cout << "-------------------" << std::endl;
+        // std::cout << "COMMAND HANDLER" << std::endl;
+        // std::cout << "from: " << ip << ":" << port << std::endl;
+        // std::cout << "data: " << data << std::endl;
+        // std::cout << "-------------------" << std::endl;
 
         std::istringstream iss(data);
         std::string command;

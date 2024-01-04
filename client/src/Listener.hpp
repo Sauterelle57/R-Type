@@ -73,17 +73,17 @@ namespace RT {
                     std::string front = _queue.front();
                     _queue.pop();
 
-                    std::cout << "new message arrived !" << std::endl;
-                    std::cout << "of size : " << front.size() << std::endl;
+                    // std::cout << "new message arrived !" << std::endl;
+                    // std::cout << "of size : " << front.size() << std::endl;
 
                     rt::ProtocolController pc;
 
                     auto receivedData = pc.deserialize(front);
-                    std::cout << "SENDER TYPE : " << receivedData.sender << std::endl;
-                    std::cout << "PROTOCOL TYPE : " << receivedData.protocol << std::endl;
+                    // std::cout << "SENDER TYPE : " << receivedData.sender << std::endl;
+                    // std::cout << "PROTOCOL TYPE : " << receivedData.protocol << std::endl;
 
                     if (receivedData.sender == rt::SENDER_TYPE::SERVER && receivedData.protocol == rt::PROTOCOL_TYPE::ENTITIES) {
-                        std::cout << "[EXEC]: ENTITIES" << std::endl;
+                        // std::cout << "[EXEC]: ENTITIES" << std::endl;
 
                         for (auto &x : receivedData.server.entities) {
                             std::uint32_t ecsID = 0;
