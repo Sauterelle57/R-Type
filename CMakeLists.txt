@@ -302,6 +302,7 @@ add_executable(map_editor
 target_include_directories(map_editor PRIVATE
         ${CMAKE_SOURCE_DIR}/client/src/renderer
         ${CMAKE_SOURCE_DIR}/map_editor/src
+        ${CMAKE_SOURCE_DIR}/map_editor/
         ${CMAKE_SOURCE_DIR}/map_editor/Tools/Vec3
         ${CMAKE_SOURCE_DIR}/map_editor/Tools/Vec4
         ${CMAKE_SOURCE_DIR}/map_editor/Tools/Utils
