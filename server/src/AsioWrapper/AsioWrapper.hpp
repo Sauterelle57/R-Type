@@ -22,7 +22,7 @@ namespace rt {
             void run();
             void startReceive();
             void sendTo(const std::string& message, const std::string& ipAddress, unsigned short port);
-            void sendStruct(const Protocol &protocol, const std::string& ipAddress, unsigned short port);
+            void sendStruct(Protocol &protocol, const std::string& ipAddress, unsigned short port);
 
             std::vector<char> getReceivedData() const;
 

@@ -60,8 +60,9 @@ namespace ECS {
                     for (auto const &clientID : clientIDS) {
                         std::ostringstream responseStream;
                         responseStream << entity << " DESTROY";
-                        std::string response = responseStream.str();
-                        clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                        clientUpdater._pc->deleteEntity(entity);
+                        // std::string response = responseStream.str();
+                        // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                     }
                     coordinatorPtr->destroyEntity(entity);
                     return;

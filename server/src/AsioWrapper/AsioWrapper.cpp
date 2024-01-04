@@ -57,7 +57,7 @@ namespace rt {
         }
     }
 
-    void AsioWrapper::sendStruct(const Protocol &protocol, const std::string& ipAddress, unsigned short port)
+    void AsioWrapper::sendStruct(Protocol &protocol, const std::string& ipAddress, unsigned short port)
     {
         try {
             boost::asio::ip::udp::endpoint destination(boost::asio::ip::address::from_string(ipAddress), port);

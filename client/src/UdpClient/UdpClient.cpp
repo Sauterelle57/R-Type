@@ -28,7 +28,7 @@ namespace rt {
         }
     }
 
-    void UdpClient::sendStruct(const rt::Protocol &protocol) {
+    void UdpClient::sendStruct(rt::Protocol &protocol) {
         sf::Packet packet;
         rt::ProtocolController pc;
         std::string serializedData = pc.serialize(protocol);
@@ -89,7 +89,7 @@ namespace rt {
     }
 
     void UdpClient::run(std::shared_ptr<bool> running) {
-        std::cout << "Receiving messages..." << std::endl;
+        // std::cout << "Receiving messages..." << std::endl;
         while (*running) {
             std::string message = receive();
             //std::cout << "message..." << std::endl;

@@ -28,7 +28,7 @@ namespace rt {
         virtual ~IUdpClient() = default;
         virtual void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex) = 0;
         virtual void send(const std::string& message) = 0;
-        virtual void sendStruct(const rt::Protocol &protocol) = 0;
+        virtual void sendStruct(rt::Protocol &protocol) = 0;
 
         virtual std::string receive() = 0;
         virtual rt::Protocol receiveStruct() = 0;
