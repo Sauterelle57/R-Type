@@ -115,6 +115,11 @@ namespace RT {
     }
 
     Core::~Core() {
+        {
+            std::lock_guard<std::mutex> lock(*_isRunningMutex);
+            *_isRunning = false;
+        }
+
         _udpClientThread->join();
     }
 
