@@ -37,7 +37,7 @@ namespace ECS {
                     float rdm2 = static_cast<float>(dist1(rng));
                     if (rdm > 49)
                         enemy.isGoingUp = !enemy.isGoingUp;
-                    if (rdm > 49)
+                    if (rdm2 > 49)
                         enemy.isTurningLeft = !enemy.isTurningLeft;
                     if ((enemy.isGoingUp || transform.position._y < -15) && transform.position._y <= 30.0) {
                         enemy.isGoingUp = true;

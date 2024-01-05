@@ -26,6 +26,7 @@
 #include "Coordinator.hpp"
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
+#include "rlights.h"
 
 namespace ECS {
     enum Direction {
@@ -150,6 +151,10 @@ namespace ECS {
 
     struct SelfDestruct {
         tls::Clock timer;
+    };
+
+    struct LightComponent {
+        Light light;
     };
 
 }

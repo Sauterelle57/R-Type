@@ -36,7 +36,7 @@ namespace RT {
             const std::string &getHost() const;
             void setHost(const std::string &host);
 
-            unsigned int _port = 4242;
+            unsigned int _port = 1234;
             std::string _host = "127.0.0.1";
             Focus _focus = HOST;
 

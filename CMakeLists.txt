@@ -216,6 +216,7 @@ add_executable(rtype_client
         client/src/Menu.cpp
         client/src/Menu.hpp
         client/Tools/ECS/Managers/Systems/SelfDestruct.hpp
+        client/Tools/ECS/Managers/Systems/Lights.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
