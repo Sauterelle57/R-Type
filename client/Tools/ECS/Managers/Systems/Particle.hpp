@@ -17,6 +17,10 @@
 #include "renderer/Mode.hpp"
 #include "Vec3.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace ECS {
     class ParticleSystem : public System {
         public:
@@ -29,6 +33,7 @@ namespace ECS {
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
+                particle.scale = transform.scale * particles.scaleOffset;
                 particle.speed = { RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                    RL::Utils::getRandomValue(100, 200) / (particles.speed * 10),
                                    RL::Utils::getRandomValue(-10, 10) / particles.speed };
@@ -46,6 +51,7 @@ namespace ECS {
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
+                particle.scale = transform.scale * particles.scaleOffset;
                 particle.speed = {RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                   RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10),
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed};
@@ -67,6 +73,30 @@ namespace ECS {
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed};
 
+                particle.scale = transform.scale * particles.scaleOffset;
+                particle.alpha = particles.lifeTime;
+                particle.active = true;
+            }
+
+            static void initParticleExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
+                if (!coordinator) {
+                    return;
+                }
+
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+                particle.position = transform.position + particles.positionOffset;
+                particle.scale = transform.scale * particles.scaleOffset;
+                float angleRadians = RL::Utils::getRandomValue(0, 360) * (M_PI / 180);
+
+                particle.speed = {
+                        cos(angleRadians) * 0.1,
+                        sin(angleRadians) * 0.1,
+                        0
+                };
+
+                particle.id = RL::Utils::getRandomValue(1, 9);
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
             }
@@ -98,6 +128,7 @@ namespace ECS {
                     particle.speed._z = .1;
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
+                particle.scale = transform.scale * particles.scaleOffset;
             }
 
             static void initParticleConeRight(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -114,6 +145,7 @@ namespace ECS {
                                    RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
+                particle.scale = transform.scale * particles.scaleOffset;
             }
 
             static void initParticleLineLeft(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -130,6 +162,7 @@ namespace ECS {
                                   0};
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
+                particle.scale = transform.scale * particles.scaleOffset;
             }
 
             static void initParticleLineRight(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -146,6 +179,7 @@ namespace ECS {
                                   0};
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
+                particle.scale = transform.scale * particles.scaleOffset;
             }
 
             void updateParticles(Entity entity) {
@@ -199,12 +233,13 @@ namespace ECS {
                 for (auto &particle : particles.particles) {
                     if (particle.active) {
                         if (particles.texture.size() > 0)
-                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * particles.scaleOffset, RL::Utils::fade(WHITE, particle.alpha));
+                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, RL::Utils::fade(WHITE, particle.alpha));
                     }
                 }
                 mode.endBlend();
                 shader->endMode();
             }
+
             static void drawParticlesStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
 
                 auto &particles = coordinator->getComponent<Particles>(entity);
@@ -217,20 +252,53 @@ namespace ECS {
                         if (particles.texture.size() > 1) {
                             if (RL::Utils::getRandomValue(0, 100) < 2) {
                                 if (particle.id != 0) {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * (particles.scaleOffset) * 4, colors[particle.id]);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale * 4, colors[particle.id]);
                                 } else {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * particles.scaleOffset * 4, WHITE);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale * 4, WHITE);
                                 }
                             } else {
                                 if (particle.id != 0) {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * (particles.scaleOffset), colors[particle.id]);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, colors[particle.id]);
                                 } else {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, transform.scale * particles.scaleOffset, WHITE);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, WHITE);
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            static void drawParticlesExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+                RL::ZMode mode;
+
+                shader->beginMode();
+                mode.beginBlend(BLEND_ADDITIVE);
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+
+                for (auto &particle : particles.particles) {
+                    if (particle.active) {
+                        if (particles.texture.size() > 8) {
+                            if (particle.id > 0) {
+                                particle.scale += 0.3;
+                                if (particle.scale > 2.5) {
+                                    particle.id *= -1;
+                                }
+                            } else if (particle.id < 0) {
+                                particle.speed -= particle.speed * 0.05;
+                                particle.scale -= 0.2;
+                            }
+                            if (particle.scale < 0.1) {
+                                particle.scale = 0.1;
+                            }
+                            std::cout << particle.id << " " << particle.scale << std::endl;
+                            camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale,  RL::Utils::fade(WHITE, particle.alpha));
+                        }
+                    }
+                }
+                mode.endBlend();
+                shader->endMode();
             }
 
             void update(std::shared_ptr<RL::ICamera> _camera, std::shared_ptr<RL::IShader> _shader) {

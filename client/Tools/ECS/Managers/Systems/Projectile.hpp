@@ -7,7 +7,9 @@
 #include "ComponentStructs.hpp"
 #include "Coordinator.hpp"
 #include "System.hpp"
-#define M_PI_ 3.14159265358979323846
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 namespace ECS {
 
@@ -41,7 +43,7 @@ namespace ECS {
 
                 tls::Vec3 newPosition = transform.position;
 
-                float angle = std::atan2(newPosition._y - position._y, newPosition._x - position._x) * 180 / M_PI_;
+                float angle = std::atan2(newPosition._y - position._y, newPosition._x - position._x) * 180 / M_PI;
 
                 transform.rotation = {0, 0, 1, angle - 90};
 

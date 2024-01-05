@@ -28,6 +28,7 @@
 #include "IUdpClient.hpp"
 #include "UdpClient.hpp"
 #include "Sound.hpp"
+#include "SelfDestruct.hpp"
 #include <mutex>
 
 namespace RT {
@@ -41,6 +42,7 @@ namespace RT {
         std::shared_ptr<ECS::CamSystem> _systemCamera;
         std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
         std::shared_ptr<ECS::SoundSystem> _systemSound;
+        std::shared_ptr<ECS::SelfDestructSystem> _systemSelfDestruct;
     };
 
     class Core {

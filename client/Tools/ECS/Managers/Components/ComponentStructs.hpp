@@ -81,6 +81,7 @@ namespace ECS {
         tls::Vec3 speed;
         float alpha;
         bool active;
+        float scale;
     };
 
     struct Particles {
@@ -145,6 +146,10 @@ namespace ECS {
         std::shared_ptr<RL::ISound> sound;
         bool loop = false;
         bool alreadyPlayed = false;
+    };
+
+    struct SelfDestruct {
+        tls::Clock timer;
     };
 
 }
