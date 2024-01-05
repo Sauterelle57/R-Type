@@ -6,7 +6,6 @@
 */
 
 #include <thread>
-#include "../Tools/ECS/Managers/Systems/Shoot.hpp"
 #include "../Tools/ECS/Managers/Components/ComponentStructs.hpp"
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"
@@ -151,6 +150,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::MultipleLink>();
         _coordinator->registerComponent<ECS::Sound>();
+        _coordinator->registerComponent<ECS::SelfDestruct>();
     }
 
     void Core::initSystem() {
@@ -162,6 +162,7 @@ namespace RT {
 //        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
+        _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
 //        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
 
 
@@ -220,6 +221,12 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::SoundSystem>(signature);
         }
 
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::SelfDestruct>());
+            _coordinator->setSystemSignature<ECS::SelfDestructSystem>(signature);
+        }
+
 //        {
 //            ECS::Signature signature;
 //            signature.set(_coordinator->getComponentType<ECS::Transform>());
@@ -256,6 +263,7 @@ namespace RT {
                 _systems._systemPlayer->update(_event, _udpClient);
                 _systems._systemParticles->update(_camera, shader);
                 _systems._systemSound->update();
+                _systems._systemSelfDestruct->update();
 
                 _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();
