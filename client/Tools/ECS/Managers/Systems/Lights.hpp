@@ -24,6 +24,10 @@ namespace ECS {
                     return;
                 }
 
+                static bool drawHitbox = false;
+
+                if (IsKeyPressed(KEY_H))
+                    drawHitbox = !drawHitbox;
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &light = coordinatorPtr->getComponent<LightComponent>(entity);
@@ -31,7 +35,9 @@ namespace ECS {
                     light.light.position = transform.position;
 
                     UpdateLightValues(*shader->getShader(), light.light);
-                    window->drawSphereWires(transform.position, transform.scale, 5, 5, light.light.color);
+
+                    if (drawHitbox)
+                        window->drawSphereWires(transform.position, transform.scale, 5, 5, light.light.color);
                 }
             }
     };

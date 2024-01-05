@@ -212,7 +212,7 @@ namespace RT {
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
         _systems._systemLight = _coordinator->registerSystem<ECS::LightSystem>();
-//        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
 
 
 //        {
@@ -283,12 +283,12 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::LightSystem>(signature);
         }
 
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Traveling>());
-//            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
-//        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -303,20 +303,31 @@ namespace RT {
 
         std::shared_ptr<RL::ZShader> shader2 = std::make_shared<RL::ZShader>("./client/resources/shaders/lighting.vs", "./client/resources/shaders/lighting.fs");
         shader2->getShader()->locs[SHADER_LOC_VECTOR_VIEW] = shader->getLocation("viewPos");
-        float ambient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+        float ambient[4] = { 0.01f, 0.01f, 0.01f, 0.01f };
         shader2->setValue(shader2->getLocation("ambient"), &ambient, SHADER_UNIFORM_VEC4);
-        float globalZ = 5;
 
+        const int nbLights = 4;
+
+        float _x[nbLights] = { -30.0f, -30.0f, 30.0f, 30.0f};
+        float _y[nbLights] = { -10.0f, 25.0f, -10.0f, 25.0f };
+        float _z[nbLights] = { -50, 1, 1, 1 };
+        Color _colors[nbLights] = { WHITE, RED, PURPLE, BLUE };
+
+        for (int i = 0 ; i < nbLights ; i++)
         {
             float x, y, z, rx, ry, rz, ra, scale;
             x = y = z = rx = ry = rz = ra = scale = 0;
-            z = globalZ;
+            Color color = _colors[i];
+
+            x = _x[i];
+            y = _y[i];
+            z = _z[i];
 
             _entities->insert(_entities->end(), _coordinator->createEntity());
             _coordinator->addComponent(
                     *_entities->rbegin(),
                     ECS::LightComponent{
-                            .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, Vector3Zero(), PURPLE, *shader2->getShader())
+                            .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, {x, y, z - 1}, color, *shader2->getShader())
                     }
             );
 
@@ -328,77 +339,10 @@ namespace RT {
                             1
                     }
             );
-        }
-        {
-            float x, y, z, rx, ry, rz, ra, scale;
-            x = y = z = rx = ry = rz = ra = scale = 0;
-
-            x = 50;
-            z = globalZ;
-
-            _entities->insert(_entities->end(), _coordinator->createEntity());
             _coordinator->addComponent(
                     *_entities->rbegin(),
-                    ECS::LightComponent{
-                            .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, Vector3Zero(), RED, *shader2->getShader())
-                    }
-            );
-
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::Transform{
-                            {x, y, z},
-                            {rx, ry, rz, ra},
-                            1
-                    }
-            );
-        }
-        {
-            float x, y, z, rx, ry, rz, ra, scale;
-            x = y = z = rx = ry = rz = ra = scale = 0;
-
-            y = 25;
-            z = globalZ;
-
-            _entities->insert(_entities->end(), _coordinator->createEntity());
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::LightComponent{
-                            .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, Vector3Zero(), GREEN, *shader2->getShader())
-                    }
-            );
-
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::Transform{
-                            {x, y, z},
-                            {rx, ry, rz, ra},
-                            1
-                    }
-            );
-        }
-        {
-            float x, y, z, rx, ry, rz, ra, scale;
-            x = y = z = rx = ry = rz = ra = scale = 0;
-
-            x = 50;
-            y = 25;
-            z = globalZ;
-
-            _entities->insert(_entities->end(), _coordinator->createEntity());
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::LightComponent{
-                            .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, Vector3Zero(), ORANGE, *shader2->getShader())
-                    }
-            );
-
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::Transform{
-                            {x, y, z},
-                            {rx, ry, rz, ra},
-                            1
+                    ECS::Traveling{
+                            {0.0175, 0, 0},
                     }
             );
         }
@@ -428,6 +372,7 @@ namespace RT {
                 _systems._systemParticles->update(_camera, shader);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
+                _systems._systemTraveling->update();
 
                 _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();
