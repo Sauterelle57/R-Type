@@ -7,6 +7,7 @@
 
 #include <thread>
 #include "../Tools/ECS/Managers/Components/ComponentStructs.hpp"
+#include "../Tools/ECS/Managers/Systems/Sound.hpp"
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/Cursor.hpp"
@@ -15,13 +16,13 @@
 #include "renderer/Texture.hpp"
 #include "renderer/Utils.hpp"
 #include "Core.hpp"
-#include "Utils.hpp"
 #include "Move.hpp"
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "MultipleLink.hpp"
 #include "Listener.hpp"
 #include "renderer/Audio.hpp"
+#include "Menu.hpp"
 
 namespace RT {
 
@@ -61,20 +62,64 @@ namespace RT {
         _camera->setUp({ 0.0f, 1.0f, 0.0f });
         _camera->setFovy(30.0f);
         _camera->setProjection(CAMERA_PERSPECTIVE);
-        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _messageQueueMutex = std::make_shared<std::mutex>();
-        _udpClient->setup("127.0.0.1", 1234, _receivedMessages, _messageQueueMutex);
+        _isRunningMutex = std::make_shared<std::mutex>();
+        {
+            std::lock_guard<std::mutex> lock(*_isRunningMutex);
+            _udpClientThread = std::make_unique<std::thread>(([&]() {
+                _udpClient->run(_isRunning);
+            }));
+        }
 
-        _udpClientThread = std::make_unique<std::thread>(([&]() {
-            _udpClient->run(_isRunning);
-        }));
+        Menu menu;
+        menu.loop(_window, _event, false);
+        bool canReach = false;
+        while (!canReach) {
+            _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex, _isRunningMutex);
+            tls::Clock tryingToConnect(0.1);
+            while (!tryingToConnect.isTimeElapsed() && !canReach) {
+                _udpClient->send("PING");
+                {
+                    std::lock_guard<std::mutex> lock(*_messageQueueMutex);
+                    while (!_receivedMessages->empty()) {
+                        std::string message = _receivedMessages->front().message;
+                        if (message == "OK") {
+                            canReach = true;
+                        }
+                        _receivedMessages->pop();
+                    }
+                }
+            }
+            if (!canReach) {
+                {
+                    std::lock_guard<std::mutex> lock(*_isRunningMutex);
+                    *_isRunning = false;
+                }
+
+                _udpClientThread->join();
+                _isRunning = std::make_shared<bool>(true);
+
+
+
+                _udpClientThread = std::make_unique<std::thread>(([&]() {
+                    _udpClient->run(_isRunning);
+                }));
+                menu.loop(_window, _event, true);
+            }
+        }
+        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _udpClient->send("CONNECTION_REQUEST");
         _clock = std::make_unique<tls::Clock>(0.01);
     }
 
     Core::~Core() {
+        {
+            std::lock_guard<std::mutex> lock(*_isRunningMutex);
+            *_isRunning = false;
+        }
+
         _udpClientThread->join();
     }
 
@@ -246,11 +291,16 @@ namespace RT {
         shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
 
         while (!_window->shouldClose()) {
-            while (!_receivedMessages->empty()) {
+            {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
-                std::string message = _receivedMessages->front().message;
-                _listener->addEvent(message);
-                _receivedMessages->pop();
+                while (!_receivedMessages->empty()) {
+                    std::string message = _receivedMessages->front().message;
+                    _receivedMessages->pop();
+                    if (message == "OK" || message == "<error>") {
+                        continue;
+                    }
+                    _listener->addEvent(message);
+                }
             }
             _listener->onEvent();
             if (_clock->isTimeElapsed()) {

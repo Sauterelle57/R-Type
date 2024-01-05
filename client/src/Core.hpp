@@ -79,6 +79,7 @@ namespace RT {
             std::unique_ptr<RL::IAudio> _audio;
 
             std::shared_ptr<std::mutex> _messageQueueMutex;
+            std::shared_ptr<std::mutex> _isRunningMutex;
     };
 };
 

@@ -213,6 +213,8 @@ add_executable(rtype_client
         client/Tools/Error/Error.hpp
         server/Tools/ECS/Managers/Systems/Collider.hpp
         client/Tools/ECS/Managers/Systems/Sound.hpp
+        client/src/Menu.cpp
+        client/src/Menu.hpp
         client/Tools/ECS/Managers/Systems/SelfDestruct.hpp
 )
 
