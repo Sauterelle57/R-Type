@@ -14,6 +14,7 @@
 #include "renderer/IImage.hpp"
 #include "renderer/IModel.hpp"
 #include "renderer/ITexture.hpp"
+#include <string>
 
 namespace RT {
     enum Focus {
