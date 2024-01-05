@@ -34,16 +34,29 @@ namespace ECS {
                     auto &enemy = coordinatorPtr->getComponent<Enemy>(entity);
                     auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
                     float rdm = static_cast<float>(dist1(rng));
+                    float rdm2 = static_cast<float>(dist1(rng));
                     if (rdm > 49)
                         enemy.isGoingUp = !enemy.isGoingUp;
+                    if (rdm > 49)
+                        enemy.isTurningLeft = !enemy.isTurningLeft;
                     if ((enemy.isGoingUp || transform.position._y < -15) && transform.position._y <= 30.0) {
+                        enemy.isGoingUp = true;
                         transform.position._y += 0.1;
                     } else {
+                        enemy.isGoingUp = false;
                         transform.position._y -= 0.1;
+                    }
+                    if ((enemy.isTurningLeft || transform.rotation._a < -15) && transform.rotation._a <= 15.0) {
+                        enemy.isTurningLeft = true;
+                        transform.rotation._a += 0.2;
+                    } else {
+                        enemy.isTurningLeft = false;
+                        transform.rotation._a -= 0.2;
                     }
                     if (enemy.clock.isTimeElapsed()) {
                         shooter.isShooting = true;
                     }
+                    transform.rotation._x = 1;
                 }
             }
 

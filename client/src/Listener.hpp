@@ -40,13 +40,13 @@ namespace RT {
                     _tileModel->_model->transform = matr;
                 }
                 {
-                    _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj");
+                    _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
-                    matr = MatrixMultiply(matr, MatrixTranslate(0, -20 , 0));
+//                    matr = MatrixMultiply(matr, MatrixTranslate(0, -2 , 0));
                     _modelEnemy->_model->transform = matr;
-                    _textureEnemy = std::make_shared<RL::ZTexture>(
-                    "./client/resources/images/duck_text.png");
+////                    _textureEnemy = std::make_shared<RL::ZTexture>(
+//                    "./client/resources/images/duck_text.png");
                 }
                 {
                     _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
@@ -149,7 +149,7 @@ namespace RT {
                                         *_entities->rbegin(),
                                         ECS::Model{
                                                 .model = _modelEnemy,
-                                                .texture = _textureEnemy
+//                                                .texture = _textureEnemy
                                         }
                                 );
                             } else if (token == "BASIC_SHOT") {

@@ -292,7 +292,6 @@ namespace ECS {
                             if (particle.scale < 0.1) {
                                 particle.scale = 0.1;
                             }
-                            std::cout << particle.id << " " << particle.scale << std::endl;
                             camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale,  RL::Utils::fade(WHITE, particle.alpha));
                         }
                     }

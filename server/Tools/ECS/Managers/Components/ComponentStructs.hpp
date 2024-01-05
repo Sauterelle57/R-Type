@@ -121,6 +121,7 @@ namespace ECS {
 
     struct Enemy {
         bool isGoingUp = false;
+        bool isTurningLeft = false;
         tls::Clock clock;
     };
 }
