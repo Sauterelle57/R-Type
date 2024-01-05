@@ -75,7 +75,7 @@ namespace RT {
 
         Menu menu;
         menu.loop(_window, _event, false);
-        bool canReach;
+        bool canReach = false;
         while (!canReach) {
             _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex, _isRunningMutex);
             tls::Clock tryingToConnect(0.1);
