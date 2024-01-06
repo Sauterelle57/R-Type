@@ -366,8 +366,7 @@ namespace RT {
                         _coordinator->addComponent(
                             *_entities->rbegin(),
                             ECS::Model{
-                                .model = _modelEnemy,
-                                .texture = _textureEnemy,
+                                .model = _playerModel,
                                 .color = colors[i++ % colors.size()]
                             }
                         );
