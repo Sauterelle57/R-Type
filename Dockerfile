@@ -21,3 +21,11 @@ WORKDIR /build/build
 RUN cmake -G "Unix Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
 
 RUN make
+
+FROM ubuntu:23.04 as runner
+
+WORKDIR /app
+
+COPY --from=builder /build/build/rtype_server .
+
+CMD [ "./rtype_server" ]
