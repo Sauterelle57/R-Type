@@ -308,13 +308,14 @@ namespace RT {
 
         const int nbLights = 4;
 
-        float _x[nbLights] = { -30.0f, -30.0f, 30.0f, 30.0f};
-        float _y[nbLights] = { -10.0f, 25.0f, -10.0f, 25.0f };
-        float _z[nbLights] = { -50, 1, 1, 1 };
-        Color _colors[nbLights] = { WHITE, RED, PURPLE, BLUE };
+        float _x[nbLights] = { -40.0f, 40.0f, 40.0f, 40.0f };
+        float _y[nbLights] = { -20.0f, 20.0f, -20.0f, 35.0f };
+        float _z[nbLights] = { 5, 5, 0, 0 };
+        Color _colors[nbLights] = { PURPLE, PINK, BLACK, BLACK };
 
-        for (int i = 0 ; i < nbLights ; i++)
+        for (int i = 0 ; i < 2 ; i++)
         {
+            std::cout << "Creating light " << i << std::endl;
             float x, y, z, rx, ry, rz, ra, scale;
             x = y = z = rx = ry = rz = ra = scale = 0;
             Color color = _colors[i];

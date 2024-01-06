@@ -249,7 +249,7 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(1000),
                                         .texture = _starTexture,
                                         .speed = 60.0f,
-                                        .scaleOffset = .5f,
+                                        .scaleOffset = 1.2f,
                                         .positionOffset = {95, 0, -120},
                                         .lifeTime = 550,
                                         .spawnRate = 1,
