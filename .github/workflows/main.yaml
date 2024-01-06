@@ -21,4 +21,4 @@ jobs:
 
       - name: Check docker
         run: |
-          docker ps
+          docker build -t build-src .
