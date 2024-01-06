@@ -67,7 +67,7 @@ namespace rt
     struct p_server {
         int destroyedEntitiesSize = 0;
         std::vector<std::uint32_t> destroyedEntities; // List entities from server to client
-        std::vector<std::bitset<578>> entities; // List entities from server to client
+        std::vector<std::bitset<554>> entities; // List entities from server to client
     };
 
     struct Protocol
@@ -201,7 +201,7 @@ namespace rt
 
             while (iss.peek() != EOF)
             {
-                std::bitset<578> entity;
+                std::bitset<554> entity;
                 deserializeEntity(iss, entity);
                 deserializedData.server.entities.push_back(entity);
             }
@@ -209,7 +209,7 @@ namespace rt
             return deserializedData;
         }
 
-        std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, float scale, int type)
+        std::bitset<554> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, float scale, ENTITY_TYPE type)
         {
             std::bitset<32> ecsIdBits(ecsId);
             std::bitset<2> signatureBits((signature[0] << 1) | signature[1]);
@@ -225,9 +225,9 @@ namespace rt
 
             std::bitset<64> scaleBits(*reinterpret_cast<uint64_t*>(&scale));
 
-            std::bitset<32> typeBits(type);
+            std::bitset<8> typeBits(static_cast<std::uint8_t>(type));
 
-            std::bitset<578> result;
+            std::bitset<554> result;
 
             // Setting bits individually
             for (int i = 0; i < 32; ++i)
@@ -248,21 +248,21 @@ namespace rt
                 result.set(i + 482, scaleBits[i]);
             }
 
-            for (int i = 0; i < 32; ++i)
+            for (int i = 0; i < 8; ++i)
                 result.set(i + 546, typeBits[i]);
 
             return result;
         }
 
-        void changeEntityTypeInBitset(std::bitset<578> &x, rt::ENTITY_TYPE type)
+        void changeEntityTypeInBitset(std::bitset<554> &x, rt::ENTITY_TYPE type)
         {
-            std::bitset<32> typeBits(type);
+            std::bitset<8> typeBits(static_cast<std::uint8_t>(type));
 
-            for (int i = 0; i < 32; ++i)
+            for (int i = 0; i < 8; ++i)
                 x.set(i + 546, typeBits[i]);
         }
 
-        static std::uint32_t getECSIdFromBitset(std::bitset<578> x)
+        static std::uint32_t getECSIdFromBitset(std::bitset<554> x)
         {
             std::bitset<32> ecsIdBits;
             std::uint32_t ecsID;
@@ -275,7 +275,7 @@ namespace rt
             return ecsID;
         }
 
-        static void convertBitsetToEntity(std::bitset<578> x, std::uint32_t &ecsID, tls::Vec3 &pos, tls::Vec4 &rotation, float &scale, int &type)
+        static void convertBitsetToEntity(std::bitset<554> x, std::uint32_t &ecsID, tls::Vec3 &pos, tls::Vec4 &rotation, float &scale, int &type)
         {
             std::bitset<32> ecsIdBits;
             std::array<bool, 2> signatureBits;
@@ -325,7 +325,7 @@ namespace rt
 
             scale = *reinterpret_cast<float*>(&scaleBits);
 
-            type = static_cast<int>(typeBits.to_ulong());
+            type = static_cast<ENTITY_TYPE>(static_cast<std::uint8_t>(typeBits.to_ulong()));
         }
 
         Protocol getProtocol() const { return *_protocol.get(); }
@@ -333,12 +333,12 @@ namespace rt
     private:
         std::shared_ptr<Protocol> _protocol;
 
-        void serializeEntity(std::ostringstream& oss, const std::bitset<578>& entity) const
+        void serializeEntity(std::ostringstream& oss, const std::bitset<554>& entity) const
         {
             oss.write(reinterpret_cast<const char*>(&entity), entity.size() / 8);
         }
 
-        static void deserializeEntity(std::istringstream& iss, std::bitset<578>& entity)
+        static void deserializeEntity(std::istringstream& iss, std::bitset<554>& entity)
         {
             iss.read(reinterpret_cast<char*>(&entity), entity.size() / 8);
         }

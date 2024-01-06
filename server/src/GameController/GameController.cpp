@@ -82,7 +82,7 @@ namespace rt {
 
 
         try {
-            std::cout << "[" << command << "] " << data.length() << std::endl;
+            // std::cout << "[" << command << "] " << data.length() << std::endl;
             if (command == "SHOOT" || command == "MOVE")
                 _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
             else
