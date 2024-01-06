@@ -24,7 +24,7 @@ namespace rt {
         if (!error) {
             auto x = _asioWrapper->getRecvBuffer();
             std::string result = std::string(x.data(), bytes_transferred);
-            std::cout << "(<) Receiving (size (o)) : " << result.size() << std::endl;
+            // std::cout << "(<) Receiving (size (o)) : " << result.size() << std::endl;
             // rt::ProtocolController pc;
             // std::cout << "1;" << std::endl;
             // auto rslt = pc.deserialize(result);
