@@ -224,11 +224,11 @@ namespace ECS {
 
             static void drawParticlesDefault(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
                 RL::ZMode mode;
-                auto &shader = coordinator->getComponent<ECS::ShaderComponent>(entity).shader;
 
-                shader->beginMode();
-                mode.beginBlend(BLEND_ADDITIVE);
                 auto &particles = coordinator->getComponent<Particles>(entity);
+
+                particles.shader->beginMode();
+                mode.beginBlend(BLEND_ADDITIVE);
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 for (auto &particle : particles.particles) {
@@ -238,7 +238,7 @@ namespace ECS {
                     }
                 }
                 mode.endBlend();
-                shader->endMode();
+                particles.shader->endMode();
             }
 
             static void drawParticlesStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
@@ -271,11 +271,10 @@ namespace ECS {
 
             static void drawParticlesExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
                 RL::ZMode mode;
-                auto &shader = coordinator->getComponent<ECS::ShaderComponent>(entity).shader;
-
-                shader->beginMode();
-                mode.beginBlend(BLEND_ADDITIVE);
                 auto &particles = coordinator->getComponent<Particles>(entity);
+
+                particles.shader->beginMode();
+                mode.beginBlend(BLEND_ADDITIVE);
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
 
@@ -299,7 +298,7 @@ namespace ECS {
                     }
                 }
                 mode.endBlend();
-                shader->endMode();
+                particles.shader->endMode();
             }
 
             void update(std::shared_ptr<RL::ICamera> _camera) {
