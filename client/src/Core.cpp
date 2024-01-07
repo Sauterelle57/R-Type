@@ -199,6 +199,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Sound>();
         _coordinator->registerComponent<ECS::SelfDestruct>();
         _coordinator->registerComponent<ECS::LightComponent>();
+        _coordinator->registerComponent<ECS::ShaderComponent>();
     }
 
     void Core::initSystem() {
@@ -213,6 +214,7 @@ namespace RT {
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
         _systems._systemLight = _coordinator->registerSystem<ECS::LightSystem>();
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
 
 
 //        {
@@ -280,6 +282,7 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::LightComponent>());
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
             _coordinator->setSystemSignature<ECS::LightSystem>(signature);
         }
 
@@ -289,64 +292,19 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Traveling>());
             _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            _coordinator->setSystemSignature<ECS::ShaderUpdaterSystem>(signature);
+        }
     }
 
     void Core::loop() {
         initComponents();
         initSystem();
         initEntities();
-
-        std::shared_ptr<RL::ZShader> shader = std::make_shared<RL::ZShader>("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
-        int glowIntensityLoc = shader->getLocation("glowIntensity");
-        float glowIntensity = 3.0f;
-        shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
-
-        std::shared_ptr<RL::ZShader> shader2 = std::make_shared<RL::ZShader>("./client/resources/shaders/lighting.vs", "./client/resources/shaders/lighting.fs");
-        shader2->getShader()->locs[SHADER_LOC_VECTOR_VIEW] = shader->getLocation("viewPos");
-        float ambient[4] = { 0.01f, 0.01f, 0.01f, 0.01f };
-        shader2->setValue(shader2->getLocation("ambient"), &ambient, SHADER_UNIFORM_VEC4);
-
-        const int nbLights = 4;
-
-        float _x[nbLights] = { -40.0f, 40.0f, 40.0f, 40.0f };
-        float _y[nbLights] = { -20.0f, 20.0f, -20.0f, 35.0f };
-        float _z[nbLights] = { 5, 5, 0, 0 };
-        Color _colors[nbLights] = { PURPLE, PINK, BLACK, BLACK };
-
-        for (int i = 0 ; i < 2 ; i++)
-        {
-            std::cout << "Creating light " << i << std::endl;
-            float x, y, z, rx, ry, rz, ra, scale;
-            x = y = z = rx = ry = rz = ra = scale = 0;
-            Color color = _colors[i];
-
-            x = _x[i];
-            y = _y[i];
-            z = _z[i];
-
-            _entities->insert(_entities->end(), _coordinator->createEntity());
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::LightComponent{
-                            .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, {x, y, z - 1}, color, *shader2->getShader())
-                    }
-            );
-
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::Transform{
-                            {x, y, z},
-                            {rx, ry, rz, ra},
-                            1
-                    }
-            );
-            _coordinator->addComponent(
-                    *_entities->rbegin(),
-                    ECS::Traveling{
-                            {0.0175, 0, 0},
-                    }
-            );
-        }
 
         while (!_window->shouldClose()) {
             {
@@ -367,10 +325,11 @@ namespace RT {
                 _systems._systemCamera->begin();
 
                 _systems._systemCamera->update();
-                _systems._systemLight->update(_window, shader2);
-                _systems._systemDrawModel->update(shader2, _camera->getPosition());
+                _systems._systemLight->update();
+                _systems._systemShaderUpdater->update(_camera->getPosition());
+                _systems._systemDrawModel->update();
                 _systems._systemPlayer->update(_event, _udpClient);
-                _systems._systemParticles->update(_camera, shader);
+                _systems._systemParticles->update(_camera);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
                 _systems._systemTraveling->update();

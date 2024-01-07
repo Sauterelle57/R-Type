@@ -222,8 +222,9 @@ namespace ECS {
                 }
             }
 
-            static void drawParticlesDefault(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+            static void drawParticlesDefault(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
                 RL::ZMode mode;
+                auto &shader = coordinator->getComponent<ECS::ShaderComponent>(entity).shader;
 
                 shader->beginMode();
                 mode.beginBlend(BLEND_ADDITIVE);
@@ -240,7 +241,7 @@ namespace ECS {
                 shader->endMode();
             }
 
-            static void drawParticlesStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+            static void drawParticlesStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
 
                 auto &particles = coordinator->getComponent<Particles>(entity);
                 auto &transform = coordinator->getComponent<Transform>(entity);
@@ -268,8 +269,9 @@ namespace ECS {
                 }
             }
 
-            static void drawParticlesExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+            static void drawParticlesExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
                 RL::ZMode mode;
+                auto &shader = coordinator->getComponent<ECS::ShaderComponent>(entity).shader;
 
                 shader->beginMode();
                 mode.beginBlend(BLEND_ADDITIVE);
@@ -300,7 +302,7 @@ namespace ECS {
                 shader->endMode();
             }
 
-            void update(std::shared_ptr<RL::ICamera> _camera, std::shared_ptr<RL::IShader> _shader) {
+            void update(std::shared_ptr<RL::ICamera> _camera) {
                 auto coordinatorPtr = _coordinator.lock();
 
                 for (auto const &entity: _entities) {
@@ -310,7 +312,7 @@ namespace ECS {
                         emitParticles(entity);
                         particles.hasStarted = true;
                     }
-                    particles.drawParticle(coordinatorPtr, entity, _camera, _shader);
+                    particles.drawParticle(coordinatorPtr, entity, _camera);
                 }
             }
     };

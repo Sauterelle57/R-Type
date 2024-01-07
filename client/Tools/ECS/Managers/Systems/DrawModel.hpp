@@ -17,29 +17,17 @@
 namespace ECS {
     class DrawModel : public System {
         public:
-            void update(const std::shared_ptr<RL::ZShader>& shader, tls::Vec3 cameraPos) {
+            void update() {
                 static bool drawHitbox = false;
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
                 }
 
-                int count = 0;
-                float camPos[3] = {static_cast<float>(cameraPos._x), static_cast<float>(cameraPos._y), static_cast<float>(cameraPos._z)};
-                shader->setValue(shader->getShader()->locs[SHADER_LOC_VECTOR_VIEW], camPos, SHADER_UNIFORM_VEC3);
 
                 for (auto const &entity : _entities) {
-                    count++;
                     auto &model = coordinatorPtr->getComponent<Model>(entity);
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
-
-                    for (int matIndex = 0; matIndex < model.model->getModel()->materialCount; matIndex++) {
-                        if (model.model->getModel()->materials[matIndex].shader.locs[SHADER_LOC_MAP_DIFFUSE] != -1) {
-                            model.model->getModel()->materials[matIndex].shader = *shader->getShader();
-//                            model.model->getModel()->materials[matIndex].shader = *shader->getShader();
-                        }
-                    }
-
 
                     transform.bounds = model.model->getBoundingBox();
 

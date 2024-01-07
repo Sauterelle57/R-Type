@@ -217,6 +217,7 @@ add_executable(rtype_client
         client/src/Menu.hpp
         client/Tools/ECS/Managers/Systems/SelfDestruct.hpp
         client/Tools/ECS/Managers/Systems/Lights.hpp
+        client/Tools/ECS/Managers/Systems/ShaderUpdater.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

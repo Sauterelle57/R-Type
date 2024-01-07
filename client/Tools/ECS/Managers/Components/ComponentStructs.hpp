@@ -97,7 +97,8 @@ namespace ECS {
         bool hasStarted = false;
         float surviveChance;
         std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle)> initParticle;
-        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader)> drawParticle;
+        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera)> drawParticle;
+        std::shared_ptr<RL::IShader> shader;
     };
 
     struct Projectile {
@@ -155,6 +156,10 @@ namespace ECS {
 
     struct LightComponent {
         Light light;
+    };
+
+    struct ShaderComponent {
+        std::shared_ptr<RL::IShader> shader;
     };
 
 }
