@@ -52,7 +52,7 @@ namespace rt
     {
         std::uint32_t ECSEntity;
 
-        std::array<bool, 3> signature;
+        std::bitset<9> signature;
 
         tls::Vec3 position;
         tls::Vec4 rotation;
@@ -132,7 +132,7 @@ namespace rt
             _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
             // auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
-            rt::Entity ent = {ECSId, {true, true, true}, position, rotation, scale, type};
+            rt::Entity ent = {ECSId, std::bitset<9>(0b000000000), position, rotation, scale, type};
             // std::cout << bits << std::endl;
             _protocol->server.entities.push_back(ent);
             return *this;
@@ -392,9 +392,9 @@ namespace rt
             oss.write(reinterpret_cast<const char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
 
             // Serialize signature
-            for (const auto& value : entity.signature) {
-                oss.write(reinterpret_cast<const char*>(&value), sizeof(value));
-            }
+            std::bitset<9> signature = entity.signature;
+            std::uint16_t signatureValue = static_cast<std::uint16_t>(signature.to_ulong());
+            oss.write(reinterpret_cast<const char*>(&signatureValue), sizeof(signatureValue));
 
             // Serialize position
             oss.write(reinterpret_cast<const char*>(&entity.position), sizeof(entity.position));
@@ -421,7 +421,10 @@ namespace rt
             iss.read(reinterpret_cast<char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
 
             // Deserialize signature
-            iss.read(reinterpret_cast<char*>(&entity.signature), sizeof(entity.signature));
+            std::uint16_t signatureValue;
+            iss.read(reinterpret_cast<char*>(&signatureValue), sizeof(signatureValue));
+            std::bitset<9> signature(signatureValue);
+            entity.signature = signature;
 
             // Deserialize position
             iss.read(reinterpret_cast<char*>(&entity.position), sizeof(entity.position));
