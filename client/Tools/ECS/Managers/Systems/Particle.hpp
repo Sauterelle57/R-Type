@@ -357,7 +357,7 @@ namespace ECS {
                             particle.active = false;
                         } else {
                             float distance = sqrt(distanceSquared);
-                            float alpha = 2.0f - (distance * 1.8);
+                            float alpha = 2.0f - (distance * 1.5);
                             camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, RL::Utils::fade(WHITE, alpha));
                         }
                     }

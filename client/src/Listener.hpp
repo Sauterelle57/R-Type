@@ -157,7 +157,7 @@ namespace RT {
                                                 .scaleOffset = .1f,
                                                 .positionOffset = {-5.5, 2.25, 0},
                                                 .lifeTime = 50,
-                                                .spawnRate = 100,
+                                                .spawnRate = 60,
                                                 .surviveChance = 0,
                                                 .initParticle = ECS::ParticleSystem::initParticleField,
                                                 .drawParticle = ECS::ParticleSystem::drawParticleField,
