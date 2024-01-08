@@ -138,6 +138,26 @@ void convertBitsetToEntity(std::bitset<578> x)
 
 int main() {
     // rt::ProtocolController pc;
+    // std::string ser = pc.convertEntityToBinaryString(1, {false, false, false}, {1, 2, 3}, {0, 1, 1, 90}, .25f, rt::ENTITY_TYPE::PLAYER);
+    // std::cout << ser << std::endl;
+    // std::cout << "Size of string data: " << ser.size() << " bytes" << std::endl;
+    // // return 0;
+    // rt::Entity deser = pc.convertBinaryStringToEntity(ser);
+
+    // std::cout << deser.ECSEntity << std::endl;
+    // std::cout << "pos: " << deser.position._x << ", " << deser.position._y << ", " << deser.position._z << std::endl;
+    // std::cout << "rot: " << deser.rotation._x << ", " << deser.rotation._y << ", " << deser.rotation._z << ", " << deser.rotation._a << std::endl;
+    // std::cout << "sca: " << deser.scale << std::endl;
+    // std::cout << "type:" << deser.entityType << std::endl;
+    // std::cout << "sign:" << deser.signature[0] << ", " << deser.signature[1] << ", " << deser.signature[2] << std::endl;
+    // return 0;
+
+    // std::bitset<554> ser1 = pc.convertEntityToBitset(1, {true, true}, {1, 2, 3}, {0, 1, 1, 90}, .25f, rt::ENTITY_TYPE::PLAYER);
+    // // std::cout << ser1.to_string() << std::endl;
+    // std::cout << ser1.size() << " bytes" << std::endl;
+    // std::cout << sizeof(ser1.to_string()) * 8 << "b" << std::endl;
+
+    // rt::ProtocolController pc;
 
     // pc.setSender(rt::SENDER_TYPE::SERVER).setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
 

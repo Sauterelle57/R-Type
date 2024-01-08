@@ -61,7 +61,7 @@ namespace ECS {
                     // for (auto &clt : clients) {
                     //     std::string response = responseStream.str();
                     //     if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort()))
-                    //         response += "_NY";
+                    //         response += "_NY";di
                     //     clientUpdater.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                     // }
                 }
@@ -74,16 +74,20 @@ namespace ECS {
                     auto ents = proto.server.entities;
 
                     for (auto &ent : ents) {
-                        auto id = rt::ProtocolController::getECSIdFromBitset(ent);
+                        auto id = ent.ECSEntity;
                         auto &type = coordinatorPtr->getComponent<Type>(id);
 
                         if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort())) {
                             std::cout << "ENTITY : " << id << " is different" << std::endl;
-                            clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::PLAYER_NY);
+                            ent.entityType = rt::ENTITY_TYPE::PLAYER_NY;
+                            // clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::PLAYER_NY);
                         }
                         // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                     }
                     auto newProto = proto;
+                    //TODO: DELTA
+                    
+                    //
                     newProto.server.entities = ents;
                     auto response = clu._pc->serialize(newProto);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
