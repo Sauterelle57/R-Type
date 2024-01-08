@@ -200,6 +200,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::SelfDestruct>();
         _coordinator->registerComponent<ECS::LightComponent>();
         _coordinator->registerComponent<ECS::ShaderComponent>();
+        _coordinator->registerComponent<ECS::Velocity>();
     }
 
     void Core::initSystem() {
@@ -215,6 +216,7 @@ namespace RT {
         _systems._systemLight = _coordinator->registerSystem<ECS::LightSystem>();
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
         _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
+        _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
 
 
 //        {
@@ -242,6 +244,7 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Particles>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
 
@@ -299,6 +302,13 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Model>());
             _coordinator->setSystemSignature<ECS::ShaderUpdaterSystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
+            _coordinator->setSystemSignature<ECS::VelocitySystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -307,6 +317,7 @@ namespace RT {
         initEntities();
 
         while (!_window->shouldClose()) {
+            _systems._systemVelocity->getOldPosition();
             {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
                 while (!_receivedMessages->empty()) {
@@ -329,6 +340,7 @@ namespace RT {
                 _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
                 _systems._systemPlayer->update(_event, _udpClient);
+                _systems._systemVelocity->update();
                 _systems._systemParticles->update(_camera);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();

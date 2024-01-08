@@ -211,9 +211,6 @@ namespace ECS {
                 particle.scale = particles.scaleOffset;
             }
 
-
-
-
             void updateParticles(Entity entity) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
@@ -339,6 +336,7 @@ namespace ECS {
                 }
 
                 auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &velocity = coordinator->getComponent<Velocity>(entity);
                 RL::ZMode mode;
                 mode.beginBlend(BLEND_ADDITIVE);
                 auto &transform = coordinator->getComponent<Transform>(entity);
@@ -349,17 +347,19 @@ namespace ECS {
 
                 for (auto &particle : particles.particles) {
                     if (particle.active) {
+                        particle.position += velocity.speed;
 
                         tls::Vec3 offset = particle.position - (transform.position + particles.positionOffset);
                         float distanceSquared = (offset._x * offset._x) / (a * a) +
                                                 (offset._y * offset._y) / (b * b) +
                                                 (offset._z * offset._z) / (c * c);
-
-                        if (distanceSquared > 1.0f) {
+                        if (distanceSquared > 2.0f) {
                             particle.active = false;
+                        } else {
+                            float distance = sqrt(distanceSquared);
+                            float alpha = 2.0f - (distance * 1.8);
+                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, RL::Utils::fade(WHITE, alpha));
                         }
-
-                        camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, WHITE);
                     }
                 }
                 mode.endBlend();

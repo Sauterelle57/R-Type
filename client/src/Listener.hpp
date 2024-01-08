@@ -21,11 +21,11 @@ namespace RT {
         public:
             Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {
                 {
-                    _playerModel = std::make_shared<RL::ZModel>(
-                            "./client/resources/models/ship.glb");
+                    _playerModel = std::make_shared<RL::ZModel>("./client/resources/models/player.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
-                    matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixTranslate(-11, 4.5, 0));
                     _playerModel->_model->transform = matr;
                 }
                 {
@@ -151,18 +151,22 @@ namespace RT {
                                 _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Particles{
-                                                .particles = std::vector<ECS::Particle>(50000),
+                                                .particles = std::vector<ECS::Particle>(5000),
                                                 .texture = _particleBlueTexture,
-                                                .speed = .5f,
+                                                .speed = .1f,
                                                 .scaleOffset = .1f,
-                                                .positionOffset = {-5.5, 2.5, 0},
-                                                .lifeTime = 20,
-                                                .spawnRate = 50,
+                                                .positionOffset = {-5.5, 2.25, 0},
+                                                .lifeTime = 50,
+                                                .spawnRate = 100,
                                                 .surviveChance = 0,
                                                 .initParticle = ECS::ParticleSystem::initParticleField,
                                                 .drawParticle = ECS::ParticleSystem::drawParticleField,
                                                 .shader = _shaderParticles
                                         }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
                                 );
                             } else if (token == "PLAYER_NY") {
                                 static int i = 0;
@@ -253,6 +257,10 @@ namespace RT {
                                         }
                                 );
                                 _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Sound{
                                         .sound = sd,
@@ -276,6 +284,10 @@ namespace RT {
                                             .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
                                             .shader = _shaderParticles
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -315,6 +327,10 @@ namespace RT {
                                     }
                                 );
                                 _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Sound{
                                         .sound = sd,
@@ -343,7 +359,10 @@ namespace RT {
                                         .shader = _shaderParticles
                                     }
                                 );
-
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
 
                                 const int nbLights = 4;
 
@@ -440,6 +459,10 @@ namespace RT {
                                         .drawParticle = ECS::ParticleSystem::drawParticlesExplosion,
                                         .shader = _shaderParticles
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),

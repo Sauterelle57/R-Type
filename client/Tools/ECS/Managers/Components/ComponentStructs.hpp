@@ -162,6 +162,10 @@ namespace ECS {
         std::shared_ptr<RL::IShader> shader;
     };
 
+    struct Velocity {
+        tls::Vec3 speed = {0, 0, 0};
+        tls::Vec3 oldPosition = {0, 0, 0};
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP
