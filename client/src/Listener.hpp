@@ -63,6 +63,10 @@ namespace RT {
                     _particleTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"));
                 }
                 {
+                    _particleBlueTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
+                    _particleBlueTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/particleBlue.png"));
+                }
+                {
                     _starTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
                     _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/star.png"));
                     _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/planet.png"));
@@ -143,6 +147,22 @@ namespace RT {
                                         .key_cancel = KEY_ESCAPE,
                                         .key_settings = KEY_F1,
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Particles{
+                                                .particles = std::vector<ECS::Particle>(50000),
+                                                .texture = _particleBlueTexture,
+                                                .speed = .5f,
+                                                .scaleOffset = .1f,
+                                                .positionOffset = {-5.5, 2.5, 0},
+                                                .lifeTime = 20,
+                                                .spawnRate = 50,
+                                                .surviveChance = 0,
+                                                .initParticle = ECS::ParticleSystem::initParticleField,
+                                                .drawParticle = ECS::ParticleSystem::drawParticleField,
+                                                .shader = _shaderParticles
+                                        }
                                 );
                             } else if (token == "PLAYER_NY") {
                                 static int i = 0;
@@ -452,6 +472,7 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _modelEnemyShot;
             std::shared_ptr<RL::ZTexture> _textureEnemy;
             std::vector<std::shared_ptr<RL::ZTexture>> _particleTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _particleBlueTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _explosionTexture;
             std::shared_ptr<RL::IShader> _lightShader;

@@ -182,6 +182,38 @@ namespace ECS {
                 particle.scale = transform.scale * particles.scaleOffset;
             }
 
+            static void initParticleField(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
+                if (!coordinator) {
+                    return;
+                }
+
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+                float a = 5.0f;
+                float b = 3.0f;
+                float c = 2.0f;
+
+                float theta = RL::Utils::getRandomValue(0, 360) * (M_PI / 180);
+                float phi = acos(1 - 2 * RL::Utils::getRandomValue(0, 100) / 100.0f);
+
+                particle.position = tls::Vec3{
+                        a * sin(phi) * cos(theta),
+                        b * sin(phi) * sin(theta),
+                        c * cos(phi)
+                } + transform.position + particles.positionOffset;
+
+                tls::Vec3 velocityDirection = tls::Vec3{-b * cos(phi) * sin(theta), a * cos(phi) * cos(theta), 0};
+                particle.speed = velocityDirection.normalized() * (particles.speed / (a + b + c));
+
+                particle.alpha = particles.lifeTime;
+                particle.active = true;
+                particle.scale = particles.scaleOffset;
+            }
+
+
+
+
             void updateParticles(Entity entity) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
@@ -299,6 +331,38 @@ namespace ECS {
                 }
                 mode.endBlend();
                 particles.shader->endMode();
+            }
+
+            static void drawParticleField(std::shared_ptr<Coordinator> coordinator, Entity entity, std::shared_ptr<RL::ICamera> camera) {
+                if (!coordinator) {
+                    return;
+                }
+
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                RL::ZMode mode;
+                mode.beginBlend(BLEND_ADDITIVE);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+                float a = 5.0f;
+                float b = 3.0f;
+                float c = 2.0f;
+
+                for (auto &particle : particles.particles) {
+                    if (particle.active) {
+
+                        tls::Vec3 offset = particle.position - (transform.position + particles.positionOffset);
+                        float distanceSquared = (offset._x * offset._x) / (a * a) +
+                                                (offset._y * offset._y) / (b * b) +
+                                                (offset._z * offset._z) / (c * c);
+
+                        if (distanceSquared > 1.0f) {
+                            particle.active = false;
+                        }
+
+                        camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, WHITE);
+                    }
+                }
+                mode.endBlend();
             }
 
             void update(std::shared_ptr<RL::ICamera> _camera) {
