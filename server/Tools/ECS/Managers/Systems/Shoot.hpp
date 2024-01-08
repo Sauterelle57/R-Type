@@ -42,7 +42,8 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Collider {
-                        0
+                        .team = 0,
+                        .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb")
                     }
                 );
                 _coordinator->addComponent(
@@ -82,7 +83,8 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Collider {
-                        1
+                        .team = 1,
+                        .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb")
                     }
                 );
                 _coordinator->addComponent(
@@ -135,6 +137,10 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::Collider {
+                            .bounds = {
+                                    .min = {-0.5, -0.5, -0.5},
+                                    .max = {0.5, 0.5, 0.5}
+                            }
                         }
                     );
                     _coordinator->addComponent(
@@ -177,6 +183,10 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Collider {
+                        .bounds = {
+                                .min = {-0.5, -0.5, -0.5},
+                                .max = {0.5, 0.5, 0.5}
+                        }
                     }
                 );
                 _coordinator->addComponent(
@@ -244,6 +254,10 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::Collider {
+                            .bounds = {
+                                .min = {-0.5, -0.5, -0.5},
+                                .max = {0.5, 0.5, 0.5}
+                            }
                         }
                     );
                 }

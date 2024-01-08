@@ -37,8 +37,7 @@ namespace ECS {
 //                            transform.bounds.min.y < transform2.bounds.max.y && transform.bounds.max.y > transform2.bounds.min.y) {
 //                            std::cout << "Collision" << std::endl;
 //                        }
-                        if (transform.position._x > transform2.position._x - 2 && transform.position._x < transform2.position._x + 2 &&
-                            transform.position._y > transform2.position._y - 2 && transform.position._y < transform2.position._y + 2) {
+                        if (collider.bounds.intersects(collider2.bounds)) {
                             if (collider.breakable && collider2.breakable && collider.team != collider2.team) {
                                 for (auto const &clientID : clientIDS) {
                                     {
@@ -58,8 +57,10 @@ namespace ECS {
                                 coordinatorPtr->destroyEntity(entity2);
                                 return;
                             } else if (collider.movable) {
+                                std::cout << "movable" << std::endl;
                                 transform.position -= collider.velocity + (!collider2.movable ? collider2.velocity : tls::Vec3(0, 0, 0));
                             } else if (collider2.movable) {
+                                std::cout << "movable2" << std::endl;
                                 transform2.position -= collider2.velocity + (!collider.movable ? collider.velocity : tls::Vec3(0, 0, 0));
                             }
                         }

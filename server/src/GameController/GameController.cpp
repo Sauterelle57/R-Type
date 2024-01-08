@@ -274,6 +274,10 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicShot
            }
        );
+        tls::BoundingBox playerBB = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
+
+        tls::Vec3 position1 = {-11, 4.5, 0}, scale1 = {0.5, 0.5, 0.5};
+        tls::BoundingBox playerBBtransformed = playerBB.transform(position1, scale1);
        _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
@@ -281,6 +285,7 @@ namespace rt {
                .breakable = true,
                .movable = true,
                .velocity = {0.01, 0, 0},
+                .bounds = playerBBtransformed,
            }
         );
         _coordinator->addComponent(
@@ -345,7 +350,8 @@ namespace rt {
                .team = 1,
                .breakable = true,
                .movable = true,
-               .velocity = {0.005, 0, 0}
+               .velocity = {0.005, 0, 0},
+                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb"),
            }
         );
         _coordinator->addComponent(
@@ -399,7 +405,8 @@ namespace rt {
                 .team = 1,
                 .breakable = false,
                 .movable = false,
-                .velocity = {0.01, 0, 0}
+                .velocity = {0.01, 0, 0},
+                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb"),
             }
         );
         _coordinator->addComponent(
@@ -440,7 +447,8 @@ namespace rt {
                 .team = 1,
                 .breakable = true,
                 .movable = false,
-                .velocity = {0.01, 0, 0}
+                .velocity = {0.01, 0, 0},
+                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb"),
             }
         );
         _coordinator->addComponent(
