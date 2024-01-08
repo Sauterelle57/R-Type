@@ -87,12 +87,14 @@ add_executable(rtype_server
         server/src/Client/Client.cpp
         server/src/Client/Client.hpp
         server/src/Client/IClient.hpp
+        server/src/Client/DeltaManager.hpp
         server/src/Client/ClientController.hpp
         # Asio Wrapper
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
         protocol/Protocol.hpp
+        protocol/EntityData.hpp
         server/Tools/ECS/Managers/Systems/Projectile.hpp
         server/Tools/Vec3/IVec3.hpp
         server/Tools/Vec4/IVec4.hpp
@@ -173,6 +175,7 @@ add_executable(rtype_client
         client/src/Core.hpp
         client/src/Core.cpp
         protocol/Protocol.hpp
+        protocol/EntityData.hpp
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp

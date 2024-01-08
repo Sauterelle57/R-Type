@@ -39,11 +39,11 @@ namespace ECS {
                     clu = clientUpdater;
                     clu_available = true;
 
-                    std::ostringstream responseStream;
-                    responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
-                                   << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
-                                   << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                                   << transform.rotation._a << " " << transform.scale << " " << type.name;
+                    // std::ostringstream responseStream;
+                    // responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
+                    //                << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
+                    //                << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
+                    //                << transform.rotation._a << " " << transform.scale << " " << type.name;
                     
                     static std::map<std::string, rt::ENTITY_TYPE> nameToId = {
                         {"CAMERA", rt::ENTITY_TYPE::CAMERA},
@@ -72,6 +72,7 @@ namespace ECS {
 
                 for (auto &clt : clu.clientController->getClients()) {
                     auto ents = proto.server.entities;
+                    std::vector<rt::Entity> newEnts;
 
                     for (auto &ent : ents) {
                         auto id = ent.ECSEntity;
@@ -83,12 +84,14 @@ namespace ECS {
                             // clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::PLAYER_NY);
                         }
                         // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
+                        rt::Entity acknowledge = clt->getDeltaManager()->addEntity(id, ent.position, ent.rotation, ent.scale, ent.entityType);
+                        newEnts.push_back(acknowledge);
                     }
                     auto newProto = proto;
                     //TODO: DELTA
-                    
-                    //
-                    newProto.server.entities = ents;
+                    newProto.server.entities = newEnts;
+
+                    // newProto.server.entities = ents;
                     auto response = clu._pc->serialize(newProto);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                 }
