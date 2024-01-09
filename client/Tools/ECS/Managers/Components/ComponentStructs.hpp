@@ -26,6 +26,7 @@
 #include "Coordinator.hpp"
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
+#include "rlights.h"
 
 namespace ECS {
     enum Direction {
@@ -96,7 +97,8 @@ namespace ECS {
         bool hasStarted = false;
         float surviveChance;
         std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle)> initParticle;
-        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader)> drawParticle;
+        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera)> drawParticle;
+        std::shared_ptr<RL::IShader> shader;
     };
 
     struct Projectile {
@@ -152,6 +154,22 @@ namespace ECS {
         tls::Clock timer;
     };
 
+    struct LightComponent {
+        Light light;
+    };
+
+    struct ShaderComponent {
+        std::shared_ptr<RL::IShader> shader;
+    };
+
+    struct Velocity {
+        tls::Vec3 speed = {0, 0, 0};
+        tls::Vec3 oldPosition = {0, 0, 0};
+    };
+
+    struct Bdb {
+        BoundingBox bounds;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

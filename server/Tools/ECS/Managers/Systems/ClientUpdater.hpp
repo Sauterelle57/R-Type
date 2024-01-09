@@ -25,13 +25,15 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
+                    auto &colliderStruct = coordinatorPtr->getComponent<Collider>(entity);
+                    auto collider = colliderStruct.bounds.transform(transform.position, {transform.scale, transform.scale, transform.scale});
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
 
                     std::ostringstream responseStream;
                     responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
                                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                                   << transform.rotation._a << " " << transform.scale << " " << type.name;
+                                   << transform.rotation._a << " " << transform.scale << " " << "BDB " << collider.min._x << " " << collider.min._y << " " << collider.min._z << " " << collider.max._x << " " << collider.max._y << " " << collider.max._z << " " << type.name;
 
                     auto clients = clientUpdater.clientController->getClients();
 

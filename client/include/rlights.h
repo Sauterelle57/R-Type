@@ -37,7 +37,7 @@
 // Defines and Macros
 //----------------------------------------------------------------------------------
 #include <raylib.h>
-#define MAX_LIGHTS  4         // Max dynamic lights supported by shader
+#define MAX_LIGHTS  50         // Max dynamic lights supported by shader
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition

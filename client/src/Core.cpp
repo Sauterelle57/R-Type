@@ -23,6 +23,8 @@
 #include "Listener.hpp"
 #include "renderer/Audio.hpp"
 #include "Menu.hpp"
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 
 namespace RT {
 
@@ -196,6 +198,10 @@ namespace RT {
         _coordinator->registerComponent<ECS::MultipleLink>();
         _coordinator->registerComponent<ECS::Sound>();
         _coordinator->registerComponent<ECS::SelfDestruct>();
+        _coordinator->registerComponent<ECS::LightComponent>();
+        _coordinator->registerComponent<ECS::ShaderComponent>();
+        _coordinator->registerComponent<ECS::Velocity>();
+        _coordinator->registerComponent<ECS::Bdb>();
     }
 
     void Core::initSystem() {
@@ -208,7 +214,11 @@ namespace RT {
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
-//        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemLight = _coordinator->registerSystem<ECS::LightSystem>();
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
+        _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
+        _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
 
 
 //        {
@@ -236,6 +246,7 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Particles>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
 
@@ -272,12 +283,40 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::SelfDestructSystem>(signature);
         }
 
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Traveling>());
-//            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
-//        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::LightComponent>());
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            _coordinator->setSystemSignature<ECS::LightSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            _coordinator->setSystemSignature<ECS::ShaderUpdaterSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
+            _coordinator->setSystemSignature<ECS::VelocitySystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Bdb>());
+            _coordinator->setSystemSignature<ECS::BdbSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -285,12 +324,8 @@ namespace RT {
         initSystem();
         initEntities();
 
-        std::shared_ptr<RL::ZShader> shader = std::make_shared<RL::ZShader>("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
-        int glowIntensityLoc = shader->getLocation("glowIntensity");
-        float glowIntensity = 3.0f;
-        shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
-
         while (!_window->shouldClose()) {
+            _systems._systemVelocity->getOldPosition();
             {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
                 while (!_receivedMessages->empty()) {
@@ -309,11 +344,16 @@ namespace RT {
                 _systems._systemCamera->begin();
 
                 _systems._systemCamera->update();
+                _systems._systemLight->update();
+                _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
+                _systems._systemBdb->update();
                 _systems._systemPlayer->update(_event, _udpClient);
-                _systems._systemParticles->update(_camera, shader);
+                _systems._systemVelocity->update();
+                _systems._systemParticles->update(_camera);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
+                _systems._systemTraveling->update();
 
                 _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();

@@ -29,6 +29,10 @@
 #include "UdpClient.hpp"
 #include "Sound.hpp"
 #include "SelfDestruct.hpp"
+#include "Lights.hpp"
+#include "ShaderUpdater.hpp"
+#include "Velocity.hpp"
+#include "Bdb.hpp"
 #include <mutex>
 
 namespace RT {
@@ -43,6 +47,10 @@ namespace RT {
         std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
         std::shared_ptr<ECS::SoundSystem> _systemSound;
         std::shared_ptr<ECS::SelfDestructSystem> _systemSelfDestruct;
+        std::shared_ptr<ECS::LightSystem> _systemLight;
+        std::shared_ptr<ECS::ShaderUpdaterSystem> _systemShaderUpdater;
+        std::shared_ptr<ECS::VelocitySystem> _systemVelocity;
+        std::shared_ptr<ECS::BdbSystem> _systemBdb;
     };
 
     class Core {

@@ -13,6 +13,7 @@
 #include <sstream>
 #include "IListener.hpp"
 #include "renderer/Sound.hpp"
+#include "renderer/Mesh.hpp"
 #include <vector>
 
 namespace RT {
@@ -20,33 +21,34 @@ namespace RT {
         public:
             Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {
                 {
-                    _playerModel = std::make_shared<RL::ZModel>(
-                            "./client/resources/models/ship.glb");
+                    _playerModel = std::make_shared<RL::ZModel>("./client/resources/models/player.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
-                    matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-11, 4.5, 0));
                     _playerModel->_model->transform = matr;
                 }
                 {
                     _tileBMmodel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-                    Matrix matr = MatrixIdentity();
-                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-                    _tileBMmodel->_model->transform = matr;
+//                    Matrix matr = MatrixIdentity();
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+//                    _tileBMmodel->_model->transform = matr;
                 }
                 {
                     _tileModel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-                    Matrix matr = MatrixIdentity();
-                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-                    _tileModel->_model->transform = matr;
+//                    Matrix matr = MatrixIdentity();
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+//                    _tileModel->_model->transform = matr;
                 }
                 {
-                    _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/duck.obj");
+                    _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
-                    matr = MatrixMultiply(matr, MatrixTranslate(0, -20 , 0));
+//                    matr = MatrixMultiply(matr, MatrixTranslate(0, -2 , 0));
                     _modelEnemy->_model->transform = matr;
-                    _textureEnemy = std::make_shared<RL::ZTexture>(
-                    "./client/resources/images/duck_text.png");
+////                    _textureEnemy = std::make_shared<RL::ZTexture>(
+//                    "./client/resources/images/duck_text.png");
                 }
                 {
                     _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
@@ -62,6 +64,10 @@ namespace RT {
                     _particleTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/particle.png"));
                 }
                 {
+                    _particleBlueTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
+                    _particleBlueTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/particleBlue.png"));
+                }
+                {
                     _starTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
                     _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/star.png"));
                     _starTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/planet.png"));
@@ -70,6 +76,24 @@ namespace RT {
                     _explosionTexture = std::vector<std::shared_ptr<RL::ZTexture>>();
                     for (int i = 1; i <= 9; i++)
                         _explosionTexture.push_back(std::make_shared<RL::ZTexture>("./client/resources/images/explosion " + std::to_string(i) + ".png"));
+                }
+                {
+                    _lightShader = std::make_shared<RL::ZShader>("./client/resources/shaders/lighting.vs", "./client/resources/shaders/lighting.fs");
+                    _lightShader->getShader()->locs[SHADER_LOC_VECTOR_VIEW] = _lightShader->getLocation("viewPos");
+                    float ambient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+                    _lightShader->setValue(_lightShader->getLocation("ambient"), &ambient, SHADER_UNIFORM_VEC4);
+                }
+                {
+                    _shaderParticles = std::make_shared<RL::ZShader>("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
+                    int glowIntensityLoc = _shaderParticles->getLocation("glowIntensity");
+                    float glowIntensity = 3.0f;
+                    _shaderParticles->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
+                }
+                {
+                    RL::ZMesh mesh = RL::ZMesh();
+                    mesh.genSphere(1, 32, 32);
+                    mesh.setCanUnload(false);
+                    _sphereModel = std::make_shared<RL::ZModel>(mesh.getMesh());
                 }
             };
             ~Listener() = default;
@@ -99,12 +123,31 @@ namespace RT {
                                         scale
                                     }
                                 );
+                            } else if (token == "BDB") {
+                                float minx, miny, minz, maxx, maxy, maxz;
+
+                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz;
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Bdb{
+                                                .bounds = {
+                                                        .min = {minx, miny, minz},
+                                                        .max = {maxx, maxy, maxz}
+                                                }
+                                        }
+                                );
                             } else if (token == "PLAYER") {
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Model{
                                         .model = _playerModel,
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -119,6 +162,26 @@ namespace RT {
                                         .key_settings = KEY_F1,
                                     }
                                 );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Particles{
+                                                .particles = std::vector<ECS::Particle>(5000),
+                                                .texture = _particleBlueTexture,
+                                                .speed = .1f,
+                                                .scaleOffset = .1f,
+                                                .positionOffset = {0, 0, 0},
+                                                .lifeTime = 50,
+                                                .spawnRate = 60,
+                                                .surviveChance = 0,
+                                                .initParticle = ECS::ParticleSystem::initParticleField,
+                                                .drawParticle = ECS::ParticleSystem::drawParticleField,
+                                                .shader = _shaderParticles
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
+                                );
                             } else if (token == "PLAYER_NY") {
                                 static int i = 0;
                                 std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
@@ -129,6 +192,12 @@ namespace RT {
                                         .color = colors[i++ % colors.size()]
                                     }
                                 );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
                             } else if (token == "TILE_BREAKABLE") {
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -137,6 +206,12 @@ namespace RT {
                                         .color = RED
                                     }
                                 );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
                             } else if (token == "TILE") {
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -144,12 +219,24 @@ namespace RT {
                                         .model = _tileModel,
                                     }
                                 );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
                             } else if (token == "ENEMY") {
                                 _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Model{
-                                                .model = _modelEnemy,
-                                                .texture = _textureEnemy
+                                            .model = _modelEnemy,
+//                                            .texture = _textureEnemy
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
                                         }
                                 );
                             } else if (token == "BASIC_SHOT") {
@@ -159,6 +246,12 @@ namespace RT {
                                         *_entities->rbegin(),
                                         ECS::Model{
                                                 .model = _modelShot
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
                                         }
                                 );
                                 _coordinator->addComponent(
@@ -173,8 +266,13 @@ namespace RT {
                                                 .spawnRate = 35,
                                                 .surviveChance = 5,
                                                 .initParticle = ECS::ParticleSystem::initParticleConeLeft,
-                                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault
+                                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                                .shader = _shaderParticles
                                         }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -197,8 +295,13 @@ namespace RT {
                                             .spawnRate = 2,
                                             .surviveChance = 0,
                                             .initParticle = ECS::ParticleSystem::initParticleLineLeft,
-                                            .drawParticle = ECS::ParticleSystem::drawParticlesDefault
+                                            .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                            .shader = _shaderParticles
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -216,6 +319,12 @@ namespace RT {
                                     }
                                 );
                                 _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                                _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Particles{
                                         .particles = std::vector<ECS::Particle>(500),
@@ -227,8 +336,13 @@ namespace RT {
                                         .spawnRate = 35,
                                         .surviveChance = 5,
                                         .initParticle = ECS::ParticleSystem::initParticleConeRight,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                        .shader = _shaderParticles
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -249,15 +363,75 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(1000),
                                         .texture = _starTexture,
                                         .speed = 60.0f,
-                                        .scaleOffset = .5f,
+                                        .scaleOffset = 1.2f,
                                         .positionOffset = {95, 0, -120},
                                         .lifeTime = 550,
                                         .spawnRate = 1,
                                         .surviveChance = 0,
                                         .initParticle = ECS::ParticleSystem::initParticleStarfieldBackground,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesStarfieldBackground
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesStarfieldBackground,
+                                        .shader = _shaderParticles
                                     }
                                 );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+
+                                const int nbLights = 4;
+
+                                float _x[nbLights] = { -20.0f, -20.0f, 40.0f, 40.0f };
+                                float _y[nbLights] = { -10.0f, 35.0f, -10.0f, 35.0f };
+                                float _z[nbLights] = { 5, 5, 5, 5 };
+                                Color _colors[nbLights] = { PURPLE, BLUE, RED, PINK };
+
+                                for (int i = 0 ; i < nbLights ; i++) {
+                                    float x, y, z, rx, ry, rz, ra, scale;
+                                    x = y = z = rx = ry = rz = ra = scale = 0;
+                                    Color color = _colors[i];
+
+                                    x = _x[i];
+                                    y = _y[i];
+                                    z = _z[i];
+
+                                    _entities->insert(_entities->end(), _coordinator->createEntity());
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::LightComponent{
+                                                    .light = CreateLight(LIGHT_POINT, { x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
+                                            }
+                                    );
+
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Transform{
+                                                    {x, y, z},
+                                                    {rx, ry, rz, ra},
+                                                    1
+                                            }
+                                    );
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Traveling{
+                                                    {0.0175, 0, 0},
+                                            }
+                                    );
+                                    _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                            .shader = _lightShader
+                                        }
+                                    );
+                                    _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Model{
+                                            .model = _sphereModel,
+                                            .color = color
+                                        }
+                                    );
+                                }
+
+
                             } else {
                                 std::cout << "Unknown token : " << token << std::endl;
                             }
@@ -273,6 +447,17 @@ namespace RT {
                                         {x, y, z},
                                         {rx, ry, rz, ra},
                                         scale
+                                };
+                            } else if (token == "BDB") {
+                                auto &bdb = _coordinator->getComponent<ECS::Bdb>(
+                                        _serverToClient[std::stoi(id)]);
+                                float minx, miny, minz, maxx, maxy, maxz;
+                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz;
+                                bdb = ECS::Bdb{
+                                        .bounds = {
+                                                .min = {minx, miny, minz},
+                                                .max = {maxx, maxy, maxz}
+                                        }
                                 };
                             } else if (token == "DESTROY") {
                                 auto transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[std::stoi(id)]);
@@ -296,8 +481,13 @@ namespace RT {
                                         .spawnRate = 1,
                                         .surviveChance = 30,
                                         .initParticle = ECS::ParticleSystem::initParticleExplosion,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesExplosion
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesExplosion,
+                                        .shader = _shaderParticles
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -330,8 +520,12 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _modelEnemyShot;
             std::shared_ptr<RL::ZTexture> _textureEnemy;
             std::vector<std::shared_ptr<RL::ZTexture>> _particleTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _particleBlueTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _explosionTexture;
+            std::shared_ptr<RL::IShader> _lightShader;
+            std::shared_ptr<RL::IShader> _shaderParticles;
+            std::shared_ptr<RL::ZModel> _sphereModel;
     };
 }
 

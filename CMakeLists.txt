@@ -13,6 +13,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
+set(ASSIMP_VERSION v5.0.1)
+FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG ${ASSIMP_VERSION}
+)
+FetchContent_MakeAvailable(assimp)
+
 if (UNIX)
     set(RAYLIB_VERSION 5.0)
     find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
@@ -74,6 +82,8 @@ ExternalProject_Add(BOOSTASIO
 ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
 include_directories(${SOURCE_DIR})
 
+set(RAYMATH_INCLUDE_DIR "${raylib_SOURCE_DIR}/src")
+
 add_executable(rtype_server
         server/main.cpp
         # Server Controller
@@ -122,6 +132,8 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
         server/Tools/ECS/Managers/Systems/Enemy.hpp
+        server/Tools/collisions/Collisions.hpp
+        server/Tools/collisions/Collisions.cpp
 )
 
 add_executable(rtype_client
@@ -216,6 +228,10 @@ add_executable(rtype_client
         client/src/Menu.cpp
         client/src/Menu.hpp
         client/Tools/ECS/Managers/Systems/SelfDestruct.hpp
+        client/Tools/ECS/Managers/Systems/Lights.hpp
+        client/Tools/ECS/Managers/Systems/ShaderUpdater.hpp
+        client/Tools/ECS/Managers/Systems/Velocity.hpp
+        client/Tools/ECS/Managers/Systems/Bdb.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -235,6 +251,8 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/server/Tools/collisions
+        ${RAYMATH_INCLUDE_DIR}
 )
 
 target_include_directories(rtype_client PRIVATE
@@ -264,6 +282,7 @@ target_include_directories(rtype_client PRIVATE
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network)
+target_link_libraries(rtype_server PRIVATE assimp)
 
 
 # Web Configurations

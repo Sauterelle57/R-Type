@@ -20,6 +20,10 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
+                tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                boundingBox.applyMatrix(matr);
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -42,7 +46,8 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Collider {
-                        0
+                        .team = 0,
+                        .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
@@ -60,6 +65,10 @@ namespace ECS {
                 );
             }
             static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
+                tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                boundingBox.applyMatrix(matr);
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -82,7 +91,8 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Collider {
-                        1
+                        .team = 1,
+                        .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
@@ -135,6 +145,10 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::Collider {
+                            .bounds = {
+                                    .min = {-0.5, -0.5, -0.5},
+                                    .max = {0.5, 0.5, 0.5}
+                            }
                         }
                     );
                     _coordinator->addComponent(
@@ -177,6 +191,10 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::Collider {
+                        .bounds = {
+                                .min = {-0.5, -0.5, -0.5},
+                                .max = {0.5, 0.5, 0.5}
+                        }
                     }
                 );
                 _coordinator->addComponent(
@@ -244,6 +262,10 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::Collider {
+                            .bounds = {
+                                .min = {-0.5, -0.5, -0.5},
+                                .max = {0.5, 0.5, 0.5}
+                            }
                         }
                     );
                 }
@@ -262,7 +284,7 @@ namespace ECS {
                     auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
 
                     if (shooter.isShooting) {
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{0, 0, 0}, updater.clientController, updater.wrapper);
                         shooter.isShooting = false;
                     }
                 }

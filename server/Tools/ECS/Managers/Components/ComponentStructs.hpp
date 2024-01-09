@@ -22,6 +22,7 @@
 #include "Coordinator.hpp"
 #include "ClientController.hpp"
 #include "IWrapper.hpp"
+#include "Collisions.hpp"
 
 namespace ECS {
     enum Direction {
@@ -97,6 +98,8 @@ namespace ECS {
         bool breakable = true;
         bool movable = true;
         tls::Vec3 velocity;
+
+        tls::BoundingBox bounds;
     };
 
     struct ClientUpdater {
@@ -121,6 +124,7 @@ namespace ECS {
 
     struct Enemy {
         bool isGoingUp = false;
+        bool isTurningLeft = false;
         tls::Clock clock;
     };
 }
