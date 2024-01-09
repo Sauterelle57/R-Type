@@ -30,9 +30,12 @@ namespace rt {
         _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
+        _commands["ID"] = [&](const std::string &data, const std::string &ip, const int port) {
+            commandID(data, ip, port);
+        };
     }
 
-    int GameController::exec() { 
+    int GameController::exec() {
         while (1) {
             // get data from queue
             if (!_receivedData.empty()) {
@@ -485,5 +488,21 @@ namespace rt {
             _createEnnemy({55, 0, 0}, 1.2);
             _createEnnemy({35, -6, 0}, 2);
         }
+    }
+
+    void GameController::commandID(const std::string &data, const std::string &ip, const int port) {
+        // std::cout << "ID: " << data << std::endl;
+        if (!_clientController->isClientExist(ip, port)) {
+            return;
+        }
+
+        std::shared_ptr<rt::Client> _client = _clientController->getClient(ip, port);
+        long long id;
+        std::string command;
+        std::istringstream iss(data);
+
+        iss >> command;
+        iss >> id;
+        _client->getDeltaManager()->validatePacket(id);
     }
 }

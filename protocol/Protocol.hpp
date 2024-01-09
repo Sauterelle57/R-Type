@@ -9,8 +9,10 @@
 #include <array>
 #include <cstdint>
 #include <bitset>
+#include <map>
 #include "Vec3.hpp"
 #include "Vec4.hpp"
+#include "EntityData.hpp"
 
 namespace rt
 {
@@ -32,34 +34,6 @@ namespace rt
         ENTITIES
     };
 
-    enum ENTITY_TYPE
-    {
-        PLAYER,
-        PLAYER_NY,
-
-        ENEMY,
-        CAMERA,
-
-        TILE,
-        TILE_BREAKABLE,
-
-        BASIC_SHOT,
-        BASIC_ENEMY_SHOT,
-        SIN_SHOT
-    };
-
-    struct Entity
-    {
-        std::uint32_t ECSEntity;
-
-        std::bitset<9> signature;
-
-        tls::Vec3 position;
-        tls::Vec4 rotation;
-        float scale;
-        ENTITY_TYPE entityType;
-    };
-
     // Client
     struct p_client {
         tls::Vec3 move = {0, 0, 0};
@@ -77,6 +51,7 @@ namespace rt
     {
         SENDER_TYPE sender;
         PROTOCOL_TYPE protocol;
+        long long packetId;
 
         p_client client;
         p_server server;
@@ -132,7 +107,7 @@ namespace rt
             _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
             // auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
-            rt::Entity ent = {ECSId, std::bitset<9>(0b000000000), position, rotation, scale, type};
+            rt::Entity ent = {ECSId, std::bitset<9>(0b111111111), position, rotation, scale, type};
             // std::cout << bits << std::endl;
             _protocol->server.entities.push_back(ent);
             return *this;
@@ -174,6 +149,7 @@ namespace rt
             std::ostringstream oss;
             oss.write(reinterpret_cast<const char*>(&protocol.sender), sizeof(protocol.sender));
             oss.write(reinterpret_cast<const char*>(&protocol.protocol), sizeof(protocol.protocol));
+            oss.write(reinterpret_cast<const char*>(&protocol.packetId), sizeof(protocol.packetId));
 
             // Serialize destroyedEntitiesSize and destroyedEntities vector
             protocol.server.destroyedEntitiesSize = protocol.server.destroyedEntities.size();
@@ -196,6 +172,7 @@ namespace rt
 
             iss.read(reinterpret_cast<char*>(&deserializedData.sender), sizeof(deserializedData.sender));
             iss.read(reinterpret_cast<char*>(&deserializedData.protocol), sizeof(deserializedData.protocol));
+            iss.read(reinterpret_cast<char*>(&deserializedData.packetId), sizeof(deserializedData.packetId));
 
             // Deserialize destroyedEntitiesSize and destroyedEntities vector
             iss.read(reinterpret_cast<char*>(&deserializedData.server.destroyedEntitiesSize), sizeof(deserializedData.server.destroyedEntitiesSize));
@@ -397,22 +374,32 @@ namespace rt
             oss.write(reinterpret_cast<const char*>(&signatureValue), sizeof(signatureValue));
 
             // Serialize position
-            oss.write(reinterpret_cast<const char*>(&entity.position), sizeof(entity.position));
+            if (entity.signature[0])
+                oss.write(reinterpret_cast<const char*>(&entity.position._x), sizeof(entity.position._x));
+            if (entity.signature[1])
+                oss.write(reinterpret_cast<const char*>(&entity.position._y), sizeof(entity.position._y));
+            if (entity.signature[2])
+                oss.write(reinterpret_cast<const char*>(&entity.position._z), sizeof(entity.position._z));
+
+
 
             // Serialize rotation
-            if (entity.signature[0]) {
-                oss.write(reinterpret_cast<const char*>(&entity.rotation), sizeof(entity.rotation));
-            }
+            if (entity.signature[3])
+                oss.write(reinterpret_cast<const char*>(&entity.rotation._x), sizeof(entity.rotation._x));
+            if (entity.signature[4])
+                oss.write(reinterpret_cast<const char*>(&entity.rotation._y), sizeof(entity.rotation._y));
+            if (entity.signature[5])
+                oss.write(reinterpret_cast<const char*>(&entity.rotation._z), sizeof(entity.rotation._z));
+            if (entity.signature[6])
+                oss.write(reinterpret_cast<const char*>(&entity.rotation._a), sizeof(entity.rotation._a));
 
             // Serialize scale
-            if (entity.signature[1]) {
+            if (entity.signature[7])
                 oss.write(reinterpret_cast<const char*>(&entity.scale), sizeof(entity.scale));
-            }
 
             // Serialize entityType
-            if (entity.signature[2]) {
+            if (entity.signature[8])
                 oss.write(reinterpret_cast<const char*>(&entity.entityType), sizeof(entity.entityType));
-            }
         }
 
         static void deserializeEntity(std::istringstream& iss, rt::Entity& entity)
@@ -427,20 +414,30 @@ namespace rt
             entity.signature = signature;
 
             // Deserialize position
-            iss.read(reinterpret_cast<char*>(&entity.position), sizeof(entity.position));
+            if (entity.signature[0])
+                iss.read(reinterpret_cast<char*>(&entity.position._x), sizeof(entity.position._x));
+            if (entity.signature[1])
+                iss.read(reinterpret_cast<char*>(&entity.position._y), sizeof(entity.position._y));
+            if (entity.signature[2])
+                iss.read(reinterpret_cast<char*>(&entity.position._z), sizeof(entity.position._z));
 
             // Deserialize rotation
-            if (entity.signature[0]) {
-                iss.read(reinterpret_cast<char*>(&entity.rotation), sizeof(entity.rotation));
-            }
+            if (entity.signature[3])
+                iss.read(reinterpret_cast<char*>(&entity.rotation._x), sizeof(entity.rotation._x));
+            if (entity.signature[4])
+                iss.read(reinterpret_cast<char*>(&entity.rotation._y), sizeof(entity.rotation._y));
+            if (entity.signature[5])
+                iss.read(reinterpret_cast<char*>(&entity.rotation._z), sizeof(entity.rotation._z));
+            if (entity.signature[6])
+                iss.read(reinterpret_cast<char*>(&entity.rotation._a), sizeof(entity.rotation._a));
 
             // Deserialize scale
-            if (entity.signature[1]) {
+            if (entity.signature[7]) {
                 iss.read(reinterpret_cast<char*>(&entity.scale), sizeof(entity.scale));
             }
 
             // Deserialize entityType
-            if (entity.signature[2]) {
+            if (entity.signature[8]) {
                 iss.read(reinterpret_cast<char*>(&entity.entityType), sizeof(entity.entityType));
             }
         }

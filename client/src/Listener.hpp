@@ -15,11 +15,12 @@
 #include "IListener.hpp"
 #include "renderer/Sound.hpp"
 #include "Protocol.hpp"
+#include "UdpClient.hpp"
 
 namespace RT {
     class Listener : public IListener {
         public:
-            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {
+            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam, std::shared_ptr<rt::UdpClient> udpClient) : _coordinator(coordinator), _entities(entities), _cam(cam), _udpClient(udpClient) {
                 {
                     _starTexture = std::make_shared<RL::ZTexture>("./client/resources/images/star.png");
                 }
@@ -92,13 +93,18 @@ namespace RT {
                             float scale = x.scale;
                             int type = x.entityType;
                             // rt::ProtocolController::convertBitsetToEntity(x, ecsID, position, rotation, scale, type);
-                            
-                            _interpreterCreateEntity(ecsID, position, rotation, scale, type);
+                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type);
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
                             _coordinator->destroyEntity(_serverToClient[ecsID]);
                         }
+
+                        std::ostringstream oss;
+                        oss << "ID " << receivedData.packetId;
+                        _udpClient->send(oss.str());
+                        // _udpClient->send()
+                        
                     }
 
                     // std::stringstream ss(front);
@@ -317,7 +323,7 @@ namespace RT {
                 _queue.push(event);
             }
 
-            void _interpreterCreateEntity(std::uint32_t ecsID, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
+            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<9> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
                 // std::cout << "interpreter" << std::endl;
                 // std::cout << "entity: " << ecsID << std::endl;
                 // std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
@@ -509,11 +515,22 @@ namespace RT {
                     // std::cout << "Changing pos of : " << _serverToClient[ecsID] << std::endl;
                     auto &transform = _coordinator->getComponent<ECS::Transform>(
                             _serverToClient[ecsID]);
-                    transform = ECS::Transform{
-                            {position._x, position._y, position._z},
-                            {rotation._x, rotation._y, rotation._z, rotation._a},
-                            scale
-                    };
+                    
+                    transform.position._x = (signature[0] ? position._x : transform.position._x);
+                    transform.position._y = (signature[1] ? position._y : transform.position._y);
+                    transform.position._z = (signature[2] ? position._z : transform.position._z);
+
+                    transform.rotation._x = (signature[3] ? rotation._x : transform.rotation._x);
+                    transform.rotation._y = (signature[4] ? rotation._y : transform.rotation._y);
+                    transform.rotation._z = (signature[5] ? rotation._z : transform.rotation._z);
+                    transform.rotation._a = (signature[6] ? rotation._a : transform.rotation._a);
+
+                    transform.scale = (signature[7] ? scale : transform.scale);
+                    // transform = ECS::Transform{
+                    //         {position._x, position._y, position._z},
+                    //         {rotation._x, rotation._y, rotation._z, rotation._a},
+                    //         scale
+                    // };
                 }
             }
 
@@ -522,6 +539,7 @@ namespace RT {
             std::shared_ptr<std::set<Entity>> _entities;
             std::unordered_map<Entity, Entity> _serverToClient;
             std::shared_ptr<RL::ICamera> _cam;
+            std::shared_ptr<rt::UdpClient> _udpClient;
             std::shared_ptr<RL::ZTexture> _starTexture;
             std::shared_ptr<RL::ZModel> _playerModel;
             std::shared_ptr<RL::ZModel> _tileBMmodel;
