@@ -32,7 +32,7 @@ namespace rt {
         };
     }
 
-    int GameController::exec() { 
+    int GameController::exec() {
         while (1) {
             // get data from queue
             if (!_receivedData.empty()) {

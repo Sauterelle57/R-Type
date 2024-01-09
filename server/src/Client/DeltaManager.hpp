@@ -19,15 +19,14 @@ namespace rt
             DeltaManager() = default;
             ~DeltaManager() = default;
 
-            std::pair<rt::Entity, float> addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type) {
+            rt::Entity addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type) {
                 std::bitset<9> signature;
                 rt::Entity ent = {ECSId, signature, position, rotation, scale, type};
 
                 if (_clients.find(ECSId) == _clients.end()) {
                     ent.signature = std::bitset<9>(0b111111111);
                     _clients.insert({ECSId, ent});
-                    rt::Entity tmp =  {0, std::bitset<9>(0b000000000), {0, 0, 0}, {0, 0, 0, 0}, 0, rt::ENTITY_TYPE::PLAYER};
-                    return {ent, _calculDelta(position, rotation, scale, type, tmp)};
+                    return ent;
                 }
 
                 rt::Entity& diff = _clients[ECSId];
@@ -48,7 +47,7 @@ namespace rt
                 ent.signature = diff.signature;
                 float delta = _calculDelta(position, rotation, scale, type, diff);
                 _clients[ECSId] = ent;
-                return {ent, delta};
+                return ent;
             }
 
             void deleteEntity(std::uint32_t ECSId) {

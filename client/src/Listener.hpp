@@ -84,7 +84,6 @@ namespace RT {
 
                     if (receivedData.sender == rt::SENDER_TYPE::SERVER && receivedData.protocol == rt::PROTOCOL_TYPE::ENTITIES) {
                         // std::cout << "[EXEC]: ENTITIES" << std::endl;
-                        float delta = 0;
 
                         for (auto &x : receivedData.server.entities) {
                             std::uint32_t ecsID = x.ECSEntity;
@@ -93,14 +92,12 @@ namespace RT {
                             float scale = x.scale;
                             int type = x.entityType;
                             // rt::ProtocolController::convertBitsetToEntity(x, ecsID, position, rotation, scale, type);
-                            _interpreterCreateEntity(delta, ecsID, x.signature, position, rotation, scale, type);
+                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type);
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
                             _coordinator->destroyEntity(_serverToClient[ecsID]);
                         }
-
-                        std::cout << "delta: " << delta << std::endl;
                     }
 
                     // std::stringstream ss(front);
@@ -319,26 +316,13 @@ namespace RT {
                 _queue.push(event);
             }
 
-            void _interpreterCreateEntity(float &delta, std::uint32_t ecsID, std::bitset<9> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
+            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<9> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
                 // std::cout << "interpreter" << std::endl;
                 // std::cout << "entity: " << ecsID << std::endl;
                 // std::cout << "position: " << position._x << ", " << position._y << ", " << position._z << std::endl;
                 // std::cout << "rotation: " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
                 // std::cout << "scale: " << scale << std::endl;
                 // std::cout << "type: " << type << std::endl;
-                float finalDelta = 0;
-
-                finalDelta += signature[0] ? position._x : 0.0;
-                finalDelta += signature[1] ? position._y : 0.0;
-                finalDelta += signature[2] ? position._z : 0.0;
-
-                finalDelta += signature[3] ? rotation._x : 0.0;
-                finalDelta += signature[4] ? rotation._y : 0.0;
-                finalDelta += signature[5] ? rotation._z : 0.0;
-                finalDelta += signature[6] ? rotation._a : 0.0;
-
-                finalDelta += signature[7] ? scale : 0.0;
-                finalDelta += signature[8] ? type : 0.0;
 
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
                     ECS::Entity entity = _coordinator->createEntity();
@@ -525,11 +509,6 @@ namespace RT {
                     auto &transform = _coordinator->getComponent<ECS::Transform>(
                             _serverToClient[ecsID]);
                     
-                    float oldDelta = 0;
-                    oldDelta += transform.position._x + transform.position._y + transform.position._z;
-                    oldDelta += transform.rotation._x + transform.rotation._y + transform.rotation._z + transform.rotation._a;
-                    oldDelta += transform.scale;
-                    
                     transform.position._x = (signature[0] ? position._x : transform.position._x);
                     transform.position._y = (signature[1] ? position._y : transform.position._y);
                     transform.position._z = (signature[2] ? position._z : transform.position._z);
@@ -545,16 +524,7 @@ namespace RT {
                     //         {rotation._x, rotation._y, rotation._z, rotation._a},
                     //         scale
                     // };
-                    float newDelta = 0;
-                    newDelta += transform.position._x + transform.position._y + transform.position._z;
-                    newDelta += transform.rotation._x + transform.rotation._y + transform.rotation._z + transform.rotation._a;
-                    newDelta += transform.scale;
-
-                    delta += newDelta - oldDelta;
-
-                    return;
                 }
-                delta += finalDelta;
             }
 
             std::queue<std::string> _queue;

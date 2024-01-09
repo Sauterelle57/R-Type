@@ -73,7 +73,6 @@ namespace ECS {
                 for (auto &clt : clu.clientController->getClients()) {
                     auto ents = proto.server.entities;
                     std::vector<rt::Entity> newEnts;
-                    float delta = 0;
 
                     for (auto &ent : ents) {
                         auto id = ent.ECSEntity;
@@ -86,14 +85,11 @@ namespace ECS {
                         }
                         // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                         auto acknowledge = clt->getDeltaManager()->addEntity(id, ent.position, ent.rotation, ent.scale, ent.entityType);
-                        delta += acknowledge.second;
-                        newEnts.push_back(acknowledge.first);
+                        newEnts.push_back(acknowledge);
                     }
                     auto newProto = proto;
                     //TODO: DELTA
                     newProto.server.entities = newEnts;
-
-                    std::cout << "DELTA : " << delta << std::endl;
 
                     // newProto.server.entities = ents;
                     auto response = clu._pc->serialize(newProto);
