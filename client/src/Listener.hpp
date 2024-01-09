@@ -122,18 +122,17 @@ namespace RT {
                                         scale
                                     }
                                 );
-                            }
-                            else if (token == "BDB") {
-                                float minx, miny, minz, maxx, maxy, maxz, team;
-                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz >> team;
+                            } else if (token == "BDB") {
+                                float minx, miny, minz, maxx, maxy, maxz;
+
+                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz;
                                 _coordinator->addComponent(
                                         *_entities->rbegin(),
                                         ECS::Bdb{
                                                 .bounds = {
                                                         .min = {minx, miny, minz},
                                                         .max = {maxx, maxy, maxz}
-                                                },
-                                                .team = team
+                                                }
                                         }
                                 );
                             } else if (token == "PLAYER") {
@@ -448,6 +447,18 @@ namespace RT {
                                         {rx, ry, rz, ra},
                                         scale
                                 };
+                            } else if (token == "BDB") {
+//                                auto &bdb = _coordinator->getComponent<ECS::Bdb>(
+//                                        _serverToClient[std::stoi(id)]);
+//                                float minx, miny, minz, maxx, maxy, maxz, team;
+//                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz >> team;
+//                                bdb = ECS::Bdb{
+//                                        .bounds = {
+//                                                .min = {minx, miny, minz},
+//                                                .max = {maxx, maxy, maxz}
+//                                        },
+//                                        .team = team
+//                                };
                             } else if (token == "DESTROY") {
                                 auto transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[std::stoi(id)]);
                                 _coordinator->destroyEntity(_serverToClient[std::stoi(id)]);

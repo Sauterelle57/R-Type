@@ -32,7 +32,7 @@ namespace ECS {
                     responseStream << entity << " TRANSFORM " << std::fixed << std::setprecision(2)
                                    << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                                    << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
-                                   << transform.rotation._a << " " << transform.scale << " " << "BDB " << collider.bounds.min._x << " " << collider.bounds.min._y << " " << collider.bounds.min._z << " " << collider.bounds.max._x << " " << collider.bounds.max._y << " " << collider.bounds.max._z << " " << collider.team << " " << type.name;
+                                   << transform.rotation._a << " " << transform.scale << " " << "BDB " << collider.bounds.min._x << " " << collider.bounds.min._y << " " << collider.bounds.min._z << " " << collider.bounds.max._x << " " << collider.bounds.max._y << " " << collider.bounds.max._z << " " << type.name;
 
                     auto clients = clientUpdater.clientController->getClients();
 

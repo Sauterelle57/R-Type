@@ -169,7 +169,6 @@ namespace ECS {
 
     struct Bdb {
         BoundingBox bounds;
-        float team;
     };
 }
 
