@@ -41,16 +41,18 @@ namespace ECS {
                             if (collider.breakable && collider2.breakable && collider.team != collider2.team) {
                                 for (auto const &clientID : clientIDS) {
                                     {
-                                        std::ostringstream responseStream;
-                                        responseStream << entity << " DESTROY";
-                                        std::string response = responseStream.str();
-                                        clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                                        // std::ostringstream responseStream;
+                                        // responseStream << entity << " DESTROY";
+                                        clientUpdater._pc->deleteEntity(entity);
+                                        // std::string response = responseStream.str();
+                                        // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                     }
                                     {
-                                        std::ostringstream responseStream;
-                                        responseStream << entity2 << " DESTROY";
-                                        std::string response = responseStream.str();
-                                        clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                                        // std::ostringstream responseStream;
+                                        // responseStream << entity2 << " DESTROY";
+                                        clientUpdater._pc->deleteEntity(entity2);
+                                        // std::string response = responseStream.str();
+                                        // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                     }
                                 }
                                 coordinatorPtr->destroyEntity(entity);

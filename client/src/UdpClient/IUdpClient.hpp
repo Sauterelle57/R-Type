@@ -13,6 +13,7 @@
 #include <memory>
 #include <queue>
 #include <mutex>
+#include "Protocol.hpp"
 
 namespace rt {
     struct ReceivedMessage {
@@ -25,8 +26,12 @@ namespace rt {
     public:
         virtual ~IUdpClient() = default;
         virtual void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex, std::shared_ptr<std::mutex> isRunningMutex) = 0;
+
         virtual void send(const std::string& message) = 0;
+        virtual void sendStruct(rt::Protocol &protocol) = 0;
+
         virtual std::string receive() = 0;
+        virtual rt::Protocol receiveStruct() = 0;
         virtual void run(std::shared_ptr<bool> running) = 0;
     };
 

@@ -46,7 +46,7 @@ namespace ECS {
                             int x, y, z;
                             if (iss >> x >> y >> z) {
                                 if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
-                                    std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
+                                    // std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
 
                                     player.mooving._x = x * 0.25f;
                                     player.mooving._y = y * 0.25f;

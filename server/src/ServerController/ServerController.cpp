@@ -24,9 +24,21 @@ namespace rt {
         if (!error) {
             auto x = _asioWrapper->getRecvBuffer();
             std::string result = std::string(x.data(), bytes_transferred);
-            std::cout << "(<) Received data: [" << result << "]" << std::endl;
+            // std::cout << "(<) Receiving (size (o)) : " << result.size() << std::endl;
+            // rt::ProtocolController pc;
+            // std::cout << "1;" << std::endl;
+            // auto rslt = pc.deserialize(result);
+            // std::cout << "2;" << std::endl;
+            // std::cout << "(<) Received data: " << std::endl;
+            // std::cout << "Sender: " << rslt.sender << std::endl;
+            // std::cout << "Protocol: " << rslt.protocol << std::endl;
+            
             //asioWrapper.sendTo("data", asioWrapper.getRemoteEndpoint().first, asioWrapper.getRemoteEndpoint().second);
             _gameCtrl->addReceivedData(result, _asioWrapper->getRemoteEndpoint().first, _asioWrapper->getRemoteEndpoint().second);
+            // pc.init();
+            // std::cout << "sending message..." << std::endl;
+            // _asioWrapper->sendStruct(pc.setSender(rt::SERVER).setProtocol(rt::OK).getProtocol(), _asioWrapper->getRemoteEndpoint().first, _asioWrapper->getRemoteEndpoint().second);
+            // std::cout << "[OK]" << std::endl;
         } else {
             std::cerr << "Error receiving data: " << error << std::endl;
         }

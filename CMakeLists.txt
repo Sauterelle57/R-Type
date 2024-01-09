@@ -97,12 +97,14 @@ add_executable(rtype_server
         server/src/Client/Client.cpp
         server/src/Client/Client.hpp
         server/src/Client/IClient.hpp
+        server/src/Client/DeltaManager.hpp
         server/src/Client/ClientController.hpp
         # Asio Wrapper
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
         protocol/Protocol.hpp
+        protocol/EntityData.hpp
         server/Tools/ECS/Managers/Systems/Projectile.hpp
         server/Tools/Vec3/IVec3.hpp
         server/Tools/Vec4/IVec4.hpp
@@ -185,6 +187,7 @@ add_executable(rtype_client
         client/src/Core.hpp
         client/src/Core.cpp
         protocol/Protocol.hpp
+        protocol/EntityData.hpp
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp
@@ -251,6 +254,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/protocol
         ${CMAKE_SOURCE_DIR}/server/Tools/collisions
         ${RAYMATH_INCLUDE_DIR}
 )
@@ -278,6 +282,7 @@ target_include_directories(rtype_client PRIVATE
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Entities
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Systems
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Coordinator
+        ${CMAKE_SOURCE_DIR}/protocol
 )
 #set(raylib_VERBOSE 1)
 

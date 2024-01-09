@@ -67,6 +67,7 @@ namespace RT {
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _messageQueueMutex = std::make_shared<std::mutex>();
+
         _isRunningMutex = std::make_shared<std::mutex>();
         {
             std::lock_guard<std::mutex> lock(*_isRunningMutex);
@@ -102,17 +103,14 @@ namespace RT {
 
                 _udpClientThread->join();
                 _isRunning = std::make_shared<bool>(true);
-
-
-
                 _udpClientThread = std::make_unique<std::thread>(([&]() {
                     _udpClient->run(_isRunning);
                 }));
                 menu.loop(_window, _event, true);
             }
         }
-        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _udpClient->send("CONNECTION_REQUEST");
+        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera, _udpClient);
         _clock = std::make_unique<tls::Clock>(0.01);
     }
 
