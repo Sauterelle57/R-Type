@@ -10,6 +10,8 @@
 #include <map>
 #include <bitset>
 #include "EntityData.hpp"
+#include "Clock.hpp"
+#include "Protocol.hpp"
 
 namespace rt
 {
@@ -19,8 +21,25 @@ namespace rt
             DeltaManager() = default;
             ~DeltaManager() = default;
 
-            void addEntity(std::uint32_t ECSId, unsigned long msgId, rt::Entity entity) {
-                _clients[ECSId] = entity;
+            bool validatePacket(unsigned long packetId) {
+                if (_packets.find(packetId) == _packets.end())
+                    return false;
+                
+                auto protocol = _packets[packetId];
+
+                for (auto x : protocol.server.entities) {
+                    _clients[x.ECSEntity] = x;
+                }
+
+                // std::cout << "Protocol in stock : " << _packets.size() << std::endl;
+
+                _packets.erase(packetId);
+                return true;
+            }
+
+            void setPacket(rt::Protocol &protocol) {
+                protocol.packetId = tls::Clock::getTimeStamp();
+                _packets[protocol.packetId] = protocol;
             }
 
             rt::Entity getAcknowledge(std::uint32_t ECSId, rt::Entity entityNow) {
@@ -53,6 +72,7 @@ namespace rt
             }
         private:
             std::map<std::uint32_t, rt::Entity> _clients;
+            std::map<long long, rt::Protocol> _packets;
 
             float _calculDelta(tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, rt::Entity& diff) {
                 float finalDelta = position._x + position._y + position._z + rotation._x + rotation._y + rotation._z + rotation._a + scale + static_cast<int>(type);

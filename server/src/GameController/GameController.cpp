@@ -492,5 +492,17 @@ namespace rt {
 
     void GameController::commandID(const std::string &data, const std::string &ip, const int port) {
         // std::cout << "ID: " << data << std::endl;
+        if (!_clientController->isClientExist(ip, port)) {
+            return;
+        }
+
+        std::shared_ptr<rt::Client> _client = _clientController->getClient(ip, port);
+        long long id;
+        std::string command;
+        std::istringstream iss(data);
+
+        iss >> command;
+        iss >> id;
+        _client->getDeltaManager()->validatePacket(id);
     }
 }

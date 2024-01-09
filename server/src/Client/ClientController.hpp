@@ -35,6 +35,9 @@ namespace rt
                 }
                 return clients;
             };
+            std::shared_ptr<Client> getClient(const std::string &ip, const int port) {
+                return _clients[ip + ":" + std::to_string(port)];
+            }
 
         private:
             std::map<std::string, std::shared_ptr<Client>> _clients;

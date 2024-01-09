@@ -91,7 +91,7 @@ namespace ECS {
                     }
                     auto newProto = proto;
                     newProto.server.entities = newEnts;
-                    newProto.packetId = tls::Clock::getTimeStamp();
+                    clt->getDeltaManager()->setPacket(newProto);
                     // std::cout << "packetId: " << newProto.packetId << std::endl;
 
                     // newProto.server.entities = ents;
