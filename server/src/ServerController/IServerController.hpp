@@ -17,7 +17,7 @@ namespace rt {
             virtual ~IServerController() = default;
             virtual void run() = 0;
             
-            virtual IWrapper &getWrapper() = 0;
+            virtual std::shared_ptr<AsioWrapper> getWrapper() = 0;
     };
 
 } // rt

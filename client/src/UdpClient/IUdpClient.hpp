@@ -12,9 +12,9 @@
 #include <optional>
 #include <memory>
 #include <queue>
+#include <mutex>
 
 namespace rt {
-
     struct ReceivedMessage {
         std::string message;
         std::string address;
@@ -24,10 +24,10 @@ namespace rt {
     class IUdpClient {
     public:
         virtual ~IUdpClient() = default;
-        virtual void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages) = 0;
+        virtual void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex, std::shared_ptr<std::mutex> isRunningMutex) = 0;
         virtual void send(const std::string& message) = 0;
         virtual std::string receive() = 0;
-        virtual void run() = 0;
+        virtual void run(std::shared_ptr<bool> running) = 0;
     };
 
 }

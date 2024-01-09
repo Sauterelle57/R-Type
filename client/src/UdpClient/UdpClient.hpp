@@ -5,6 +5,7 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <queue>
+#include <memory>
 
 namespace rt {
     class UdpClient : public IUdpClient {
@@ -12,19 +13,23 @@ namespace rt {
         UdpClient() = default;
         ~UdpClient() = default;
 
-        void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages);
+        void setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex, std::shared_ptr<std::mutex> isRunningMutex);
 
         void send(const std::string& message);
 
         std::string receive();
 
-        void run();
+        void run(std::shared_ptr<bool> running);
 
     private:
         sf::UdpSocket socket;
         sf::IpAddress serverEndpoint;
         unsigned short serverPortNumber{};
-        std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages;
+        std::shared_ptr<std::queue<ReceivedMessage>> _receivedMessages;
+        std::shared_ptr<std::mutex> _messageQueueMutex;
+        std::shared_ptr<bool> _isSetup = std::make_shared<bool>(false);
+        std::shared_ptr<std::mutex> _isSetupMutex = std::make_shared<std::mutex>();
+        std::shared_ptr<std::mutex> _isRunningMutex;
     };
 
 } // namespace rt
