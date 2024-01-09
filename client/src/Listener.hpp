@@ -25,20 +25,21 @@ namespace RT {
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
                     matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
-                    matr = MatrixMultiply(matr, MatrixTranslate(-11, 4.5, 0));
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-11, 4.5, 0));
                     _playerModel->_model->transform = matr;
                 }
                 {
                     _tileBMmodel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-                    Matrix matr = MatrixIdentity();
-                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-                    _tileBMmodel->_model->transform = matr;
+//                    Matrix matr = MatrixIdentity();
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+//                    _tileBMmodel->_model->transform = matr;
                 }
                 {
                     _tileModel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-                    Matrix matr = MatrixIdentity();
-                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-                    _tileModel->_model->transform = matr;
+//                    Matrix matr = MatrixIdentity();
+//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
+//                    _tileModel->_model->transform = matr;
                 }
                 {
                     _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
@@ -168,7 +169,7 @@ namespace RT {
                                                 .texture = _particleBlueTexture,
                                                 .speed = .1f,
                                                 .scaleOffset = .1f,
-                                                .positionOffset = {-5.5, 2.25, 0},
+                                                .positionOffset = {0, 0, 0},
                                                 .lifeTime = 50,
                                                 .spawnRate = 60,
                                                 .surviveChance = 0,

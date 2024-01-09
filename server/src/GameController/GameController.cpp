@@ -284,6 +284,13 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicShot
            }
        );
+
+        tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
+        Matrix matr = MatrixIdentity();
+        matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
+        matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
+        bdb.applyMatrix(matr);
+
        _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
@@ -291,7 +298,7 @@ namespace rt {
                .breakable = true,
                .movable = true,
                .velocity = {0.01, 0, 0},
-                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb"),
+               .bounds = bdb,
            }
         );
         _coordinator->addComponent(
@@ -350,6 +357,11 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicEnemyShot
            }
        );
+        tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb");
+        Matrix matr = MatrixIdentity();
+        matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+        bdb.applyMatrix(matr);
+
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
@@ -357,7 +369,7 @@ namespace rt {
                .breakable = true,
                .movable = true,
                .velocity = {0.005, 0, 0},
-                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb"),
+               .bounds = bdb
            }
         );
         _coordinator->addComponent(

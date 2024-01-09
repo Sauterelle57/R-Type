@@ -14,12 +14,40 @@
 #include <iostream>
 #include "Vec3.hpp"
 #include <vector>
+#include "raymath.h"
 
 namespace tls {
 
     struct BoundingBox {
         Vec3 min;
         Vec3 max;
+
+        void applyMatrix(const Matrix& mat) {
+            Vector3 corners[8] = {
+                    {static_cast<float>(min._x), static_cast<float>(min._y), static_cast<float>(min._z)},
+                    {static_cast<float>(max._x), static_cast<float>(min._y), static_cast<float>(min._z)},
+                    {static_cast<float>(min._x), static_cast<float>(max._y), static_cast<float>(min._z)},
+                    {static_cast<float>(max._x), static_cast<float>(max._y), static_cast<float>(min._z)},
+                    {static_cast<float>(min._x), static_cast<float>(min._y), static_cast<float>(max._z)},
+                    {static_cast<float>(max._x), static_cast<float>(min._y), static_cast<float>(max._z)},
+                    {static_cast<float>(min._x), static_cast<float>(max._y), static_cast<float>(max._z)},
+                    {static_cast<float>(max._x), static_cast<float>(max._y), static_cast<float>(max._z)}
+            };
+
+            for (int i = 0; i < 8; i++) {
+                corners[i] = Vector3Transform(corners[i], mat);
+            }
+
+            Vector3 newMin = corners[0];
+            Vector3 newMax = corners[0];
+            for (int i = 1; i < 8; i++) {
+                newMin = Vector3Min(newMin, corners[i]);
+                newMax = Vector3Max(newMax, corners[i]);
+            }
+
+            min = {newMin.x, newMin.y, newMin.z};
+            max = {newMax.x, newMax.y, newMax.z};
+        }
 
         BoundingBox transform(const Vec3& position, const Vec3& scale) const {
             BoundingBox transformed;

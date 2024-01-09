@@ -82,6 +82,8 @@ ExternalProject_Add(BOOSTASIO
 ExternalProject_Get_Property(BOOSTASIO SOURCE_DIR)
 include_directories(${SOURCE_DIR})
 
+set(RAYMATH_INCLUDE_DIR "${raylib_SOURCE_DIR}/src")
+
 add_executable(rtype_server
         server/main.cpp
         # Server Controller
@@ -250,6 +252,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
         ${CMAKE_SOURCE_DIR}/server/Tools/collisions
+        ${RAYMATH_INCLUDE_DIR}
 )
 
 target_include_directories(rtype_client PRIVATE

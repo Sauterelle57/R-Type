@@ -20,6 +20,10 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateY(180 * DEG2RAD));
+                tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                boundingBox.applyMatrix(matr);
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -43,7 +47,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Collider {
                         .team = 0,
-                        .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb")
+                        .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
@@ -61,6 +65,10 @@ namespace ECS {
                 );
             }
             static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateY(180 * DEG2RAD));
+                tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                boundingBox.applyMatrix(matr);
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -84,7 +92,7 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Collider {
                         .team = 1,
-                        .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb")
+                        .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
@@ -276,7 +284,7 @@ namespace ECS {
                     auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
 
                     if (shooter.isShooting) {
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{0, 0, 0}, updater.clientController, updater.wrapper);
                         shooter.isShooting = false;
                     }
                 }
