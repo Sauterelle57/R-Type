@@ -146,8 +146,8 @@ namespace ECS {
                         *_entities.rbegin(),
                         ECS::Collider {
                             .bounds = {
-                                    .min = {-0.5, -0.5, -0.5},
-                                    .max = {0.5, 0.5, 0.5}
+                                    .min = {-1, -1, -1},
+                                    .max = {1, 1, 1}
                             }
                         }
                     );
@@ -192,8 +192,8 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Collider {
                         .bounds = {
-                                .min = {-0.5, -0.5, -0.5},
-                                .max = {0.5, 0.5, 0.5}
+                                .min = {-1, -1, -1},
+                                .max = {1, 1, 1}
                         }
                     }
                 );
@@ -263,8 +263,8 @@ namespace ECS {
                         *_entities.rbegin(),
                         ECS::Collider {
                             .bounds = {
-                                .min = {-0.5, -0.5, -0.5},
-                                .max = {0.5, 0.5, 0.5}
+                                .min = {-1, -1, -1},
+                                .max = {1, 1, 1}
                             }
                         }
                     );
