@@ -201,6 +201,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::LightComponent>();
         _coordinator->registerComponent<ECS::ShaderComponent>();
         _coordinator->registerComponent<ECS::Velocity>();
+        _coordinator->registerComponent<ECS::Bdb>();
     }
 
     void Core::initSystem() {
@@ -217,6 +218,7 @@ namespace RT {
         _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
         _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
         _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
+        _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
 
 
 //        {
@@ -309,6 +311,12 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::VelocitySystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Bdb>());
+            _coordinator->setSystemSignature<ECS::BdbSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -339,6 +347,7 @@ namespace RT {
                 _systems._systemLight->update();
                 _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
+                _systems._systemBdb->update();
                 _systems._systemPlayer->update(_event, _udpClient);
                 _systems._systemVelocity->update();
                 _systems._systemParticles->update(_camera);

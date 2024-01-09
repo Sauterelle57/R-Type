@@ -166,6 +166,11 @@ namespace ECS {
         tls::Vec3 speed = {0, 0, 0};
         tls::Vec3 oldPosition = {0, 0, 0};
     };
+
+    struct Bdb {
+        BoundingBox bounds;
+        float team;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

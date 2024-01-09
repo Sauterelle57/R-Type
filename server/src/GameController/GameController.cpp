@@ -170,6 +170,7 @@ namespace rt {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Type>());
+            signature.set(_coordinator->getComponentType<ECS::Collider>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
             _coordinator->setSystemSignature<ECS::ClientUpdaterSystem>(signature);
         }
@@ -235,6 +236,15 @@ namespace rt {
             ECS::ClientUpdater {
                 .wrapper = _wrapper,
                 .clientController = _clientController
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 8,
+                .breakable = false,
+                .movable = false,
+                .bounds = tls::BoundingBox({-1000, -1000, -1000}, {-1000, -1000, -1000}),
             }
         );
 

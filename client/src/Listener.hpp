@@ -122,6 +122,20 @@ namespace RT {
                                         scale
                                     }
                                 );
+                            }
+                            else if (token == "BDB") {
+                                float minx, miny, minz, maxx, maxy, maxz, team;
+                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz >> team;
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Bdb{
+                                                .bounds = {
+                                                        .min = {minx, miny, minz},
+                                                        .max = {maxx, maxy, maxz}
+                                                },
+                                                .team = team
+                                        }
+                                );
                             } else if (token == "PLAYER") {
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -384,7 +398,7 @@ namespace RT {
                                     _coordinator->addComponent(
                                             *_entities->rbegin(),
                                             ECS::LightComponent{
-                                                    .light = CreateLight(LIGHT_POINT, (Vector3){ x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
+                                                    .light = CreateLight(LIGHT_POINT, { x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
                                             }
                                     );
 

@@ -57,10 +57,8 @@ namespace ECS {
                                 coordinatorPtr->destroyEntity(entity2);
                                 return;
                             } else if (collider.movable) {
-                                std::cout << "movable" << std::endl;
                                 transform.position -= collider.velocity + (!collider2.movable ? collider2.velocity : tls::Vec3(0, 0, 0));
                             } else if (collider2.movable) {
-                                std::cout << "movable2" << std::endl;
                                 transform2.position -= collider2.velocity + (!collider.movable ? collider.velocity : tls::Vec3(0, 0, 0));
                             }
                         }

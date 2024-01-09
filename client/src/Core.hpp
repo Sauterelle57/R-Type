@@ -32,6 +32,7 @@
 #include "Lights.hpp"
 #include "ShaderUpdater.hpp"
 #include "Velocity.hpp"
+#include "Bdb.hpp"
 #include <mutex>
 
 namespace RT {
@@ -49,6 +50,7 @@ namespace RT {
         std::shared_ptr<ECS::LightSystem> _systemLight;
         std::shared_ptr<ECS::ShaderUpdaterSystem> _systemShaderUpdater;
         std::shared_ptr<ECS::VelocitySystem> _systemVelocity;
+        std::shared_ptr<ECS::BdbSystem> _systemBdb;
     };
 
     class Core {

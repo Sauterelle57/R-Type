@@ -13,7 +13,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
-set(ASSIMP_VERSION v5.0.1) # Remplacez par la version désirée
+set(ASSIMP_VERSION v5.0.1)
 FetchContent_Declare(
         assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
@@ -229,6 +229,7 @@ add_executable(rtype_client
         client/Tools/ECS/Managers/Systems/Lights.hpp
         client/Tools/ECS/Managers/Systems/ShaderUpdater.hpp
         client/Tools/ECS/Managers/Systems/Velocity.hpp
+        client/Tools/ECS/Managers/Systems/Bdb.hpp
 )
 
 target_include_directories(rtype_server PRIVATE
