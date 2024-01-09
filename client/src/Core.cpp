@@ -6,8 +6,8 @@
 */
 
 #include <thread>
-#include "../Tools/ECS/Managers/Systems/Shoot.hpp"
 #include "../Tools/ECS/Managers/Components/ComponentStructs.hpp"
+#include "../Tools/ECS/Managers/Systems/Sound.hpp"
 #include "renderer/Window.hpp"
 #include "renderer/Camera.hpp"
 #include "renderer/Cursor.hpp"
@@ -16,13 +16,15 @@
 #include "renderer/Texture.hpp"
 #include "renderer/Utils.hpp"
 #include "Core.hpp"
-#include "Utils.hpp"
 #include "Move.hpp"
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "MultipleLink.hpp"
 #include "Listener.hpp"
 #include "renderer/Audio.hpp"
+#include "Menu.hpp"
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 
 namespace RT {
 
@@ -65,17 +67,59 @@ namespace RT {
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _messageQueueMutex = std::make_shared<std::mutex>();
-        _udpClient->setup("127.0.0.1", 1234, _receivedMessages, _messageQueueMutex);
 
-        _udpClientThread = std::make_unique<std::thread>(([&]() {
-            _udpClient->run(_isRunning);
-        }));
+        _isRunningMutex = std::make_shared<std::mutex>();
+        {
+            std::lock_guard<std::mutex> lock(*_isRunningMutex);
+            _udpClientThread = std::make_unique<std::thread>(([&]() {
+                _udpClient->run(_isRunning);
+            }));
+        }
+
+        Menu menu;
+        menu.loop(_window, _event, false);
+        bool canReach = false;
+        while (!canReach) {
+            _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex, _isRunningMutex);
+            tls::Clock tryingToConnect(0.1);
+            while (!tryingToConnect.isTimeElapsed() && !canReach) {
+                _udpClient->send("PING");
+                {
+                    std::lock_guard<std::mutex> lock(*_messageQueueMutex);
+                    while (!_receivedMessages->empty()) {
+                        std::string message = _receivedMessages->front().message;
+                        if (message == "OK") {
+                            canReach = true;
+                        }
+                        _receivedMessages->pop();
+                    }
+                }
+            }
+            if (!canReach) {
+                {
+                    std::lock_guard<std::mutex> lock(*_isRunningMutex);
+                    *_isRunning = false;
+                }
+
+                _udpClientThread->join();
+                _isRunning = std::make_shared<bool>(true);
+                _udpClientThread = std::make_unique<std::thread>(([&]() {
+                    _udpClient->run(_isRunning);
+                }));
+                menu.loop(_window, _event, true);
+            }
+        }
         _udpClient->send("CONNECTION_REQUEST");
         _listener = std::make_unique<Listener>(_coordinator, _entities, _camera, _udpClient);
         _clock = std::make_unique<tls::Clock>(0.01);
     }
 
     Core::~Core() {
+        {
+            std::lock_guard<std::mutex> lock(*_isRunningMutex);
+            *_isRunning = false;
+        }
+
         _udpClientThread->join();
     }
 
@@ -151,6 +195,11 @@ namespace RT {
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::MultipleLink>();
         _coordinator->registerComponent<ECS::Sound>();
+        _coordinator->registerComponent<ECS::SelfDestruct>();
+        _coordinator->registerComponent<ECS::LightComponent>();
+        _coordinator->registerComponent<ECS::ShaderComponent>();
+        _coordinator->registerComponent<ECS::Velocity>();
+        _coordinator->registerComponent<ECS::Bdb>();
     }
 
     void Core::initSystem() {
@@ -162,7 +211,12 @@ namespace RT {
 //        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
-//        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
+        _systems._systemLight = _coordinator->registerSystem<ECS::LightSystem>();
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
+        _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
+        _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
 
 
 //        {
@@ -190,6 +244,7 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Particles>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
 
@@ -220,12 +275,46 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::SoundSystem>(signature);
         }
 
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Traveling>());
-//            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
-//        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::SelfDestruct>());
+            _coordinator->setSystemSignature<ECS::SelfDestructSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::LightComponent>());
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            _coordinator->setSystemSignature<ECS::LightSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            _coordinator->setSystemSignature<ECS::ShaderUpdaterSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
+            _coordinator->setSystemSignature<ECS::VelocitySystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Bdb>());
+            _coordinator->setSystemSignature<ECS::BdbSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -233,17 +322,18 @@ namespace RT {
         initSystem();
         initEntities();
 
-        std::shared_ptr<RL::ZShader> shader = std::make_shared<RL::ZShader>("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
-        int glowIntensityLoc = shader->getLocation("glowIntensity");
-        float glowIntensity = 3.0f;
-        shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
-
         while (!_window->shouldClose()) {
-            while (!_receivedMessages->empty()) {
+            _systems._systemVelocity->getOldPosition();
+            {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
-                std::string message = _receivedMessages->front().message;
-                _listener->addEvent(message);
-                _receivedMessages->pop();
+                while (!_receivedMessages->empty()) {
+                    std::string message = _receivedMessages->front().message;
+                    _receivedMessages->pop();
+                    if (message == "OK" || message == "<error>") {
+                        continue;
+                    }
+                    _listener->addEvent(message);
+                }
             }
             _listener->onEvent();
             if (_clock->isTimeElapsed()) {
@@ -252,10 +342,16 @@ namespace RT {
                 _systems._systemCamera->begin();
 
                 _systems._systemCamera->update();
+                _systems._systemLight->update();
+                _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
+                _systems._systemBdb->update();
                 _systems._systemPlayer->update(_event, _udpClient);
-                _systems._systemParticles->update(_camera, shader);
+                _systems._systemVelocity->update();
+                _systems._systemParticles->update(_camera);
                 _systems._systemSound->update();
+                _systems._systemSelfDestruct->update();
+                _systems._systemTraveling->update();
 
                 _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();

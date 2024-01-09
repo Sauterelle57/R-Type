@@ -25,6 +25,8 @@
 #include "renderer/ICamera.hpp"
 #include "Coordinator.hpp"
 #include "renderer/ISound.hpp"
+#include "renderer/IShader.hpp"
+#include "rlights.h"
 
 namespace ECS {
     enum Direction {
@@ -37,11 +39,6 @@ namespace ECS {
         RIGHT_UP,
         RIGHT_DOWN,
         NONE
-    };
-
-    enum ParticleType {
-        CONE,
-        EXPLOSION,
     };
 
     struct Transform {
@@ -80,24 +77,28 @@ namespace ECS {
     };
 
     struct Particle {
+        int id = 0;
         tls::Vec3 position;
         tls::Vec3 speed;
         float alpha;
         bool active;
+        float scale;
     };
 
     struct Particles {
         std::vector<Particle> particles;
-        std::shared_ptr<RL::ZTexture> texture;
-        ParticleType type;
-        Direction direction;
+        std::vector<std::shared_ptr<RL::ZTexture>> texture;
         float speed;
         float scaleOffset;
         tls::Vec3 positionOffset;
         float lifeTime;
         float spawnRate;
-        float spawnTimer;
+        tls::Clock spawnTimer = tls::Clock(0);
+        bool hasStarted = false;
         float surviveChance;
+        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle)> initParticle;
+        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera)> drawParticle;
+        std::shared_ptr<RL::IShader> shader;
     };
 
     struct Projectile {
@@ -149,6 +150,26 @@ namespace ECS {
         bool alreadyPlayed = false;
     };
 
+    struct SelfDestruct {
+        tls::Clock timer;
+    };
+
+    struct LightComponent {
+        Light light;
+    };
+
+    struct ShaderComponent {
+        std::shared_ptr<RL::IShader> shader;
+    };
+
+    struct Velocity {
+        tls::Vec3 speed = {0, 0, 0};
+        tls::Vec3 oldPosition = {0, 0, 0};
+    };
+
+    struct Bdb {
+        BoundingBox bounds;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

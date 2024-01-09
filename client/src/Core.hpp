@@ -22,13 +22,17 @@
 #include "Play.hpp"
 #include "Particle.hpp"
 #include "Projectile.hpp"
-#include "Shoot.hpp"
 #include "Cam.hpp"
 #include "Traveling.hpp"
 #include "IListener.hpp"
 #include "IUdpClient.hpp"
 #include "UdpClient.hpp"
 #include "Sound.hpp"
+#include "SelfDestruct.hpp"
+#include "Lights.hpp"
+#include "ShaderUpdater.hpp"
+#include "Velocity.hpp"
+#include "Bdb.hpp"
 #include <mutex>
 
 namespace RT {
@@ -38,11 +42,15 @@ namespace RT {
         std::shared_ptr<ECS::Play> _systemPlayer;
         std::shared_ptr<ECS::DrawModel> _systemDrawModel;
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
-        std::shared_ptr<ECS::Shoot> _systemShoot;
         std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
         std::shared_ptr<ECS::CamSystem> _systemCamera;
         std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
         std::shared_ptr<ECS::SoundSystem> _systemSound;
+        std::shared_ptr<ECS::SelfDestructSystem> _systemSelfDestruct;
+        std::shared_ptr<ECS::LightSystem> _systemLight;
+        std::shared_ptr<ECS::ShaderUpdaterSystem> _systemShaderUpdater;
+        std::shared_ptr<ECS::VelocitySystem> _systemVelocity;
+        std::shared_ptr<ECS::BdbSystem> _systemBdb;
     };
 
     class Core {
@@ -79,6 +87,7 @@ namespace RT {
             std::unique_ptr<RL::IAudio> _audio;
 
             std::shared_ptr<std::mutex> _messageQueueMutex;
+            std::shared_ptr<std::mutex> _isRunningMutex;
     };
 };
 

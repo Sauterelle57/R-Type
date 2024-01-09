@@ -5,14 +5,21 @@
 #include "UdpClient.hpp"
 
 namespace rt {
-    void UdpClient::setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex) {
+
+    void UdpClient::setup(const std::string& serverIP, unsigned short serverPort, std::shared_ptr<std::queue<ReceivedMessage>> receivedMessages, std::shared_ptr<std::mutex> messageQueueMutex, std::shared_ptr<std::mutex> isRunningMutex) {
         serverEndpoint = sf::IpAddress(serverIP);
         serverPortNumber = serverPort;
-        this->receivedMessages = receivedMessages;
-        this->_messageQueueMutex = messageQueueMutex;
+        _receivedMessages = receivedMessages;
+        _messageQueueMutex = messageQueueMutex;
+        _isRunningMutex = isRunningMutex;
+        socket.setBlocking(false);
 
         if (socket.bind(0) != sf::Socket::Done) {
             std::cerr << "Error binding to a port" << std::endl;
+        }
+        {
+            std::lock_guard<std::mutex> lock(*_isSetupMutex);
+            *_isSetup = true;
         }
     }
 
@@ -47,7 +54,7 @@ namespace rt {
         unsigned short senderPort;
 
         if (socket.receive(packet, sender, senderPort) != sf::Socket::Done) {
-            std::cerr << "Error receiving data" << std::endl;
+//            std::cerr << "Error receiving data" << std::endl;
             return "<error>";
         } else {
             // Get the data directly from the packet
@@ -89,12 +96,24 @@ namespace rt {
     }
 
     void UdpClient::run(std::shared_ptr<bool> running) {
-        // std::cout << "Receiving messages..." << std::endl;
-        while (*running) {
-            std::string message = receive();
-            //std::cout << "message..." << std::endl;
-            std::lock_guard<std::mutex> lock(*_messageQueueMutex);
-            receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
+        bool run = true;
+        while (run) {
+            {
+                std::lock_guard<std::mutex> lock(*_isSetupMutex);
+                if (*_isSetup) {
+                    {
+                        std::lock_guard<std::mutex> lock2(*_isRunningMutex);
+                        if (!*running)
+                            run = false;
+                    }
+                    {
+                        std::string message = receive();
+                        std::lock_guard<std::mutex> lock2(*_messageQueueMutex);
+                        if (message != "<error>")
+                            _receivedMessages->push({message, serverEndpoint.toString(), serverPortNumber});
+                    }
+                }
+            }
         }
     }
 } // namespace rt

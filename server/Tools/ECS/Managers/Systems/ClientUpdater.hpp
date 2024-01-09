@@ -36,6 +36,8 @@ namespace ECS {
                 for (auto const &entity : _entities) {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
+                    auto &colliderStruct = coordinatorPtr->getComponent<Collider>(entity);
+                    auto collider = colliderStruct.bounds.transform(transform.position, {transform.scale, transform.scale, transform.scale});
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     clu = clientUpdater;
                     clu_available = true;
@@ -78,11 +80,9 @@ namespace ECS {
                     for (auto &ent : ents) {
                         auto id = ent.ECSEntity;
                         auto &type = coordinatorPtr->getComponent<Type>(id);
-
                         if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort())) {
                             ent.entityType = rt::ENTITY_TYPE::PLAYER_NY;
                         }
-
                         auto acknowledge = clt->getDeltaManager()->getAcknowledge(id, ent);
                         if (acknowledge.signature[0] || acknowledge.signature[1] || acknowledge.signature[2] || acknowledge.signature[3] || acknowledge.signature[4] || acknowledge.signature[5] || acknowledge.signature[6] || acknowledge.signature[7] || acknowledge.signature[8])
                             newEnts.push_back(acknowledge);
