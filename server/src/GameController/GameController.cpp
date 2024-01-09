@@ -17,10 +17,6 @@ namespace rt {
         _clockEnemySpawn = tls::Clock(10);
         _waveEnemy = 1;
         _clientController = std::make_shared<ClientController>();
-        _pc = std::make_shared<ProtocolController>();
-        _pc->init();
-        _pc->setSender(rt::SENDER_TYPE::SERVER);
-        _pc->setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
     }
 
     void GameController::_initializeCommands() {
@@ -30,12 +26,9 @@ namespace rt {
         _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
-        _commands["ID"] = [&](const std::string &data, const std::string &ip, const int port) {
-            commandID(data, ip, port);
-        };
     }
 
-    int GameController::exec() {
+    int GameController::exec() { 
         while (1) {
             // get data from queue
             if (!_receivedData.empty()) {
@@ -48,17 +41,17 @@ namespace rt {
                 _systems._systemProjectile->update(_camera);
                 _systems._systemShoot->update();
                 _systems._systemCollider->update();
+                _systems._systemClientUpdater->update();
                 _systems._systemMove->update();
                 _systems._systemEnemy->update();
-                _systems._systemClientUpdater->update();
             }
             if (_clockEnemySpawn.isTimeElapsed()) {
-//                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-//                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-//                }
+                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+                }
 
-//                if (_waveEnemy < 8)
-//                    _waveEnemy++;
+                if (_waveEnemy < 8)
+                    _waveEnemy++;
             }
         }
     }
@@ -73,11 +66,11 @@ namespace rt {
 
     void GameController::commandHandler(const std::string &data, const std::string &ip, const int port) {
 
-        // std::cout << "-------------------" << std::endl;
-        // std::cout << "COMMAND HANDLER" << std::endl;
-        // std::cout << "from: " << ip << ":" << port << std::endl;
-        // std::cout << "data: " << data << std::endl;
-        // std::cout << "-------------------" << std::endl;
+        std::cout << "-------------------" << std::endl;
+        std::cout << "COMMAND HANDLER" << std::endl;
+        std::cout << "from: " << ip << ":" << port << std::endl;
+        std::cout << "data: " << data << std::endl;
+        std::cout << "-------------------" << std::endl;
 
         std::istringstream iss(data);
         std::string command;
@@ -85,7 +78,7 @@ namespace rt {
 
 
         try {
-            // std::cout << "[" << command << "] " << data.length() << std::endl;
+            std::cout << "[" << command << "] " << data.length() << std::endl;
             if (command == "SHOOT" || command == "MOVE")
                 _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
             else
@@ -241,7 +234,6 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
-                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -321,7 +313,6 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
-                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -390,7 +381,6 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
-                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -446,7 +436,6 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
-                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -489,7 +478,6 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::ClientUpdater {
-                ._pc = _pc,
                 .wrapper = _wrapper,
                 .clientController = _clientController
             }
@@ -511,24 +499,8 @@ namespace rt {
             _initializeECSEntities();
             _createEnnemy({40, 20, 0}, 1.5);
             _createEnnemy({50, 10, 0}, 1.7);
-//            _createEnnemy({55, 0, 0}, 1.2);
-//            _createEnnemy({35, -6, 0}, 2);
+            _createEnnemy({55, 0, 0}, 1.2);
+            _createEnnemy({35, -6, 0}, 2);
         }
-    }
-
-    void GameController::commandID(const std::string &data, const std::string &ip, const int port) {
-        // std::cout << "ID: " << data << std::endl;
-        if (!_clientController->isClientExist(ip, port)) {
-            return;
-        }
-
-        std::shared_ptr<rt::Client> _client = _clientController->getClient(ip, port);
-        long long id;
-        std::string command;
-        std::istringstream iss(data);
-
-        iss >> command;
-        iss >> id;
-        _client->getDeltaManager()->validatePacket(id);
     }
 }

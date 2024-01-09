@@ -9,9 +9,6 @@
 #define ICLIENT_HPP_
 #include <iostream>
 #include <string>
-#include <memory>
-#include "EntityData.hpp"
-#include "DeltaManager.hpp"
 
 namespace rt
 {
@@ -21,7 +18,6 @@ namespace rt
 
             virtual std::string getIpAdress() const = 0;
             virtual int getPort() const = 0;
-            virtual std::shared_ptr<DeltaManager> getDeltaManager() = 0;
 
             enum EventType {
                 TRANSFORM

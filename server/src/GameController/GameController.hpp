@@ -44,7 +44,6 @@ namespace rt {
             void commandMove(const std::string &data, const std::string &ip, const int port);
             void commandShoot(const std::string &data, const std::string &ip, const int port);
             void commandRequestConnection(const std::string &data, const std::string &ip, const int port);
-            void commandID(const std::string &data, const std::string &ip, const int port);
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
@@ -85,8 +84,6 @@ namespace rt {
             tls::Clock _clock;
             tls::Clock _clockEnemySpawn;
             int _waveEnemy;
-
-            std::shared_ptr<ProtocolController> _pc;
     };
 
 }

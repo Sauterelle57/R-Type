@@ -13,7 +13,6 @@ namespace rt
     {
         _ipAdress = ipAdress;
         _port = port;
-        _deltaMgr = std::make_shared<DeltaManager>();
     }
 
     Client::~Client()
@@ -28,11 +27,6 @@ namespace rt
     int Client::getPort() const
     {
         return _port;
-    }
-
-    std::shared_ptr<DeltaManager> Client::getDeltaManager()
-    {
-        return _deltaMgr;
     }
 
 //    void Client::setPlayerID(const int id)

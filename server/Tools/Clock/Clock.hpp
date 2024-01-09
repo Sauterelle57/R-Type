@@ -59,13 +59,6 @@ namespace tls {
                 return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
             }
 
-            static long long getTimeStamp() {
-                auto currentTime = std::chrono::system_clock::now();
-                auto currentTimeMs = std::chrono::time_point_cast<std::chrono::nanoseconds>(currentTime);
-                auto epochMs = currentTimeMs.time_since_epoch();
-                return std::chrono::duration_cast<std::chrono::nanoseconds>(epochMs).count();
-            }
-
         private:
             std::chrono::time_point<std::chrono::system_clock> _start;
             std::chrono::time_point<std::chrono::system_clock> _end;

@@ -11,17 +11,15 @@
 #include <queue>
 #include <iostream>
 #include <sstream>
-#include <unordered_map>
 #include "IListener.hpp"
 #include "renderer/Sound.hpp"
-#include "Protocol.hpp"
-#include "UdpClient.hpp"
 #include "renderer/Mesh.hpp"
+#include <vector>
 
 namespace RT {
     class Listener : public IListener {
         public:
-            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam, std::shared_ptr<rt::UdpClient> udpClient) : _coordinator(coordinator), _entities(entities), _cam(cam), _udpClient(udpClient) {
+            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {
                 {
                     _playerModel = std::make_shared<RL::ZModel>("./client/resources/models/player.glb");
                     Matrix matr = MatrixIdentity();
@@ -98,332 +96,237 @@ namespace RT {
                     _sphereModel = std::make_shared<RL::ZModel>(mesh.getMesh());
                 }
             };
-
             ~Listener() = default;
-            
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
                     _queue.pop();
 
-                    rt::ProtocolController pc;
+                    std::stringstream ss(front);
+                    std::string id;
+                    ss >> id;
+                    std::string token;
+                    if (_serverToClient.find(std::stoi(id)) == _serverToClient.end()) {
+                        Entity entity = _coordinator->createEntity();
+                        _entities->insert(_entities->end(), entity);
+                        _serverToClient[std::stoi(id)] = entity;
 
-                    auto receivedData = pc.deserialize(front);
-
-                    if (receivedData.sender == rt::SENDER_TYPE::SERVER && receivedData.protocol == rt::PROTOCOL_TYPE::ENTITIES) {
-
-                        for (auto &x : receivedData.server.entities) {
-                            std::uint32_t ecsID = x.ECSEntity;
-                            tls::Vec3 position = x.position;
-                            tls::Vec4 rotation = x.rotation;
-                            tls::BoundingBox bounds = x.bounds;
-                            float scale = x.scale;
-                            int type = x.entityType;
-                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds);
-                        }
-
-                        for (auto &ecsID : receivedData.server.destroyedEntities) {
-                            _coordinator->destroyEntity(_serverToClient[ecsID]);
-                        }
-
-                        std::ostringstream oss;
-                        oss << "ID " << receivedData.packetId;
-                        _udpClient->send(oss.str());
-                    }
-                }
-            }
-
-            void addEvent(const std::string &event) {
-                _queue.push(event);
-            }
-
-            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds) {
-                if (_serverToClient.find(ecsID) == _serverToClient.end()) {
-                    ECS::Entity entity = _coordinator->createEntity();
-
-                    _entities->insert(_entities->end(), entity);
-                    _serverToClient[ecsID] = entity;
-
-                    _coordinator->addComponent(
-                        *_entities->rbegin(),
-                        ECS::Transform{
-                                {position._x, position._y, position._z},
-                                {rotation._x, rotation._y, rotation._z, rotation._a},
-                                scale
-                        }
-                    );
-
-                    if (type == rt::ENTITY_TYPE::PLAYER) {
-                        std::cout << "Create player ! with [" << ecsID << "]" << std::endl;
-                        _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Model{
-                                .model = _playerModel,
-                            }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                        _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Player{
-                                .key_up = KEY_W,
-                                .key_down = KEY_S,
-                                .key_left = KEY_A,
-                                .key_right = KEY_D,
-                                .key_shoot = KEY_SPACE,
-                                .key_validate = KEY_ENTER,
-                                .key_cancel = KEY_ESCAPE,
-                                .key_settings = KEY_F1,
-                            }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(5000),
-                                        .texture = _particleBlueTexture,
-                                        .speed = .1f,
-                                        .scaleOffset = .1f,
-                                        .positionOffset = {0, 0, 0},
-                                        .lifeTime = 50,
-                                        .spawnRate = 60,
-                                        .surviveChance = 0,
-                                        .initParticle = ECS::ParticleSystem::initParticleField,
-                                        .drawParticle = ECS::ParticleSystem::drawParticleField,
-                                        .shader = _shaderParticles
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
-                        );
-                    } else if (type == rt::ENTITY_TYPE::PLAYER_NY) {
-                        static int i = 0;
-                        std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
-                        _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Model{
-                                .model = _playerModel,
-                                .color = colors[i++ % colors.size()]
-                            }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                    } else if (type == rt::ENTITY_TYPE::CAMERA) {
-                        _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Cam{
-                                .camera = _cam
-                            }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(1000),
-                                        .texture = _starTexture,
-                                        .speed = 60.0f,
-                                        .scaleOffset = 1.2f,
-                                        .positionOffset = {95, 0, -120},
-                                        .lifeTime = 550,
-                                        .spawnRate = 1,
-                                        .surviveChance = 0,
-                                        .initParticle = ECS::ParticleSystem::initParticleStarfieldBackground,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesStarfieldBackground,
-                                        .shader = _shaderParticles
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
-                        );
-
-                        const int nbLights = 4;
-
-                        float _x[nbLights] = { -20.0f, -20.0f, 40.0f, 40.0f };
-                        float _y[nbLights] = { -10.0f, 35.0f, -10.0f, 35.0f };
-                        float _z[nbLights] = { 5, 5, 5, 5 };
-                        Color _colors[nbLights] = { PURPLE, BLUE, RED, PINK };
-
-                        for (int i = 0 ; i < nbLights ; i++) {
-                            float x, y, z, rx, ry, rz, ra;
-                            x = y = z = rx = ry = rz = ra = 0;
-                            Color color = _colors[i];
-
-                            x = _x[i];
-                            y = _y[i];
-                            z = _z[i];
-
-                            _entities->insert(_entities->end(), _coordinator->createEntity());
-                            _coordinator->addComponent(
-                                    *_entities->rbegin(),
-                                    ECS::LightComponent{
-                                            .light = CreateLight(LIGHT_POINT, { x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
-                                    }
-                            );
-
-                            _coordinator->addComponent(
+                        while (ss >> token) {
+                            if (token == "TRANSFORM") {
+                                float x, y, z, rx, ry, rz, ra, scale;
+                                ss >> x >> y >> z >> rx >> ry >> rz >> ra >> scale;
+                                _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Transform{
-                                            {x, y, z},
-                                            {rx, ry, rz, ra},
-                                            1
+                                        {x, y, z},
+                                        {rx, ry, rz, ra},
+                                        scale
                                     }
-                            );
-                            _coordinator->addComponent(
-                                    *_entities->rbegin(),
-                                    ECS::Traveling{
-                                            {0.0175, 0, 0},
-                                    }
-                            );
-                            _coordinator->addComponent(
-                                    *_entities->rbegin(),
-                                    ECS::ShaderComponent{
-                                            .shader = _lightShader
-                                    }
-                            );
-                            _coordinator->addComponent(
+                                );
+                            } else if (token == "BDB") {
+                                float minx, miny, minz, maxx, maxy, maxz;
+
+                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz;
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Bdb{
+                                                .bounds = {
+                                                        .min = {minx, miny, minz},
+                                                        .max = {maxx, maxy, maxz}
+                                                }
+                                        }
+                                );
+                            } else if (token == "PLAYER") {
+                                _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Model{
-                                            .model = _sphereModel,
-                                            .color = color
+                                        .model = _playerModel,
                                     }
-                            );
-                        }
-                    } else if (type == rt::ENTITY_TYPE::TILE_BREAKABLE) {
-                        _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Model{
-                                .model = _tileBMmodel,
-                                .color = RED
-                            }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                    } else if (type == rt::ENTITY_TYPE::TILE) {
-                        _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Model{
-                                .model = _tileModel,
-                            }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                    } else if (type == rt::ENTITY_TYPE::ENEMY) {
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                        .model = _modelEnemy,
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                    } else if (type == rt::ENTITY_TYPE::BASIC_SHOT) {
-                        std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
-                        sd->setSoundVolume(0.5f);
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                        .model = _modelShot
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(500),
-                                        .texture = _particleTexture,
-                                        .speed = 75.0f,
-                                        .scaleOffset = 3.0f,
-                                        .positionOffset = {-0.5, 0, 0},
-                                        .lifeTime = 2,
-                                        .spawnRate = 35,
-                                        .surviveChance = 5,
-                                        .initParticle = ECS::ParticleSystem::initParticleConeLeft,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                        .shader = _shaderParticles
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Sound{
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Player{
+                                        .key_up = KEY_W,
+                                        .key_down = KEY_S,
+                                        .key_left = KEY_A,
+                                        .key_right = KEY_D,
+                                        .key_shoot = KEY_SPACE,
+                                        .key_validate = KEY_ENTER,
+                                        .key_cancel = KEY_ESCAPE,
+                                        .key_settings = KEY_F1,
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Particles{
+                                                .particles = std::vector<ECS::Particle>(5000),
+                                                .texture = _particleBlueTexture,
+                                                .speed = .1f,
+                                                .scaleOffset = .1f,
+                                                .positionOffset = {0, 0, 0},
+                                                .lifeTime = 50,
+                                                .spawnRate = 60,
+                                                .surviveChance = 0,
+                                                .initParticle = ECS::ParticleSystem::initParticleField,
+                                                .drawParticle = ECS::ParticleSystem::drawParticleField,
+                                                .shader = _shaderParticles
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
+                                );
+                            } else if (token == "PLAYER_NY") {
+                                static int i = 0;
+                                std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model{
+                                        .model = _playerModel,
+                                        .color = colors[i++ % colors.size()]
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                            } else if (token == "TILE_BREAKABLE") {
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model{
+                                        .model = _tileBMmodel,
+                                        .color = RED
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                            } else if (token == "TILE") {
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model{
+                                        .model = _tileModel,
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                            } else if (token == "ENEMY") {
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Model{
+                                            .model = _modelEnemy,
+//                                            .texture = _textureEnemy
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                            } else if (token == "BASIC_SHOT") {
+                                std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                                sd->setSoundVolume(0.5f);
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Model{
+                                                .model = _modelShot
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Particles{
+                                                .particles = std::vector<ECS::Particle>(500),
+                                                .texture = _particleTexture,
+                                                .speed = 75.0f,
+                                                .scaleOffset = 3.0f,
+                                                .positionOffset = {-0.5, 0, 0},
+                                                .lifeTime = 2,
+                                                .spawnRate = 35,
+                                                .surviveChance = 5,
+                                                .initParticle = ECS::ParticleSystem::initParticleConeLeft,
+                                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                                .shader = _shaderParticles
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Sound{
                                         .sound = sd,
-                                }
-                        );
-                    } else if (type == rt::ENTITY_TYPE::SIN_SHOT) {
-                        std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
-                        sd->setSoundVolume(0.5f);
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(500),
-                                        .texture = _particleTexture,
-                                        .speed = 500.0f,
-                                        .scaleOffset = 3.0f,
-                                        .positionOffset = {-0.5, 0, 0},
-                                        .lifeTime = 10,
-                                        .spawnRate = 2,
-                                        .surviveChance = 0,
-                                        .initParticle = ECS::ParticleSystem::initParticleLineLeft,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                        .shader = _shaderParticles
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Sound{
+                                    }
+                                );
+                            } else if (token == "SIN_SHOT") {
+                                std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                                sd->setSoundVolume(0.5f);
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Particles{
+                                            .particles = std::vector<ECS::Particle>(500),
+                                            .texture = _particleTexture,
+                                            .speed = 500.0f,
+                                            .scaleOffset = 3.0f,
+                                            .positionOffset = {-0.5, 0, 0},
+                                            .lifeTime = 10,
+                                            .spawnRate = 2,
+                                            .surviveChance = 0,
+                                            .initParticle = ECS::ParticleSystem::initParticleLineLeft,
+                                            .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                            .shader = _shaderParticles
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Sound{
                                         .sound = sd,
-                                }
-                        );
-                    } else if (type == rt::BASIC_ENEMY_SHOT) {
-                        std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
-                        sd->setSoundVolume(0.5f);
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
+                                    }
+                                );
+                            } else if (token == "BASIC_ENEMY_SHOT") {
+                                std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
+                                sd->setSoundVolume(0.5f);
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Model{
                                         .model = _modelEnemyShot,
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                                .shader = _lightShader,
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Particles{
                                         .particles = std::vector<ECS::Particle>(500),
                                         .texture = _particleTexture,
                                         .speed = 75.0f,
@@ -435,57 +338,175 @@ namespace RT {
                                         .initParticle = ECS::ParticleSystem::initParticleConeRight,
                                         .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
                                         .shader = _shaderParticles
-                                }
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
-                        );
-                        _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Sound{
-                                        .sound = sd,
-                                }
-                        );
-                    }
-                    // DBD
-                    _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Bdb{
-                                    .bounds = {
-                                            .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
-                                            .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
                                     }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Sound{
+                                        .sound = sd,
+                                    }
+                                );
+                            } else if (token == "CAMERA") {
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Cam{
+                                        .camera = _cam
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Particles{
+                                        .particles = std::vector<ECS::Particle>(1000),
+                                        .texture = _starTexture,
+                                        .speed = 60.0f,
+                                        .scaleOffset = 1.2f,
+                                        .positionOffset = {95, 0, -120},
+                                        .lifeTime = 550,
+                                        .spawnRate = 1,
+                                        .surviveChance = 0,
+                                        .initParticle = ECS::ParticleSystem::initParticleStarfieldBackground,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesStarfieldBackground,
+                                        .shader = _shaderParticles
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+
+                                const int nbLights = 4;
+
+                                float _x[nbLights] = { -20.0f, -20.0f, 40.0f, 40.0f };
+                                float _y[nbLights] = { -10.0f, 35.0f, -10.0f, 35.0f };
+                                float _z[nbLights] = { 5, 5, 5, 5 };
+                                Color _colors[nbLights] = { PURPLE, BLUE, RED, PINK };
+
+                                for (int i = 0 ; i < nbLights ; i++) {
+                                    float x, y, z, rx, ry, rz, ra, scale;
+                                    x = y = z = rx = ry = rz = ra = scale = 0;
+                                    Color color = _colors[i];
+
+                                    x = _x[i];
+                                    y = _y[i];
+                                    z = _z[i];
+
+                                    _entities->insert(_entities->end(), _coordinator->createEntity());
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::LightComponent{
+                                                    .light = CreateLight(LIGHT_POINT, { x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
+                                            }
+                                    );
+
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Transform{
+                                                    {x, y, z},
+                                                    {rx, ry, rz, ra},
+                                                    1
+                                            }
+                                    );
+                                    _coordinator->addComponent(
+                                            *_entities->rbegin(),
+                                            ECS::Traveling{
+                                                    {0.0175, 0, 0},
+                                            }
+                                    );
+                                    _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::ShaderComponent{
+                                            .shader = _lightShader
+                                        }
+                                    );
+                                    _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Model{
+                                            .model = _sphereModel,
+                                            .color = color
+                                        }
+                                    );
+                                }
+
+
+                            } else {
+                                std::cout << "Unknown token : " << token << std::endl;
                             }
-                    );
-                } else {
-                    auto &transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[ecsID]);
-                    
-                    transform.position._x = (signature[0] ? position._x : transform.position._x);
-                    transform.position._y = (signature[1] ? position._y : transform.position._y);
-                    transform.position._z = (signature[2] ? position._z : transform.position._z);
+                        }
+                    } else {
+                        while (ss >> token) {
+                            if (token == "TRANSFORM") {
+                                auto &transform = _coordinator->getComponent<ECS::Transform>(
+                                        _serverToClient[std::stoi(id)]);
+                                float x, y, z, rx, ry, rz, ra, scale;
+                                ss >> x >> y >> z >> rx >> ry >> rz >> ra >> scale;
+                                transform = ECS::Transform{
+                                        {x, y, z},
+                                        {rx, ry, rz, ra},
+                                        scale
+                                };
+                            } else if (token == "BDB") {
+                                auto &bdb = _coordinator->getComponent<ECS::Bdb>(
+                                        _serverToClient[std::stoi(id)]);
+                                float minx, miny, minz, maxx, maxy, maxz;
+                                ss >> minx >> miny >> minz >> maxx >> maxy >> maxz;
+                                bdb = ECS::Bdb{
+                                        .bounds = {
+                                                .min = {minx, miny, minz},
+                                                .max = {maxx, maxy, maxz}
+                                        }
+                                };
+                            } else if (token == "DESTROY") {
+                                auto transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[std::stoi(id)]);
+                                _coordinator->destroyEntity(_serverToClient[std::stoi(id)]);
 
-                    transform.rotation._x = (signature[3] ? rotation._x : transform.rotation._x);
-                    transform.rotation._y = (signature[4] ? rotation._y : transform.rotation._y);
-                    transform.rotation._z = (signature[5] ? rotation._z : transform.rotation._z);
-                    transform.rotation._a = (signature[6] ? rotation._a : transform.rotation._a);
-
-                    transform.scale = (signature[7] ? scale : transform.scale);
-
-                    auto &bdb = _coordinator->getComponent<ECS::Bdb>(
-                            _serverToClient[ecsID]);
-
-
-                    bdb = ECS::Bdb{
-                            .bounds = {
-                                    .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
-                                    .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
+                                _entities->insert(_entities->end(), _coordinator->createEntity());
+                                transform.scale = 1;
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    transform
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::Particles{
+                                        .particles = std::vector<ECS::Particle>(10),
+                                        .texture = _explosionTexture,
+                                        .speed = 400.0f,
+                                        .scaleOffset = .3f,
+                                        .positionOffset = {0, 0, 0},
+                                        .lifeTime = 6000,
+                                        .spawnRate = 1,
+                                        .surviveChance = 30,
+                                        .initParticle = ECS::ParticleSystem::initParticleExplosion,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesExplosion,
+                                        .shader = _shaderParticles
+                                    }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
+                                    *_entities->rbegin(),
+                                    ECS::SelfDestruct{
+                                        .timer = tls::Clock(.4)
+                                    }
+                                );
+                            } else {
+//                                std::cout << "[UPDATE] Unknown token : " << token << std::endl;
                             }
-                    };
+                        }
+                    }
                 }
             }
 
-            std::shared_ptr<rt::UdpClient> _udpClient;
+            void addEvent(const std::string &event) {
+                _queue.push(event);
+            }
+
             std::queue<std::string> _queue;
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::shared_ptr<std::set<Entity>> _entities;
@@ -505,7 +526,6 @@ namespace RT {
             std::shared_ptr<RL::IShader> _lightShader;
             std::shared_ptr<RL::IShader> _shaderParticles;
             std::shared_ptr<RL::ZModel> _sphereModel;
-;
     };
 }
 

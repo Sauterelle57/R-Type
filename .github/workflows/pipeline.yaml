@@ -1,0 +1,49 @@
+name: RType CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feat/*
+      - feat/*/*
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Build the project
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up C++ environment
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y g++
+      
+      - name: Set up CMake
+        run: |
+          wget https://github.com/Kitware/CMake/releases/download/v3.27.9/cmake-3.27.9-linux-x86_64.sh
+          chmod +x cmake-3.27.9-linux-x86_64.sh
+          sudo ./cmake-3.27.9-linux-x86_64.sh --prefix=/usr/local --exclude-subdir
+      
+      - name: Install SFML dependencies
+        run: |
+          sudo apt-get install libxi-dev libfreetype6-dev libx11-dev libxrandr-dev libudev-dev libgl1-mesa-dev libflac-dev libogg-dev libvorbis-dev libvorbisenc2 libvorbisfile3 libopenal-dev libpthread-stubs0-dev -y
+          sudo apt-get install libpthread-stubs0-dev libgl1-mesa-dev libx11-dev libxrandr-dev libfreetype6-dev libjpeg8-dev libsndfile1-dev libopenal-dev libudev-dev libxcb-image0-dev libjpeg-dev libflac-dev libvorbis-dev libogg-dev libxcursor-dev libxinerama-dev -y
+      
+      - name: Build the project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+      
+      - name: Archive the build
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build

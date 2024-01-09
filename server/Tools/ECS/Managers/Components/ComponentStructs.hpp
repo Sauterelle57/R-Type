@@ -67,7 +67,7 @@ namespace ECS {
         int damage;
         float speed;
         float durability;
-        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc)> create_projectile;
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper)> create_projectile;
     };
 
     struct Alive {
@@ -103,7 +103,6 @@ namespace ECS {
     };
 
     struct ClientUpdater {
-        std::shared_ptr<rt::ProtocolController> _pc;
         std::shared_ptr<rt::IWrapper> wrapper;
         std::shared_ptr<rt::ClientController> clientController;
     };

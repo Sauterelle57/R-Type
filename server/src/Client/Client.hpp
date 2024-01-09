@@ -11,7 +11,6 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <bitset>
 
 namespace rt
 {
@@ -23,14 +22,11 @@ namespace rt
             int getPort() const;
 //            void setPlayerID(const int id);
 //            int getPlayerID() const;
-            std::shared_ptr<DeltaManager> getDeltaManager();
-            
         private:
             std::string _ipAdress;
             int _port;
             int _playerID;
             std::map<EventType, bool> _events;
-            std::shared_ptr<DeltaManager> _deltaMgr;
     };
 }
 

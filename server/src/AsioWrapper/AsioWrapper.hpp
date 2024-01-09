@@ -9,7 +9,6 @@
 #include <string>
 
 #include "IWrapper.hpp"
-#include "Protocol.hpp"
 
 namespace rt {
 
@@ -22,17 +21,17 @@ namespace rt {
             void run();
             void startReceive();
             void sendTo(const std::string& message, const std::string& ipAddress, unsigned short port);
-            void sendStruct(Protocol &protocol, const std::string& ipAddress, unsigned short port);
 
             std::vector<char> getReceivedData() const;
 
-            const std::array<char, 2048>& getRecvBuffer() const;
+            const std::array<char, 1024>& getRecvBuffer() const;
             std::pair<std::string, int> getRemoteEndpoint() const;
+
         private:
             boost::asio::io_service ioService;
             boost::asio::ip::udp::socket socket;
             boost::asio::ip::udp::endpoint remoteEndpoint;
-            std::array<char, 2048> recvBuffer;
+            std::array<char, 1024> recvBuffer;
 
             ReceiveHandler receiveHandler;
 
