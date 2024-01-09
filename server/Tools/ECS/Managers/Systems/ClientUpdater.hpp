@@ -88,7 +88,8 @@ namespace ECS {
                             newEnts.push_back(acknowledge);
                     }
                     auto newProto = proto;
-                    newProto.server.entities = newEnts;
+                    newProto.server.destroyedEntities = clt->getDeltaManager()->getDeletedEntities(proto.server.destroyedEntities);
+
                     for (auto x : newProto.server.destroyedEntities) {
                         clt->getDeltaManager()->deleteEntity(x);
                     }

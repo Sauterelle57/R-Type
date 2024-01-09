@@ -12,6 +12,7 @@
 #include "EntityData.hpp"
 #include "Clock.hpp"
 #include "Protocol.hpp"
+#include <algorithm>
 
 namespace rt
 {
@@ -28,8 +29,20 @@ namespace rt
                 auto protocol = _packets[packetId];
 
                 for (auto x : protocol.server.entities) {
-                    _clients[x.ECSEntity] = x;
+                    _entities[x.ECSEntity] = x;
                 }
+
+                //std::vector<std::uint32_t> _toDelete
+                std::vector<std::uint32_t> destroyedEntities = protocol.server.destroyedEntities;
+                // do : _toDelete = _toDelete - protocol.server.destroyedEntities;
+                _toDelete.erase(std::remove_if(_toDelete.begin(), _toDelete.end(),
+                [&destroyedEntities](std::uint32_t id) {
+                    return std::find(destroyedEntities.begin(), destroyedEntities.end(), id) != destroyedEntities.end();
+                }), _toDelete.end());
+
+                
+
+                // _toDelete.insert(_toDelete.end(), protocol.server.destroyedEntities.begin(), protocol.server.destroyedEntities.end());
 
                 // std::cout << "Protocol in stock : " << _packets.size() << std::endl;
 
@@ -43,12 +56,12 @@ namespace rt
             }
 
             rt::Entity getAcknowledge(std::uint32_t ECSId, rt::Entity entityNow) {
-                if (_clients.find(ECSId) == _clients.end()) {
+                if (_entities.find(ECSId) == _entities.end()) {
                     entityNow.signature = std::bitset<9>(0b111111111);
                     return entityNow;
                 }
 
-                rt::Entity& diff = _clients[ECSId];
+                rt::Entity& diff = _entities[ECSId];
                 diff.signature[0] = diff.position._x != entityNow.position._x;
                 diff.signature[1] = diff.position._y != entityNow.position._y;
                 diff.signature[2] = diff.position._z != entityNow.position._z;
@@ -67,11 +80,25 @@ namespace rt
             }
 
             void deleteEntity(std::uint32_t ECSId) {
-                if (_clients.find(ECSId) != _clients.end())
-                    _clients.erase(ECSId);
+                if (_entities.find(ECSId) != _entities.end())
+                    _entities.erase(ECSId);
+            }
+
+            std::vector<std::uint32_t> getDeletedEntities(std::vector<std::uint32_t> toDelete) {
+
+                toDelete.insert(toDelete.end(), _toDelete.begin(), _toDelete.end());
+
+                _toDelete = toDelete;
+
+                return toDelete;
+            }   
+
+            void setDeletedEntities(std::vector<std::uint32_t> entities) {
+                _toDelete = entities;
             }
         private:
-            std::map<std::uint32_t, rt::Entity> _clients;
+            std::map<std::uint32_t, rt::Entity> _entities;
+            std::vector<std::uint32_t> _toDelete;
             std::map<long long, rt::Protocol> _packets;
 
             float _calculDelta(tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, rt::Entity& diff) {
