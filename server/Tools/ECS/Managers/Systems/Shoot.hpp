@@ -20,7 +20,7 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
-                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateY(180 * DEG2RAD));
+                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
                 tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
                 boundingBox.applyMatrix(matr);
 
@@ -65,7 +65,7 @@ namespace ECS {
                 );
             }
             static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
-                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateY(180 * DEG2RAD));
+                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
                 tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
                 boundingBox.applyMatrix(matr);
 
