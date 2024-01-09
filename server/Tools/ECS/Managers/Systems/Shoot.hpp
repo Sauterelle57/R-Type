@@ -20,9 +20,13 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
-                Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
-                tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
-                boundingBox.applyMatrix(matr);
+                static Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox.applyMatrix(matr);
+                    first = false;
+                }
 
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
@@ -66,9 +70,14 @@ namespace ECS {
                 );
             }
             static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
-              Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
-              tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
-              boundingBox.applyMatrix(matr);
+                static Matrix matr = MatrixMultiply(MatrixIdentity(), MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox.applyMatrix(matr);
+                    first = false;
+                }
+
 
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(

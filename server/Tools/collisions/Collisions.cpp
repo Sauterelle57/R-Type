@@ -34,6 +34,7 @@ namespace tls {
     }
 
     BoundingBox loadModelAndGetBoundingBox(const std::string& path) {
+        std::cout << "Loading model: " << path << std::endl;
         Assimp::Importer importer;
         const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate);
 

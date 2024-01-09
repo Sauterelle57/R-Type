@@ -53,12 +53,12 @@ namespace rt {
                 _systems._systemClientUpdater->update();
             }
             if (_clockEnemySpawn.isTimeElapsed()) {
-//                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-//                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-//                }
+                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+                }
 
-//                if (_waveEnemy < 8)
-//                    _waveEnemy++;
+                if (_waveEnemy < 8)
+                    _waveEnemy++;
             }
         }
     }
@@ -256,9 +256,9 @@ namespace rt {
             }
         );
 
-        for (float i = -45; i < 55; i += 2) {
-            _createTile({i, 32, 0});
-            _createTile({i, -20, 0});
+        for (float i = -45; i < 55; i += 3) {
+            _createTile({i, 35, 0});
+            _createTile({i, -18, 0});
         }
         _createTile({30, 29, 0});
         _createBreakableTile({10, 20, 0});
@@ -366,10 +366,14 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicEnemyShot
            }
        );
-        tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb");
-        Matrix matr = MatrixIdentity();
-        matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
-        bdb.applyMatrix(matr);
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb");
+        static Matrix matr = MatrixIdentity();
+        static bool first = true;
+        if (first) {
+            matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+            bdb.applyMatrix(matr);
+            first = false;
+        }
 
         _coordinator->addComponent(
            *_entities.rbegin(),
@@ -427,6 +431,8 @@ namespace rt {
                 .scale = .3f
             }
         );
+
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Collider {
@@ -434,7 +440,7 @@ namespace rt {
                 .breakable = false,
                 .movable = false,
                 .velocity = {0.01, 0, 0},
-                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb"),
+                .bounds = bounds,
             }
         );
         _coordinator->addComponent(
@@ -470,6 +476,7 @@ namespace rt {
                 .scale = .2f
             }
         );
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Collider {
@@ -477,7 +484,7 @@ namespace rt {
                 .breakable = true,
                 .movable = false,
                 .velocity = {0.01, 0, 0},
-                .bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb"),
+                .bounds = bounds,
             }
         );
         _coordinator->addComponent(
@@ -511,8 +518,8 @@ namespace rt {
             _initializeECSEntities();
             _createEnnemy({40, 20, 0}, 1.5);
             _createEnnemy({50, 10, 0}, 1.7);
-//            _createEnnemy({55, 0, 0}, 1.2);
-//            _createEnnemy({35, -6, 0}, 2);
+            _createEnnemy({55, 0, 0}, 1.2);
+            _createEnnemy({35, -6, 0}, 2);
         }
     }
 
