@@ -58,12 +58,12 @@ namespace ECS {
                 if (std::abs(camTransform.position._x - transform.position._x) > 100 || std::abs(camTransform.position._y - transform.position._y) > 100 ||
                         std::abs(camTransform.position._x - transform.position._x) < -100 || std::abs(camTransform.position._y - transform.position._y) < -100) {
                     for (auto const &clientID : clientIDS) {
-                        std::ostringstream responseStream;
-                        responseStream << entity << " DESTROY";
+                        // std::ostringstream responseStream;
+                        // responseStream << entity << " DESTROY";
                         clientUpdater._pc->deleteEntity(entity);
                         // std::string response = responseStream.str();
                         // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
-                    }
+                    } 
                     coordinatorPtr->destroyEntity(entity);
                     return;
                 }

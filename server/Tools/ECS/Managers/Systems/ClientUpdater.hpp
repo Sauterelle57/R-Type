@@ -80,39 +80,24 @@ namespace ECS {
                         auto &type = coordinatorPtr->getComponent<Type>(id);
 
                         if (type.different && (type.ip != clt->getIpAdress() || type.port != clt->getPort())) {
-                            std::cout << "ENTITY : " << id << " is different" << std::endl;
                             ent.entityType = rt::ENTITY_TYPE::PLAYER_NY;
-                            // clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::PLAYER_NY);
                         }
-                        // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
+
                         auto acknowledge = clt->getDeltaManager()->getAcknowledge(id, ent);
                         if (acknowledge.signature[0] || acknowledge.signature[1] || acknowledge.signature[2] || acknowledge.signature[3] || acknowledge.signature[4] || acknowledge.signature[5] || acknowledge.signature[6] || acknowledge.signature[7] || acknowledge.signature[8])
                             newEnts.push_back(acknowledge);
                     }
                     auto newProto = proto;
                     newProto.server.entities = newEnts;
+                    for (auto x : newProto.server.destroyedEntities) {
+                        clt->getDeltaManager()->deleteEntity(x);
+                    }
                     clt->getDeltaManager()->setPacket(newProto);
-                    // std::cout << "packetId: " << newProto.packetId << std::endl;
-
-                    // newProto.server.entities = ents;
                     auto response = clu._pc->serialize(newProto);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                 }
 
                 clu._pc->init();
-                
-
-                // auto clients = clientUpdater.clientController->getClients();
-
-                // for (auto &clt : clients) {
-                //     auto protocol = pc.getProtocol();
-                //     auto ip = clt->getIpAdress();
-                //     auto port = clt->getPort();
-                //     for (auto &entity : protocol.server.entities)
-                //         if (type.different && (type.ip != ip || type.port != port))
-                //             entity.entityType = rt::ENTITY_TYPE::ENEMY;
-                    
-                // }
             }
 
             void send() {
