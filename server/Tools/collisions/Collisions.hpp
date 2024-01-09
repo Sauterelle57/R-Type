@@ -13,6 +13,7 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 #include "Vec3.hpp"
+#include <vector>
 
 namespace tls {
 
@@ -33,8 +34,9 @@ namespace tls {
                    (min._z <= other.max._z && max._z >= other.min._z);
         }
     };
-    BoundingBox calculateBoundingBox(const aiMesh* mesh);
+
     BoundingBox loadModelAndGetBoundingBox(const std::string& path);
-    }
+    BoundingBox calculateBoundingBoxForAllMeshes(const aiScene *scene);
+}
 
 #endif //RTYPE_COLLISIONS_HPP
