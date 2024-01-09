@@ -53,12 +53,12 @@ namespace rt {
                 _systems._systemClientUpdater->update();
             }
             if (_clockEnemySpawn.isTimeElapsed()) {
-                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-                }
+//                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+//                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+//                }
 
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
+//                if (_waveEnemy < 8)
+//                    _waveEnemy++;
             }
         }
     }
@@ -511,8 +511,8 @@ namespace rt {
             _initializeECSEntities();
             _createEnnemy({40, 20, 0}, 1.5);
             _createEnnemy({50, 10, 0}, 1.7);
-            _createEnnemy({55, 0, 0}, 1.2);
-            _createEnnemy({35, -6, 0}, 2);
+//            _createEnnemy({55, 0, 0}, 1.2);
+//            _createEnnemy({35, -6, 0}, 2);
         }
     }
 

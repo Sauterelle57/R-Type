@@ -57,7 +57,7 @@ namespace rt
 
             rt::Entity getAcknowledge(std::uint32_t ECSId, rt::Entity entityNow) {
                 if (_entities.find(ECSId) == _entities.end()) {
-                    entityNow.signature = std::bitset<9>(0b111111111);
+                    entityNow.signature = std::bitset<15>(0b111111111111111);
                     return entityNow;
                 }
 
@@ -73,6 +73,14 @@ namespace rt
 
                 diff.signature[7] = diff.scale != entityNow.scale;
                 diff.signature[8] = diff.entityType != entityNow.entityType;
+
+                diff.signature[9] = diff.bounds.min._x != entityNow.bounds.min._x;
+                diff.signature[10] = diff.bounds.min._y != entityNow.bounds.min._y;
+                diff.signature[11] = diff.bounds.min._z != entityNow.bounds.min._z;
+
+                diff.signature[12] = diff.bounds.max._x != entityNow.bounds.max._x;
+                diff.signature[13] = diff.bounds.max._y != entityNow.bounds.max._y;
+                diff.signature[14] = diff.bounds.max._z != entityNow.bounds.max._z;
 
                 entityNow.signature = diff.signature;
 

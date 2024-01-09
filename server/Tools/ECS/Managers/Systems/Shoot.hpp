@@ -289,7 +289,7 @@ namespace ECS {
                     auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
 
                     if (shooter.isShooting) {
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper, updater._pc);
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
                         shooter.isShooting = false;
                     }
                 }

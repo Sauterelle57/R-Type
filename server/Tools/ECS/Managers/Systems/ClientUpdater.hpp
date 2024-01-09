@@ -59,7 +59,7 @@ namespace ECS {
                         {"SIN_SHOT", rt::ENTITY_TYPE::SIN_SHOT},
                     };
 
-                    clientUpdater._pc->addEntity(entity, transform.position, transform.rotation, transform.scale, nameToId[type.name]);
+                    clientUpdater._pc->addEntity(entity, transform.position, transform.rotation, transform.scale, nameToId[type.name], collider);
                     // auto clients = clientUpdater.clientController->getClients();
                     // for (auto &clt : clients) {
                     //     std::string response = responseStream.str();
@@ -84,7 +84,7 @@ namespace ECS {
                             ent.entityType = rt::ENTITY_TYPE::PLAYER_NY;
                         }
                         auto acknowledge = clt->getDeltaManager()->getAcknowledge(id, ent);
-                        if (acknowledge.signature[0] || acknowledge.signature[1] || acknowledge.signature[2] || acknowledge.signature[3] || acknowledge.signature[4] || acknowledge.signature[5] || acknowledge.signature[6] || acknowledge.signature[7] || acknowledge.signature[8])
+                        if (acknowledge.signature[0] || acknowledge.signature[1] || acknowledge.signature[2] || acknowledge.signature[3] || acknowledge.signature[4] || acknowledge.signature[5] || acknowledge.signature[6] || acknowledge.signature[7] || acknowledge.signature[8] || acknowledge.signature[9] || acknowledge.signature[10] || acknowledge.signature[11] || acknowledge.signature[12] || acknowledge.signature[13] || acknowledge.signature[14])
                             newEnts.push_back(acknowledge);
                     }
                     auto newProto = proto;

@@ -168,7 +168,10 @@ namespace ECS {
     };
 
     struct Bdb {
-        BoundingBox bounds;
+        BoundingBox bounds = {
+            {0, 0, 0},
+            {0, 0, 0}
+        };
     };
 }
 

@@ -39,21 +39,19 @@ namespace ECS {
 //                        }
                         if (collider.bounds.transform(transform.position, {transform.scale, transform.scale, transform.scale}).intersects(collider2.bounds.transform(transform2.position, {transform2.scale, transform2.scale, transform2.scale}))) {
                             if (collider.breakable && collider2.breakable && collider.team != collider2.team) {
-                                for (auto const &clientID : clientIDS) {
-                                    {
-                                        // std::ostringstream responseStream;
-                                        // responseStream << entity << " DESTROY";
-                                        clientUpdater._pc->deleteEntity(entity);
-                                        // std::string response = responseStream.str();
-                                        // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
-                                    }
-                                    {
-                                        // std::ostringstream responseStream;
-                                        // responseStream << entity2 << " DESTROY";
-                                        clientUpdater._pc->deleteEntity(entity2);
-                                        // std::string response = responseStream.str();
-                                        // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
-                                    }
+                                {
+                                    // std::ostringstream responseStream;
+                                    // responseStream << entity << " DESTROY";
+                                    clientUpdater._pc->deleteEntity(entity);
+                                    // std::string response = responseStream.str();
+                                    // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                                }
+                                {
+                                    // std::ostringstream responseStream;
+                                    // responseStream << entity2 << " DESTROY";
+                                    clientUpdater._pc->deleteEntity(entity2);
+                                    // std::string response = responseStream.str();
+                                    // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                 }
                                 coordinatorPtr->destroyEntity(entity);
                                 coordinatorPtr->destroyEntity(entity2);

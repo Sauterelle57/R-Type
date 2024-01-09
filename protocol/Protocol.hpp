@@ -101,13 +101,13 @@ namespace rt
 
         // Events Server Part :
 
-        ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type)
+        ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, tls::BoundingBox bounds)
         {
             _protocol->sender = rt::SENDER_TYPE::SERVER;
             _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
             // auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
-            rt::Entity ent = {ECSId, std::bitset<9>(0b111111111), position, rotation, scale, type};
+            rt::Entity ent = {ECSId, std::bitset<15>(0b111111111111111), position, rotation, scale, type, bounds};
             // std::cout << bits << std::endl;
             _protocol->server.entities.push_back(ent);
             return *this;
@@ -369,7 +369,7 @@ namespace rt
             oss.write(reinterpret_cast<const char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
 
             // Serialize signature
-            std::bitset<9> signature = entity.signature;
+            std::bitset<15> signature = entity.signature;
             std::uint16_t signatureValue = static_cast<std::uint16_t>(signature.to_ulong());
             oss.write(reinterpret_cast<const char*>(&signatureValue), sizeof(signatureValue));
 
@@ -400,6 +400,13 @@ namespace rt
             // Serialize entityType
             if (entity.signature[8])
                 oss.write(reinterpret_cast<const char*>(&entity.entityType), sizeof(entity.entityType));
+
+            oss.write(reinterpret_cast<const char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
+            oss.write(reinterpret_cast<const char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
+            oss.write(reinterpret_cast<const char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
+            oss.write(reinterpret_cast<const char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
+            oss.write(reinterpret_cast<const char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
+            oss.write(reinterpret_cast<const char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
         }
 
         static void deserializeEntity(std::istringstream& iss, rt::Entity& entity)
@@ -410,7 +417,7 @@ namespace rt
             // Deserialize signature
             std::uint16_t signatureValue;
             iss.read(reinterpret_cast<char*>(&signatureValue), sizeof(signatureValue));
-            std::bitset<9> signature(signatureValue);
+            std::bitset<15> signature(signatureValue);
             entity.signature = signature;
 
             // Deserialize position
@@ -440,6 +447,13 @@ namespace rt
             if (entity.signature[8]) {
                 iss.read(reinterpret_cast<char*>(&entity.entityType), sizeof(entity.entityType));
             }
+
+            iss.read(reinterpret_cast<char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
+            iss.read(reinterpret_cast<char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
+            iss.read(reinterpret_cast<char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
+            iss.read(reinterpret_cast<char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
+            iss.read(reinterpret_cast<char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
+            iss.read(reinterpret_cast<char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
         }
 
     };

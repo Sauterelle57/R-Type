@@ -116,9 +116,10 @@ namespace RT {
                             std::uint32_t ecsID = x.ECSEntity;
                             tls::Vec3 position = x.position;
                             tls::Vec4 rotation = x.rotation;
+                            tls::BoundingBox bounds = x.bounds;
                             float scale = x.scale;
                             int type = x.entityType;
-                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type);
+                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds);
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
@@ -136,7 +137,7 @@ namespace RT {
                 _queue.push(event);
             }
 
-            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<9> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type) {
+            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds) {
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
                     ECS::Entity entity = _coordinator->createEntity();
 
@@ -447,6 +448,16 @@ namespace RT {
                                 }
                         );
                     }
+                    // DBD
+                    _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Bdb{
+                                    .bounds = {
+                                            .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
+                                            .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
+                                    }
+                            }
+                    );
                 } else {
                     auto &transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[ecsID]);
                     
@@ -460,6 +471,17 @@ namespace RT {
                     transform.rotation._a = (signature[6] ? rotation._a : transform.rotation._a);
 
                     transform.scale = (signature[7] ? scale : transform.scale);
+
+                    auto &bdb = _coordinator->getComponent<ECS::Bdb>(
+                            _serverToClient[ecsID]);
+
+
+                    bdb = ECS::Bdb{
+                            .bounds = {
+                                    .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
+                                    .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
+                            }
+                    };
                 }
             }
 

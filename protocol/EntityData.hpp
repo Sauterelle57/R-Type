@@ -11,6 +11,7 @@
 #include <bitset>
 #include "Vec3.hpp"
 #include "Vec4.hpp"
+#include "../server/Tools/collisions/Collisions.hpp"
 
 namespace rt
 {
@@ -27,19 +28,22 @@ namespace rt
 
         BASIC_SHOT,
         BASIC_ENEMY_SHOT,
-        SIN_SHOT
+        SIN_SHOT,
+
+        BDB
     };
 
     struct Entity
     {
         std::uint32_t ECSEntity;
 
-        std::bitset<9> signature;
+        std::bitset<15> signature;
 
         tls::Vec3 position;
         tls::Vec4 rotation;
         float scale;
         ENTITY_TYPE entityType;
+        tls::BoundingBox bounds;
     };
 }
 
