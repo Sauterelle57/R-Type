@@ -30,6 +30,9 @@ namespace rt {
         _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
+        _commands["ID"] = [&](const std::string &data, const std::string &ip, const int port) {
+            commandID(data, ip, port);
+        };
     }
 
     int GameController::exec() {
@@ -485,5 +488,9 @@ namespace rt {
             _createEnnemy({55, 0, 0}, 1.2);
             _createEnnemy({35, -6, 0}, 2);
         }
+    }
+
+    void GameController::commandID(const std::string &data, const std::string &ip, const int port) {
+        // std::cout << "ID: " << data << std::endl;
     }
 }

@@ -51,6 +51,7 @@ namespace rt
     {
         SENDER_TYPE sender;
         PROTOCOL_TYPE protocol;
+        long long packetId;
 
         p_client client;
         p_server server;
@@ -148,6 +149,7 @@ namespace rt
             std::ostringstream oss;
             oss.write(reinterpret_cast<const char*>(&protocol.sender), sizeof(protocol.sender));
             oss.write(reinterpret_cast<const char*>(&protocol.protocol), sizeof(protocol.protocol));
+            oss.write(reinterpret_cast<const char*>(&protocol.packetId), sizeof(protocol.packetId));
 
             // Serialize destroyedEntitiesSize and destroyedEntities vector
             protocol.server.destroyedEntitiesSize = protocol.server.destroyedEntities.size();
@@ -170,6 +172,7 @@ namespace rt
 
             iss.read(reinterpret_cast<char*>(&deserializedData.sender), sizeof(deserializedData.sender));
             iss.read(reinterpret_cast<char*>(&deserializedData.protocol), sizeof(deserializedData.protocol));
+            iss.read(reinterpret_cast<char*>(&deserializedData.packetId), sizeof(deserializedData.packetId));
 
             // Deserialize destroyedEntitiesSize and destroyedEntities vector
             iss.read(reinterpret_cast<char*>(&deserializedData.server.destroyedEntitiesSize), sizeof(deserializedData.server.destroyedEntitiesSize));
@@ -378,7 +381,7 @@ namespace rt
             if (entity.signature[2])
                 oss.write(reinterpret_cast<const char*>(&entity.position._z), sizeof(entity.position._z));
 
-            
+
 
             // Serialize rotation
             if (entity.signature[3])

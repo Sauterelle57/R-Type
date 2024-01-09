@@ -62,7 +62,6 @@ namespace RT {
         _camera->setUp({ 0.0f, 1.0f, 0.0f });
         _camera->setFovy(30.0f);
         _camera->setProjection(CAMERA_PERSPECTIVE);
-        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _messageQueueMutex = std::make_shared<std::mutex>();
@@ -72,6 +71,7 @@ namespace RT {
             _udpClient->run(_isRunning);
         }));
         _udpClient->send("CONNECTION_REQUEST");
+        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera, _udpClient);
         _clock = std::make_unique<tls::Clock>(0.01);
     }
 

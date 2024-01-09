@@ -15,11 +15,12 @@
 #include "IListener.hpp"
 #include "renderer/Sound.hpp"
 #include "Protocol.hpp"
+#include "UdpClient.hpp"
 
 namespace RT {
     class Listener : public IListener {
         public:
-            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam) : _coordinator(coordinator), _entities(entities), _cam(cam) {
+            Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam, std::shared_ptr<rt::UdpClient> udpClient) : _coordinator(coordinator), _entities(entities), _cam(cam), _udpClient(udpClient) {
                 {
                     _starTexture = std::make_shared<RL::ZTexture>("./client/resources/images/star.png");
                 }
@@ -98,6 +99,12 @@ namespace RT {
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
                             _coordinator->destroyEntity(_serverToClient[ecsID]);
                         }
+
+                        std::ostringstream oss;
+                        oss << "ID " << receivedData.packetId;
+                        _udpClient->send(oss.str());
+                        // _udpClient->send()
+                        
                     }
 
                     // std::stringstream ss(front);
@@ -532,6 +539,7 @@ namespace RT {
             std::shared_ptr<std::set<Entity>> _entities;
             std::unordered_map<Entity, Entity> _serverToClient;
             std::shared_ptr<RL::ICamera> _cam;
+            std::shared_ptr<rt::UdpClient> _udpClient;
             std::shared_ptr<RL::ZTexture> _starTexture;
             std::shared_ptr<RL::ZModel> _playerModel;
             std::shared_ptr<RL::ZModel> _tileBMmodel;

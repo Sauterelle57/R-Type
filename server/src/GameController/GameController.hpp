@@ -44,6 +44,7 @@ namespace rt {
             void commandMove(const std::string &data, const std::string &ip, const int port);
             void commandShoot(const std::string &data, const std::string &ip, const int port);
             void commandRequestConnection(const std::string &data, const std::string &ip, const int port);
+            void commandID(const std::string &data, const std::string &ip, const int port);
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;

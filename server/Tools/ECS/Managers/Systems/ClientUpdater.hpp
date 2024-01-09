@@ -13,6 +13,7 @@
 #include "../Components/ComponentStructs.hpp"
 #include "Protocol.hpp"
 #include <map>
+#include "Clock.hpp"
 
 namespace ECS {
     class ClientUpdaterSystem : public System {
@@ -84,23 +85,19 @@ namespace ECS {
                             // clu._pc->changeEntityTypeInBitset(ent, rt::ENTITY_TYPE::PLAYER_NY);
                         }
                         // clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
-                        auto acknowledge = clt->getDeltaManager()->addEntity(id, ent.position, ent.rotation, ent.scale, ent.entityType);
-                        newEnts.push_back(acknowledge);
+                        auto acknowledge = clt->getDeltaManager()->getAcknowledge(id, ent);
+                        if (acknowledge.signature[0] || acknowledge.signature[1] || acknowledge.signature[2] || acknowledge.signature[3] || acknowledge.signature[4] || acknowledge.signature[5] || acknowledge.signature[6] || acknowledge.signature[7] || acknowledge.signature[8])
+                            newEnts.push_back(acknowledge);
                     }
                     auto newProto = proto;
-                    //TODO: DELTA
                     newProto.server.entities = newEnts;
+                    newProto.packetId = tls::Clock::getTimeStamp();
+                    // std::cout << "packetId: " << newProto.packetId << std::endl;
 
                     // newProto.server.entities = ents;
                     auto response = clu._pc->serialize(newProto);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                 }
-
-                // for (auto &x : proto.server.entities) {
-                //     auto id = rt::ProtocolController::getECSIdFromBitset(x);
-                //     std::cout << "ENTITY : " << id << std::endl;
-
-                // }
 
                 clu._pc->init();
                 
