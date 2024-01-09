@@ -19,14 +19,15 @@ namespace rt
             DeltaManager() = default;
             ~DeltaManager() = default;
 
-            rt::Entity addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type) {
+            std::pair<rt::Entity, float> addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type) {
                 std::bitset<9> signature;
                 rt::Entity ent = {ECSId, signature, position, rotation, scale, type};
 
                 if (_clients.find(ECSId) == _clients.end()) {
                     ent.signature = std::bitset<9>(0b111111111);
                     _clients.insert({ECSId, ent});
-                    return ent;
+                    rt::Entity tmp =  {0, std::bitset<9>(0b000000000), {0, 0, 0}, {0, 0, 0, 0}, 0, rt::ENTITY_TYPE::PLAYER};
+                    return {ent, _calculDelta(position, rotation, scale, type, tmp)};
                 }
 
                 rt::Entity& diff = _clients[ECSId];
@@ -45,15 +46,24 @@ namespace rt
 
                 
                 ent.signature = diff.signature;
+                float delta = _calculDelta(position, rotation, scale, type, diff);
                 _clients[ECSId] = ent;
-                return ent;
+                return {ent, delta};
             }
+
             void deleteEntity(std::uint32_t ECSId) {
                 if (_clients.find(ECSId) != _clients.end())
                     _clients.erase(ECSId);
             }
         private:
             std::map<std::uint32_t, rt::Entity> _clients;
+
+            float _calculDelta(tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, rt::Entity& diff) {
+                float finalDelta = position._x + position._y + position._z + rotation._x + rotation._y + rotation._z + rotation._a + scale + static_cast<int>(type);
+                float base = diff.position._x + diff.position._y + diff.position._z + diff.rotation._x + diff.rotation._y + diff.rotation._z + diff.rotation._a + diff.scale + static_cast<int>(diff.entityType);
+                float delta = finalDelta - base;
+                return delta;
+            }
     };
 }
 
