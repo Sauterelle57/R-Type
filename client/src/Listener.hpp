@@ -152,7 +152,16 @@ namespace RT {
                                 scale
                         }
                     );
-
+                    // DBD
+                    _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Bdb{
+                                    .bounds = {
+                                            .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
+                                            .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
+                                    }
+                            }
+                    );
                     if (type == rt::ENTITY_TYPE::PLAYER) {
                         std::cout << "Create player ! with [" << ecsID << "]" << std::endl;
                         _coordinator->addComponent(
@@ -448,16 +457,6 @@ namespace RT {
                                 }
                         );
                     }
-                    // DBD
-                    _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Bdb{
-                                    .bounds = {
-                                            .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
-                                            .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
-                                    }
-                            }
-                    );
                 } else {
                     auto &transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[ecsID]);
                     
