@@ -82,8 +82,9 @@ namespace rt {
             std::cout << "[" << command << "] " << data.length() << std::endl;
             if (command == "SHOOT" || command == "MOVE")
                 _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
-            else
+            else{
                 _commands.at(command)(data, ip, port);
+                std::cout << "command found" << std::endl;}
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
         }
@@ -146,10 +147,17 @@ namespace rt {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Projectile>());
-            signature.set(_coordinator->getComponentType<ECS::Trajectory>());
+            // signature.set(_coordinator->getComponentType<ECS::Trajectory>());
             signature.set(_coordinator->getComponentType<ECS::Type>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
             _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Trajectory>());
+            _coordinator->setSystemSignature<ECS::AutoMove>(signature);
         }
 
         {

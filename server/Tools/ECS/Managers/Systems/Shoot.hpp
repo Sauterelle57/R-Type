@@ -150,6 +150,7 @@ namespace ECS {
                             .speed = 0.5f
                         }
                     );
+                    std::cout << "i: " << i << std::endl;
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Trajectory {
@@ -245,7 +246,7 @@ namespace ECS {
                     }
                 };
                 std::vector<tls::Vec4> rotations = {{0,0,1,-90}, {0,0,1,-45}, {0,0,1,-135}};
-                // std::vector<Direction> directions = {Direction::LEFT, Direction::LEFT_UP, Direction::LEFT_DOWN};
+                // std::vector<ECS::Direction> directions = {ECS::Direction::LEFT, ECS::Direction::LEFT_UP, ECS::Direction::LEFT_DOWN};
 
                 for (int i = 0; i < 3; i++) {
                     _entities.insert(_entities.end(), _coordinator->createEntity());
@@ -265,6 +266,7 @@ namespace ECS {
                             .speed = 0.5f
                         }
                     );
+                    std::cout << "i2 : " << i << std::endl;
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Trajectory {

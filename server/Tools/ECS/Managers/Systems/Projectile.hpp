@@ -44,7 +44,7 @@ namespace ECS {
             for (auto const &entity : _entities) {
                 auto &projectile = coordinatorPtr->getComponent<Projectile>(entity);
                 auto &transform = coordinatorPtr->getComponent<Transform>(entity);
-                auto &trajectory = coordinatorPtr->getComponent<Trajectory>(entity);
+                // auto &trajectory = coordinatorPtr->getComponent<Trajectory>(entity);
                 auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                 auto clientIDS = clientUpdater.clientController->getClients();
 

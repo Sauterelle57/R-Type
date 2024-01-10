@@ -6,7 +6,7 @@
 */
 
 #ifndef RTYPE_MOVE_HPP
-#define RTYPE_MOVE_HPPserver/Tools/ECS/Managers/Systems/AutoMove.hpp
+#define RTYPE_MOVE_HPP
 
 #include "System.hpp"
 #include "Coordinator.hpp"

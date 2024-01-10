@@ -102,6 +102,7 @@ namespace ECS {
     };
 
     struct Projectile {
+        // std::shared_ptr<float> t = std::make_shared<float>(0.0f);
         // Direction direction = ECS::Direction::LEFT;
         // std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
         int damage;
@@ -175,6 +176,10 @@ namespace ECS {
         BoundingBox bounds;
     };
 
+    struct Parent {
+
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos)> create_children;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP
