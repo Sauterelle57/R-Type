@@ -27,6 +27,7 @@
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
 #include "rlights.h"
+#include "renderer/IMusic.hpp"
 
 namespace ECS {
     enum Direction {
@@ -174,6 +175,10 @@ namespace ECS {
             {0, 0, 0},
             {0, 0, 0}
         };
+    };
+
+    struct Music {
+        std::shared_ptr<RL::IMusic> music;
     };
 }
 

@@ -33,6 +33,7 @@
 #include "ShaderUpdater.hpp"
 #include "Velocity.hpp"
 #include "Bdb.hpp"
+#include "Music.hpp"
 #include <mutex>
 
 namespace RT {
@@ -51,6 +52,7 @@ namespace RT {
         std::shared_ptr<ECS::ShaderUpdaterSystem> _systemShaderUpdater;
         std::shared_ptr<ECS::VelocitySystem> _systemVelocity;
         std::shared_ptr<ECS::BdbSystem> _systemBdb;
+        std::shared_ptr<ECS::MusicSystem> _systemMusic;
     };
 
     class Core {
