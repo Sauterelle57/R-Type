@@ -40,7 +40,9 @@ namespace rt {
             // get data from queue
             if (!_receivedData.empty()) {
                 ReceivedData data = _receivedData.front();
+                // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
                 commandHandler(data.data, data.ip, data.port);
+                // std::cout << "End of traitment" << std::endl;
                 _receivedData.pop();
             }
             if (_clock.isTimeElapsed()) {
