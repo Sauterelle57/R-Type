@@ -294,9 +294,9 @@ namespace rt {
        );
 
         tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
-        Matrix matr = MatrixIdentity();
-        matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
-        matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
+        tls::Matrix matr = tls::MatrixIdentity();
+        matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(90 * DEG2RAD));
+        matr = tls::MatrixMultiply(matr, tls::MatrixRotateZ(-90 * DEG2RAD));
         bdb.applyMatrix(matr);
 
        _coordinator->addComponent(
@@ -367,10 +367,10 @@ namespace rt {
            }
        );
         static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb");
-        static Matrix matr = MatrixIdentity();
+        static tls::Matrix matr = tls::MatrixIdentity();
         static bool first = true;
         if (first) {
-            matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+            matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
             bdb.applyMatrix(matr);
             first = false;
         }
