@@ -17,6 +17,7 @@
 #include "Protocol.hpp"
 #include "UdpClient.hpp"
 #include "renderer/Mesh.hpp"
+#include "renderer/Music.hpp"
 
 namespace RT {
     class Listener : public IListener {
@@ -230,6 +231,12 @@ namespace RT {
                             *_entities->rbegin(),
                             ECS::Cam{
                                 .camera = _cam
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Music {
+                                .music = std::make_shared<RL::ZMusic>("./client/resources/sounds/stage1.mp3")
                             }
                         );
                         _coordinator->addComponent(

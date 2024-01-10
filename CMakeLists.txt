@@ -234,6 +234,7 @@ add_executable(rtype_client
         client/Tools/ECS/Managers/Systems/ShaderUpdater.hpp
         client/Tools/ECS/Managers/Systems/Velocity.hpp
         client/Tools/ECS/Managers/Systems/Bdb.hpp
+        client/Tools/ECS/Managers/Systems/Music.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

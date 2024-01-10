@@ -201,9 +201,12 @@ namespace RT {
         _coordinator->registerComponent<ECS::ShaderComponent>();
         _coordinator->registerComponent<ECS::Velocity>();
         _coordinator->registerComponent<ECS::Bdb>();
+        _coordinator->registerComponent<ECS::Music>();
     }
 
     void Core::initSystem() {
+        _systems._systemMusic = _coordinator->registerSystem<ECS::MusicSystem>();
+
 //        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
@@ -316,6 +319,12 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Bdb>());
             _coordinator->setSystemSignature<ECS::BdbSystem>(signature);
         }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Music>());
+            _coordinator->setSystemSignature<ECS::MusicSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -338,6 +347,7 @@ namespace RT {
             }
             _listener->onEvent();
             if (_clock->isTimeElapsed()) {
+                _systems._systemMusic->update();
                 _window->beginDrawing();
                 _window->clearBackground(BLACK);
                 _systems._systemCamera->begin();

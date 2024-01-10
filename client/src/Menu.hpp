@@ -14,6 +14,7 @@
 #include "renderer/IImage.hpp"
 #include "renderer/IModel.hpp"
 #include "renderer/ITexture.hpp"
+#include "renderer/IMusic.hpp"
 #include <string>
 
 namespace RT {
@@ -45,7 +46,7 @@ namespace RT {
             std::shared_ptr<RL::ITexture> _enterGame;
             std::shared_ptr<RL::ITexture> _cursor;
 
-
+            std::shared_ptr<RL::IMusic> _music;
     };
 } // RT
 
