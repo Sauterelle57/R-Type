@@ -11,13 +11,13 @@
 #include <memory>
 #include <map>
 
-namespace rt 
+namespace rt
 {
     class ClientController {
         public:
             ClientController() = default;
             ~ClientController() = default;
-            
+
             void addClient(const std::string &ip, const int port) {
                 std::cout << "CLIENTMGR/NEW CLIENT: " << ip << ":" << port << std::endl;
                 _clients[ip + ":" + std::to_string(port)] = std::make_shared<Client>(ip, port);

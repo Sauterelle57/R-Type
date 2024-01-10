@@ -190,6 +190,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::Player>();
         _coordinator->registerComponent<ECS::Particles>();
         _coordinator->registerComponent<ECS::Projectile>();
+        _coordinator->registerComponent<ECS::Trajectory>();
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Cam>();
         _coordinator->registerComponent<ECS::Traveling>();
