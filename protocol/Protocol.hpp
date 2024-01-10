@@ -31,12 +31,14 @@ namespace rt
         CONNECTION_ACCEPTED,
         CONNECTION_REFUSED,
         OK,
-        ENTITIES
+        ENTITIES,
+        ID
     };
 
     // Client
     struct p_client {
         tls::Vec3 move = {0, 0, 0};
+        long long packetId;
     };
 
     // Server
@@ -99,6 +101,39 @@ namespace rt
             return *this;
         }
 
+        ProtocolController& actionShoot()
+        {
+            _protocol->sender = rt::SENDER_TYPE::CLIENT;
+            _protocol->protocol = rt::PROTOCOL_TYPE::SHOOT;
+
+            return *this;
+        }
+
+        ProtocolController& responseOK()
+        {
+            _protocol->sender = rt::SENDER_TYPE::SERVER;
+            _protocol->protocol = rt::PROTOCOL_TYPE::OK;
+
+            return *this;
+        }
+
+        ProtocolController& actionConnectionRequest(void)
+        {
+            _protocol->sender = rt::SENDER_TYPE::CLIENT;
+            _protocol->protocol = rt::PROTOCOL_TYPE::CONNECTION_REQUEST;
+
+            return *this;
+        }
+
+        ProtocolController& actionId(long long id)
+        {
+            _protocol->sender = rt::SENDER_TYPE::CLIENT;
+            _protocol->protocol = rt::PROTOCOL_TYPE::ID;
+
+            _protocol->client.packetId = id;
+            
+            return *this;
+        }
         // Events Server Part :
 
         ProtocolController& addEntity(std::uint32_t ECSId, tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, tls::BoundingBox bounds)
@@ -149,17 +184,27 @@ namespace rt
             std::ostringstream oss;
             oss.write(reinterpret_cast<const char*>(&protocol.sender), sizeof(protocol.sender));
             oss.write(reinterpret_cast<const char*>(&protocol.protocol), sizeof(protocol.protocol));
-            oss.write(reinterpret_cast<const char*>(&protocol.packetId), sizeof(protocol.packetId));
+            if (protocol.sender == SERVER) {
+                oss.write(reinterpret_cast<const char*>(&protocol.packetId), sizeof(protocol.packetId));
 
-            // Serialize destroyedEntitiesSize and destroyedEntities vector
-            protocol.server.destroyedEntitiesSize = protocol.server.destroyedEntities.size();
-            oss.write(reinterpret_cast<const char*>(&protocol.server.destroyedEntitiesSize), sizeof(protocol.server.destroyedEntitiesSize));
-            oss.write(reinterpret_cast<const char*>(protocol.server.destroyedEntities.data()), protocol.server.destroyedEntities.size() * sizeof(std::uint32_t));
+                // Serialize destroyedEntitiesSize and destroyedEntities vector
+                protocol.server.destroyedEntitiesSize = protocol.server.destroyedEntities.size();
+                oss.write(reinterpret_cast<const char*>(&protocol.server.destroyedEntitiesSize), sizeof(protocol.server.destroyedEntitiesSize));
+                oss.write(reinterpret_cast<const char*>(protocol.server.destroyedEntities.data()), protocol.server.destroyedEntities.size() * sizeof(std::uint32_t));
 
 
-            for (const auto& entity : protocol.server.entities)
-            {
-                serializeEntity(oss, entity);
+                for (const auto& entity : protocol.server.entities)
+                {
+                    serializeEntity(oss, entity);
+                }
+            } else {
+                if (protocol.protocol == MOVE) {
+                    oss.write(reinterpret_cast<const char*>(&protocol.client.move._x), sizeof(protocol.client.move._x));
+                    oss.write(reinterpret_cast<const char*>(&protocol.client.move._y), sizeof(protocol.client.move._y));
+                    oss.write(reinterpret_cast<const char*>(&protocol.client.move._z), sizeof(protocol.client.move._z));
+                } else if (protocol.protocol == ID) {
+                    oss.write(reinterpret_cast<const char*>(&protocol.client.packetId), sizeof(protocol.client.packetId));
+                }
             }
 
             return oss.str();
@@ -172,19 +217,29 @@ namespace rt
 
             iss.read(reinterpret_cast<char*>(&deserializedData.sender), sizeof(deserializedData.sender));
             iss.read(reinterpret_cast<char*>(&deserializedData.protocol), sizeof(deserializedData.protocol));
-            iss.read(reinterpret_cast<char*>(&deserializedData.packetId), sizeof(deserializedData.packetId));
+            if (deserializedData.sender == SERVER) {
+                iss.read(reinterpret_cast<char*>(&deserializedData.packetId), sizeof(deserializedData.packetId));
 
-            // Deserialize destroyedEntitiesSize and destroyedEntities vector
-            iss.read(reinterpret_cast<char*>(&deserializedData.server.destroyedEntitiesSize), sizeof(deserializedData.server.destroyedEntitiesSize));
-            deserializedData.server.destroyedEntities.resize(deserializedData.server.destroyedEntitiesSize);
-            iss.read(reinterpret_cast<char*>(deserializedData.server.destroyedEntities.data()), deserializedData.server.destroyedEntities.size() * sizeof(std::uint32_t));
+                // Deserialize destroyedEntitiesSize and destroyedEntities vector
+                iss.read(reinterpret_cast<char*>(&deserializedData.server.destroyedEntitiesSize), sizeof(deserializedData.server.destroyedEntitiesSize));
+                deserializedData.server.destroyedEntities.resize(deserializedData.server.destroyedEntitiesSize);
+                iss.read(reinterpret_cast<char*>(deserializedData.server.destroyedEntities.data()), deserializedData.server.destroyedEntities.size() * sizeof(std::uint32_t));
 
 
-            while (iss.peek() != EOF)
-            {
-                rt::Entity entity;
-                deserializeEntity(iss, entity);
-                deserializedData.server.entities.push_back(entity);
+                while (iss.peek() != EOF)
+                {
+                    rt::Entity entity;
+                    deserializeEntity(iss, entity);
+                    deserializedData.server.entities.push_back(entity);
+                }
+            } else {
+                if (deserializedData.protocol == MOVE) {
+                    iss.read(reinterpret_cast<char*>(&deserializedData.client.move._x), sizeof(deserializedData.client.move._x));
+                    iss.read(reinterpret_cast<char*>(&deserializedData.client.move._y), sizeof(deserializedData.client.move._y));
+                    iss.read(reinterpret_cast<char*>(&deserializedData.client.move._z), sizeof(deserializedData.client.move._z));
+                } else if (deserializedData.protocol == ID) {
+                    iss.read(reinterpret_cast<char*>(&deserializedData.client.packetId), sizeof(deserializedData.client.packetId));
+                }
             }
 
             return deserializedData;

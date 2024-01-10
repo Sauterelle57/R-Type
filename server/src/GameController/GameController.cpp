@@ -24,13 +24,13 @@ namespace rt {
     }
 
     void GameController::_initializeCommands() {
-        _commands["PING"] = [&](const std::string &data, const std::string &ip, const int port) {
+        _commands[rt::PROTOCOL_TYPE::PING] = [&](const rt::Protocol &data, const std::string &ip, const int port) {
             commandPing(data, ip, port);
         };
-        _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
+        _commands[rt::PROTOCOL_TYPE::CONNECTION_REQUEST] = [&](const rt::Protocol &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
-        _commands["ID"] = [&](const std::string &data, const std::string &ip, const int port) {
+        _commands[rt::PROTOCOL_TYPE::ID] = [&](const rt::Protocol &data, const std::string &ip, const int port) {
             commandID(data, ip, port);
         };
     }
@@ -63,7 +63,7 @@ namespace rt {
         }
     }
 
-    void GameController::addReceivedData(const std::string &data, const std::string &ip, const int port) {
+    void GameController::addReceivedData(const rt::Protocol &data, const std::string &ip, const int port) {
         _receivedData.push({data, ip, port});
     }
 
@@ -71,7 +71,7 @@ namespace rt {
         _wrapper = wrapper;
     }
 
-    void GameController::commandHandler(const std::string &data, const std::string &ip, const int port) {
+    void GameController::commandHandler(const rt::Protocol &data, const std::string &ip, const int port) {
 
         // std::cout << "-------------------" << std::endl;
         // std::cout << "COMMAND HANDLER" << std::endl;
@@ -79,17 +79,12 @@ namespace rt {
         // std::cout << "data: " << data << std::endl;
         // std::cout << "-------------------" << std::endl;
 
-        std::istringstream iss(data);
-        std::string command;
-        iss >> command;
-
-
         try {
             // std::cout << "[" << command << "] " << data.length() << std::endl;
-            if (command == "SHOOT" || command == "MOVE")
+            if (data.protocol == rt::PROTOCOL_TYPE::SHOOT || data.protocol == rt::PROTOCOL_TYPE::MOVE)
                 _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
             else
-                _commands.at(command)(data, ip, port);
+                _commands.at(data.protocol)(data, ip, port);
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
         }
@@ -504,12 +499,15 @@ namespace rt {
     }
 
     // Commands
-    void GameController::commandPing(const std::string &data, const std::string &ip, const int port) {
-        _wrapper->sendTo("OK", ip, port);
+    void GameController::commandPing(const rt::Protocol &data, const std::string &ip, const int port) {
+        rt::ProtocolController pc;
+        pc.responseOK();
+        auto toSend = pc.getProtocol();
+        _wrapper->sendStruct(toSend, ip, port);
         std::cout << "(>) Sent information" << std::endl;
     }
 
-    void GameController::commandRequestConnection(const std::string &data, const std::string &ip, const int port) {
+    void GameController::commandRequestConnection(const rt::Protocol &data, const std::string &ip, const int port) {
         if (!_clientController->isClientExist(ip, port))
             _clientController->addClient(ip, port);
         _createPlayer(ip, port);
@@ -523,19 +521,15 @@ namespace rt {
         }
     }
 
-    void GameController::commandID(const std::string &data, const std::string &ip, const int port) {
+    void GameController::commandID(const rt::Protocol &data, const std::string &ip, const int port) {
         // std::cout << "ID: " << data << std::endl;
         if (!_clientController->isClientExist(ip, port)) {
             return;
         }
 
         std::shared_ptr<rt::Client> _client = _clientController->getClient(ip, port);
-        long long id;
-        std::string command;
-        std::istringstream iss(data);
+        long long id = data.packetId;
 
-        iss >> command;
-        iss >> id;
         _client->getDeltaManager()->validatePacket(id);
     }
 }

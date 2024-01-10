@@ -24,6 +24,7 @@
 #include "ClientUpdater.hpp"
 #include "PlayerManager.hpp"
 #include "Enemy.hpp"
+#include "Protocol.hpp"
 
 namespace rt {
 
@@ -34,17 +35,17 @@ namespace rt {
 
             int exec();
 
-            void addReceivedData(const std::string &data, const std::string &ip, const int port);
+            void addReceivedData(const rt::Protocol &data, const std::string &ip, const int port);
 
             void addWrapper(std::shared_ptr<IWrapper> wrapper);
 
-            void commandHandler(const std::string &data, const std::string &ip, const int port);
+            void commandHandler(const rt::Protocol &data, const std::string &ip, const int port);
 
-            void commandPing(const std::string &data, const std::string &ip, const int port);
-            void commandMove(const std::string &data, const std::string &ip, const int port);
-            void commandShoot(const std::string &data, const std::string &ip, const int port);
-            void commandRequestConnection(const std::string &data, const std::string &ip, const int port);
-            void commandID(const std::string &data, const std::string &ip, const int port);
+            void commandPing(const rt::Protocol &data, const std::string &ip, const int port);
+            void commandMove(const rt::Protocol &data, const std::string &ip, const int port);
+            void commandShoot(const rt::Protocol &data, const std::string &ip, const int port);
+            void commandRequestConnection(const rt::Protocol &data, const std::string &ip, const int port);
+            void commandID(const rt::Protocol &data, const std::string &ip, const int port);
 
             struct System {
                 std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
@@ -62,7 +63,7 @@ namespace rt {
             std::shared_ptr<IWrapper> _wrapper;
             std::shared_ptr<rt::ClientController> _clientController;
 
-            std::map<std::string, std::function<void(const std::string &, const std::string &, const int)>> _commands;
+            std::map<rt::PROTOCOL_TYPE, std::function<void(const rt::Protocol &, const std::string &, const int)>> _commands;
 
             void _initializeCommands();
             void _initializeECS();
