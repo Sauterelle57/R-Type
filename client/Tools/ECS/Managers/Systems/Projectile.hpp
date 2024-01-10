@@ -36,10 +36,11 @@ namespace ECS {
 
             for (auto const &entity : _entities) {
                 auto &projectile = coordinatorPtr->getComponent<Projectile>(entity);
+                // auto &trajectory = coordinatorPtr->getComponent<Trajectory>(entity);
                 auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                 tls::Vec3 position = transform.position;
 
-                transform.position = projectile.trajectory(transform.position, projectile.t);
+                // transform.position = trajectory.trajectory(transform.position, projectile.t);
 
                 tls::Vec3 newPosition = transform.position;
 

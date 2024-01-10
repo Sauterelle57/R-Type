@@ -28,7 +28,7 @@ namespace rt {
         };
     }
 
-    int GameController::exec() { 
+    int GameController::exec() {
         while (1) {
             // get data from queue
             if (!_receivedData.empty()) {
@@ -43,6 +43,7 @@ namespace rt {
                 _systems._systemCollider->update();
                 _systems._systemClientUpdater->update();
                 _systems._systemMove->update();
+                _systems._systemAutoMove->update();
                 _systems._systemEnemy->update();
             }
             if (_clockEnemySpawn.isTimeElapsed()) {
@@ -108,6 +109,7 @@ namespace rt {
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Projectile>();
+        _coordinator->registerComponent<ECS::Trajectory>();
         _coordinator->registerComponent<ECS::Collider>();
         _coordinator->registerComponent<ECS::Type>();
         _coordinator->registerComponent<ECS::ClientUpdater>();
@@ -129,6 +131,7 @@ namespace rt {
         _systems._systemClientUpdater = _coordinator->registerSystem<ECS::ClientUpdaterSystem>();
         _systems._systemPlayerManager = _coordinator->registerSystem<ECS::PlayerManager>();
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
+        _systems._systemAutoMove = _coordinator->registerSystem<ECS::AutoMove>();
         _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
         _systems._systemEnemy->init();
 
@@ -143,6 +146,7 @@ namespace rt {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Projectile>());
+            signature.set(_coordinator->getComponentType<ECS::Trajectory>());
             signature.set(_coordinator->getComponentType<ECS::Type>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
             _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);

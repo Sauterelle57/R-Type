@@ -18,6 +18,7 @@
 #include "renderer/ISound.hpp"
 #include "renderer/IAudio.hpp"
 #include "Move.hpp"
+#include "AutoMove.hpp"
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "Particle.hpp"
@@ -39,6 +40,7 @@ namespace RT {
 
     struct System {
         std::shared_ptr<ECS::Move> _systemMove;
+        std::shared_ptr<ECS::AutoMove> _systemAutoMove;
         std::shared_ptr<ECS::Play> _systemPlayer;
         std::shared_ptr<ECS::DrawModel> _systemDrawModel;
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;

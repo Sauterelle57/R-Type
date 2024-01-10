@@ -17,3 +17,6 @@ build/
 _deps/
 CPackConfig.cmake
 CPackSourceConfig.cmake
+
+
+vgcore*

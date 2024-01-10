@@ -102,12 +102,16 @@ namespace ECS {
     };
 
     struct Projectile {
-        std::shared_ptr<float> t = std::make_shared<float>(0.0f);
-        Direction direction = ECS::Direction::LEFT;
-        std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
+        // Direction direction = ECS::Direction::LEFT;
+        // std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
         int damage;
         float speed;
         bool active;
+    };
+
+    struct Trajectory {
+        std::shared_ptr<float> t = std::make_shared<float>(0.0f);
+        std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
     };
 
     struct Weapon {
@@ -170,6 +174,7 @@ namespace ECS {
     struct Bdb {
         BoundingBox bounds;
     };
+
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

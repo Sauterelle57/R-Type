@@ -36,29 +36,34 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
-                        },
                         .damage = 1,
                         .speed = 0.5f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::Collider {
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
+                        }
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Collider {
                         .team = 0,
                         .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::Type {
+                    Type {
                         .name = "BASIC_SHOT"
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::ClientUpdater {
+                    ClientUpdater {
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }
@@ -81,29 +86,34 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
-                        },
                         .damage = 1,
                         .speed = 0.2f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::Collider {
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
+                        }
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Collider {
                         .team = 1,
                         .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::Type {
+                    Type {
                         .name = "BASIC_ENEMY_SHOT"
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::ClientUpdater {
+                    ClientUpdater {
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }
@@ -136,15 +146,20 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .t = std::make_shared<float>(start[i]),
-                            .trajectory = trajectories[i],
                             .damage = 1,
                             .speed = 0.5f
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
-                        ECS::Collider {
+                        Trajectory {
+                            .t = std::make_shared<float>(start[i]),
+                            .trajectory = trajectories[i]
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Collider {
                             .bounds = {
                                     .min = {-1, -1, -1},
                                     .max = {1, 1, 1}
@@ -153,13 +168,13 @@ namespace ECS {
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
-                        ECS::Type {
+                        Type {
                             .name = "SIN_SHOT"
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
-                        ECS::ClientUpdater {
+                        ClientUpdater {
                             .wrapper = _wrapper,
                             .clientController = _clientController
                         }
@@ -180,17 +195,22 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            *t += 0.01f;
-                            return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
-                        },
                         .damage = 1,
                         .speed = 0.5f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::Collider {
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            *t += 0.01f;
+                            return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
+                        }
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Collider {
                         .bounds = {
                                 .min = {-1, -1, -1},
                                 .max = {1, 1, 1}
@@ -199,13 +219,13 @@ namespace ECS {
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::Type {
+                    Type {
                         .name = "SIN_SHOT"
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
-                    ECS::ClientUpdater {
+                    ClientUpdater {
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }
@@ -225,7 +245,7 @@ namespace ECS {
                     }
                 };
                 std::vector<tls::Vec4> rotations = {{0,0,1,-90}, {0,0,1,-45}, {0,0,1,-135}};
-                std::vector<ECS::Direction> directions = {ECS::Direction::LEFT, ECS::Direction::LEFT_UP, ECS::Direction::LEFT_DOWN};
+                // std::vector<Direction> directions = {Direction::LEFT, Direction::LEFT_UP, Direction::LEFT_DOWN};
 
                 for (int i = 0; i < 3; i++) {
                     _entities.insert(_entities.end(), _coordinator->createEntity());
@@ -240,28 +260,33 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .direction = directions[i],
-                            .trajectory = trajectories[i],
+                            // .direction = directions[i],
                             .damage = 1,
                             .speed = 0.5f
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
-                        ECS::Type {
+                        Trajectory {
+                            .trajectory = trajectories[i]
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Type {
                             .name = "BASIC_SHOT"
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
-                        ECS::ClientUpdater {
+                        ClientUpdater {
                             .wrapper = _wrapper,
                             .clientController = _clientController
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
-                        ECS::Collider {
+                        Collider {
                             .bounds = {
                                 .min = {-1, -1, -1},
                                 .max = {1, 1, 1}
@@ -290,6 +315,6 @@ namespace ECS {
                 }
             }
     };
-}
+} //ECS
 
 #endif //RTYPE_SHOOT_HPP

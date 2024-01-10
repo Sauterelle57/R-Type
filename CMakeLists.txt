@@ -119,6 +119,7 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/SystemsManager.hpp
         server/Tools/ECS/Managers/Systems/System.hpp
         server/Tools/ECS/Managers/Systems/Move.hpp
+        server/Tools/ECS/Managers/Systems/AutoMove.hpp
         server/Tools/ECS/Managers/Coordinator/Coordinator.hpp
         server/Tools/Utils/Utils.hpp
         server/Tools/Utils/Utils.cpp
@@ -211,6 +212,7 @@ add_executable(rtype_client
         client/Tools/ECS/Managers/Systems/SystemsManager.hpp
         client/Tools/ECS/Managers/Systems/System.hpp
         client/Tools/ECS/Managers/Systems/Move.hpp
+        client/Tools/ECS/Managers/Systems/AutoMove.hpp
         client/Tools/ECS/Managers/Systems/DrawModel.hpp
         client/Tools/ECS/Managers/Systems/Play.hpp
         client/Tools/ECS/Managers/Systems/Particle.hpp

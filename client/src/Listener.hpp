@@ -243,36 +243,36 @@ namespace RT {
                                 std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
                                 sd->setSoundVolume(0.5f);
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::Model{
-                                                .model = _modelShot
-                                        }
+                                    *_entities->rbegin(),
+                                    ECS::Model{
+                                        .model = _modelShot
+                                    }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::ShaderComponent{
-                                                .shader = _lightShader,
-                                        }
+                                    *_entities->rbegin(),
+                                    ECS::ShaderComponent{
+                                        .shader = _lightShader,
+                                    }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::Particles{
-                                                .particles = std::vector<ECS::Particle>(500),
-                                                .texture = _particleTexture,
-                                                .speed = 75.0f,
-                                                .scaleOffset = 3.0f,
-                                                .positionOffset = {-0.5, 0, 0},
-                                                .lifeTime = 2,
-                                                .spawnRate = 35,
-                                                .surviveChance = 5,
-                                                .initParticle = ECS::ParticleSystem::initParticleConeLeft,
-                                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                                .shader = _shaderParticles
-                                        }
+                                    *_entities->rbegin(),
+                                    ECS::Particles{
+                                        .particles = std::vector<ECS::Particle>(500),
+                                        .texture = _particleTexture,
+                                        .speed = 75.0f,
+                                        .scaleOffset = 3.0f,
+                                        .positionOffset = {-0.5, 0, 0},
+                                        .lifeTime = 2,
+                                        .spawnRate = 35,
+                                        .surviveChance = 5,
+                                        .initParticle = ECS::ParticleSystem::initParticleConeLeft,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                        .shader = _shaderParticles
+                                    }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::Velocity{}
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -286,22 +286,22 @@ namespace RT {
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
                                     ECS::Particles{
-                                            .particles = std::vector<ECS::Particle>(500),
-                                            .texture = _particleTexture,
-                                            .speed = 500.0f,
-                                            .scaleOffset = 3.0f,
-                                            .positionOffset = {-0.5, 0, 0},
-                                            .lifeTime = 10,
-                                            .spawnRate = 2,
-                                            .surviveChance = 0,
-                                            .initParticle = ECS::ParticleSystem::initParticleLineLeft,
-                                            .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                            .shader = _shaderParticles
+                                        .particles = std::vector<ECS::Particle>(500),
+                                        .texture = _particleTexture,
+                                        .speed = 500.0f,
+                                        .scaleOffset = 3.0f,
+                                        .positionOffset = {-0.5, 0, 0},
+                                        .lifeTime = 10,
+                                        .spawnRate = 2,
+                                        .surviveChance = 0,
+                                        .initParticle = ECS::ParticleSystem::initParticleLineLeft,
+                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                        .shader = _shaderParticles
                                     }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::Velocity{}
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -319,10 +319,10 @@ namespace RT {
                                     }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::ShaderComponent{
-                                                .shader = _lightShader,
-                                        }
+                                    *_entities->rbegin(),
+                                    ECS::ShaderComponent{
+                                        .shader = _lightShader,
+                                    }
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -341,8 +341,8 @@ namespace RT {
                                     }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::Velocity{}
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
                                 );
                                 _coordinator->addComponent(
                                     *_entities->rbegin(),
@@ -374,8 +374,8 @@ namespace RT {
                                     }
                                 );
                                 _coordinator->addComponent(
-                                        *_entities->rbegin(),
-                                        ECS::Velocity{}
+                                    *_entities->rbegin(),
+                                    ECS::Velocity{}
                                 );
 
                                 const int nbLights = 4;
@@ -396,25 +396,25 @@ namespace RT {
 
                                     _entities->insert(_entities->end(), _coordinator->createEntity());
                                     _coordinator->addComponent(
-                                            *_entities->rbegin(),
-                                            ECS::LightComponent{
-                                                    .light = CreateLight(LIGHT_POINT, { x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
-                                            }
+                                        *_entities->rbegin(),
+                                        ECS::LightComponent{
+                                                .light = CreateLight(LIGHT_POINT, { x, y, z }, {x, y, z - 1}, color, *_lightShader->getShader())
+                                        }
                                     );
 
                                     _coordinator->addComponent(
-                                            *_entities->rbegin(),
-                                            ECS::Transform{
-                                                    {x, y, z},
-                                                    {rx, ry, rz, ra},
-                                                    1
-                                            }
+                                        *_entities->rbegin(),
+                                        ECS::Transform{
+                                                {x, y, z},
+                                                {rx, ry, rz, ra},
+                                                1
+                                        }
                                     );
                                     _coordinator->addComponent(
-                                            *_entities->rbegin(),
-                                            ECS::Traveling{
-                                                    {0.0175, 0, 0},
-                                            }
+                                        *_entities->rbegin(),
+                                        ECS::Traveling{
+                                                {0.0175, 0, 0},
+                                        }
                                     );
                                     _coordinator->addComponent(
                                         *_entities->rbegin(),

@@ -16,7 +16,7 @@
 #include "renderer/Texture.hpp"
 #include "renderer/Utils.hpp"
 #include "Core.hpp"
-#include "Move.hpp"
+// #include "Move.hpp"
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "MultipleLink.hpp"
@@ -202,6 +202,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::ShaderComponent>();
         _coordinator->registerComponent<ECS::Velocity>();
         _coordinator->registerComponent<ECS::Bdb>();
+        _coordinator->registerComponent<ECS::Trajectory>();
     }
 
     void Core::initSystem() {

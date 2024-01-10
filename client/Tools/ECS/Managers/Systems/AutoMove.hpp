@@ -2,18 +2,18 @@
 ** EPITECH PROJECT, 2023
 ** B-CPP-500-STG-5-2-rtype-noah.gosciniak
 ** File description:
-** Move
+** AutoMove
 */
 
-#ifndef RTYPE_MOVE_HPP
-#define RTYPE_MOVE_HPPserver/Tools/ECS/Managers/Systems/AutoMove.hpp
+#ifndef RTYPE_AutoMove_HPP
+#define RTYPE_AutoMove_HPP
 
 #include "System.hpp"
 #include "Coordinator.hpp"
 #include "ComponentStructs.hpp"
 
 namespace ECS {
-    class Move : public System {
+    class AutoMove : public System {
         public:
             void update() {
                 auto coordinatorPtr = _coordinator.lock();
@@ -23,14 +23,12 @@ namespace ECS {
 
                 // for (auto const &entity : _entities) {
                 //     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                //     auto &trajectory = coordinatorPtr->getComponent<Trajectory>(entity);
 
-                //     transform.position._y -= 0.1;
-                //     if (transform.position._y < 0) {
-                //         transform.position._y = 20;
-                //     }
+                //     transform.position = trajectory.trajectory(transform.position, trajectory.t);
                 // }
             }
     };
 }
 
-#endif //RTYPE_MOVE_HPP
+#endif //RTYPE_AutoMove_HPP
