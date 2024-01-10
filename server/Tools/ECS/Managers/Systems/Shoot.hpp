@@ -40,11 +40,16 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
-                        },
                         .damage = 1,
                         .speed = 0.5f
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
+                        }
                     }
                 );
                 _coordinator->addComponent(
@@ -91,11 +96,16 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
-                        },
                         .damage = 1,
                         .speed = 0.2f
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
+                        }
                     }
                 );
                 _coordinator->addComponent(
@@ -147,10 +157,15 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .t = std::make_shared<float>(start[i]),
-                            .trajectory = trajectories[i],
                             .damage = 1,
                             .speed = 0.5f
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Trajectory {
+                            .t = std::make_shared<float>(start[i]),
+                            .trajectory = trajectories[i]
                         }
                     );
                     _coordinator->addComponent(
@@ -192,12 +207,17 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
+                        .damage = 1,
+                        .speed = 0.5f
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
+                    Trajectory {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             *t += 0.01f;
                             return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
-                        },
-                        .damage = 1,
-                        .speed = 0.5f
+                        }
                     }
                 );
                 _coordinator->addComponent(
@@ -253,10 +273,14 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .direction = directions[i],
-                            .trajectory = trajectories[i],
                             .damage = 1,
                             .speed = 0.5f
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Trajectory {
+                            .trajectory = trajectories[i]
                         }
                     );
                     _coordinator->addComponent(
