@@ -403,7 +403,7 @@ namespace RT {
                                         .texture = _particleTexture,
                                         .speed = 500.0f,
                                         .scaleOffset = 3.0f,
-                                        .positionOffset = {-0.5, 0, 0},
+                                        .positionOffset = {0, 0, 0},
                                         .lifeTime = 10,
                                         .spawnRate = 2,
                                         .surviveChance = 0,

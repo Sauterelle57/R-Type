@@ -172,8 +172,8 @@ namespace ECS {
                         *_entities.rbegin(),
                         ECS::Collider {
                             .bounds = {
-                                    .min = {-1, -1, -1},
-                                    .max = {1, 1, 1}
+                                    .min = {-2, -2, -2},
+                                    .max = {2, 2, 2}
                             }
                         }
                     );
@@ -224,8 +224,8 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Collider {
                         .bounds = {
-                                .min = {-1, -1, -1},
-                                .max = {1, 1, 1}
+                                .min = {-2, -2, -2},
+                                .max = {2, 2, 2}
                         }
                     }
                 );
@@ -258,7 +258,20 @@ namespace ECS {
                     }
                 };
                 std::vector<tls::Vec4> rotations = {{0,0,1,-90}, {0,0,1,-45}, {0,0,1,-135}};
-                std::vector<ECS::Direction> directions = {ECS::Direction::LEFT, ECS::Direction::LEFT_UP, ECS::Direction::LEFT_DOWN};
+                static tls::Matrix matr0 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox0 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::Matrix matr1 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ((90 + 45) * DEG2RAD));
+                static tls::BoundingBox boundingBox1 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::Matrix matr2 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ((90 - 45) * DEG2RAD));
+                static tls::BoundingBox boundingBox2 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox0.applyMatrix(matr0);
+                    boundingBox1.applyMatrix(matr1);
+                    boundingBox2.applyMatrix(matr2);
+                    first = false;
+                }
+                static std::vector<tls::BoundingBox> boundingBoxes = {boundingBox0, boundingBox1, boundingBox2};
 
                 for (int i = 0; i < 3; i++) {
                     _entities.insert(_entities.end(), _coordinator->createEntity());
@@ -269,6 +282,13 @@ namespace ECS {
                             .rotation = rotations[i],
                             .scale = 0.1f
                         }
+                    );
+                    _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::Collider {
+                                    .team = 0,
+                                    .bounds = boundingBoxes[i]
+                            }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
@@ -295,15 +315,6 @@ namespace ECS {
                             ._pc = _pc,
                             .wrapper = _wrapper,
                             .clientController = _clientController
-                        }
-                    );
-                    _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::Collider {
-                            .bounds = {
-                                .min = {-1, -1, -1},
-                                .max = {1, 1, 1}
-                            }
                         }
                     );
                 }

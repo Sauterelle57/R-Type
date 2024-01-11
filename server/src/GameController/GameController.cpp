@@ -299,7 +299,7 @@ namespace rt {
                .damage = 1,
                .speed = 1,
                .durability = 1,
-               .create_projectile = ECS::Shoot::basicShot
+               .create_projectile = ECS::Shoot::tripleShot
            }
        );
 
