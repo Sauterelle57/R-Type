@@ -355,12 +355,6 @@ namespace rt {
                 .mooving = {0, 0, 0}
             }
         );
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
-        //     ECS::Shooter {
-        //         .isShooting = false
-        //     }
-        // );
     }
 
     void GameController::_createEnemy(tls::Vec3 pos, float clockSpeed) {
@@ -520,12 +514,9 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicEnemyShot
            }
         );
-        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
-        // static tls::Matrix matr = tls::MatrixIdentity();
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/boss.glb");
         static bool first = true;
         if (first) {
-            // matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
-            // bdb.applyMatrix(matr);
             first = false;
         }
         _coordinator->addComponent(
@@ -577,11 +568,11 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = .3f
+                .scale = 1.5f
             }
         );
 
-        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Collider {
@@ -622,10 +613,10 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = .2f
+                .scale = 1.f
             }
         );
-        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Collider {
@@ -665,11 +656,11 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnemy({40, 20, 0}, 1.5);
-            _createEnemy({50, 10, 0}, 1.7);
-            _createEnemy({55, 0, 0}, 1.2);
-            _createEnemy({35, -6, 0}, 2);
-            // _createBoss({8, 20, 0}, 1.5, 2);
+            // _createEnemy({40, 20, 0}, 1.5);
+            // _createEnemy({50, 10, 0}, 1.7);
+            // _createEnemy({55, 0, 0}, 1.2);
+            // _createEnemy({35, -6, 0}, 2);
+            _createBoss({8, 20, 0}, 1.5, 2);
         }
     }
 

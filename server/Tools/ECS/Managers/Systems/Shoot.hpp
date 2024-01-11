@@ -20,8 +20,9 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
-                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
-                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(180 * DEG2RAD));
+                // static tls::Matrix matr = tls::MatrixIdentity();
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
                 static bool first = true;
                 if (first) {
                     boundingBox.applyMatrix(matr);
@@ -33,22 +34,22 @@ namespace ECS {
                     *_entities.rbegin(),
                     Transform {
                         .position = _pos,
-                        .rotation = {0, 0, 1, -90},
-                        .scale = 0.15f
+                        .rotation = {1, 0, 0, 180},
+                        .scale = 0.03f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
-                        .speed = 0.5f
+                        .damage = 1,
+                        .speed = 0.2f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Trajectory {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
+                            return tls::Vec3{pos._x + 1, pos._y, pos._z};
                         }
                     }
                 );
@@ -144,6 +145,14 @@ namespace ECS {
                 };
                 std::vector<double> start = {_pos._y, 0.0};
 
+                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox.applyMatrix(matr);
+                    first = false;
+                }
+
                 for (int i = 0; i < 2; i++) {
                     _entities.insert(_entities.end(), _coordinator->createEntity());
                     _coordinator->addComponent(
@@ -151,7 +160,7 @@ namespace ECS {
                         Transform {
                             .position = _pos,
                             .rotation = {0, 0, 1, -90},
-                            .scale = 0.1f
+                            .scale = 0.05f
                         }
                     );
                     _coordinator->addComponent(
@@ -195,13 +204,21 @@ namespace ECS {
             }
 
             static void sinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
+                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox.applyMatrix(matr);
+                    first = false;
+                }
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
                         .position = _pos,
                         .rotation = {0, 0, 1, -90},
-                        .scale = 0.1f
+                        .scale = 0.05f
                     }
                 );
                 _coordinator->addComponent(
@@ -224,8 +241,8 @@ namespace ECS {
                     *_entities.rbegin(),
                     ECS::Collider {
                         .bounds = {
-                                .min = {-2, -2, -2},
-                                .max = {2, 2, 2}
+                            .min = {-2, -2, -2},
+                            .max = {2, 2, 2}
                         }
                     }
                 );
@@ -259,11 +276,11 @@ namespace ECS {
                 };
                 std::vector<tls::Vec4> rotations = {{0,0,1,-90}, {0,0,1,-45}, {0,0,1,-135}};
                 static tls::Matrix matr0 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
-                static tls::BoundingBox boundingBox0 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::BoundingBox boundingBox0 = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
                 static tls::Matrix matr1 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ((90 + 45) * DEG2RAD));
-                static tls::BoundingBox boundingBox1 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::BoundingBox boundingBox1 = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
                 static tls::Matrix matr2 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ((90 - 45) * DEG2RAD));
-                static tls::BoundingBox boundingBox2 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::BoundingBox boundingBox2 = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
                 static bool first = true;
                 if (first) {
                     boundingBox0.applyMatrix(matr0);
@@ -280,7 +297,7 @@ namespace ECS {
                         Transform {
                             .position = _pos,
                             .rotation = rotations[i],
-                            .scale = 0.1f
+                            .scale = 0.05f
                         }
                     );
                     _coordinator->addComponent(

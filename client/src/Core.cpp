@@ -364,7 +364,6 @@ namespace RT {
                 _systems._systemSelfDestruct->update();
                 _systems._systemTraveling->update();
 
-                _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();
                 _window->drawFPS(10, 10);
                 _window->endDrawing();
