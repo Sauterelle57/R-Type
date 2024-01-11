@@ -203,7 +203,7 @@ namespace ECS {
     struct Button {
         Rectangle bounds;
         std::string text;
-        std::function<void()> onClick;
+        std::function<void(void)> onClick;
     };
 
     struct Modal {

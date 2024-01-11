@@ -344,7 +344,7 @@ namespace RT {
 
         std::shared_ptr<RL::IRenderTexture> target = std::make_shared<RL::ZRenderTexture2D>(_window->getRenderWidth(), _window->getRenderHeight());
 
-        while (!_window->shouldClose()) {
+        while (!_window->shouldClose() && !_shouldClose) {
             _systems._systemVelocity->getOldPosition();
             {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
@@ -357,7 +357,7 @@ namespace RT {
                     _listener->addEvent(message);
                 }
             }
-            _listener->onEvent();
+            _listener->onEvent(_shouldClose, _debug);
             if (_clock->isTimeElapsed()) {
                 _systems._systemMusic->update();
 
@@ -368,7 +368,8 @@ namespace RT {
                 _systems._systemLight->update();
                 _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
-                _systems._systemBdb->update();
+                if (_debug)
+                    _systems._systemBdb->update();
                 _systems._systemPlayer->update(_event, _udpClient);
                 _systems._systemVelocity->update();
                 _systems._systemParticles->update(_camera);

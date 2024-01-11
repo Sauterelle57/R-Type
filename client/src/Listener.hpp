@@ -102,7 +102,7 @@ namespace RT {
 
             ~Listener() = default;
             
-            void onEvent() {
+            void onEvent(bool &shouldClose, bool &debug) {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
                     _queue.pop();
@@ -120,7 +120,7 @@ namespace RT {
                             tls::BoundingBox bounds = x.bounds;
                             float scale = x.scale;
                             int type = x.entityType;
-                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds);
+                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds, shouldClose, debug);
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
@@ -138,7 +138,7 @@ namespace RT {
                 _queue.push(event);
             }
 
-            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds) {
+            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds, bool &shouldCLose, bool &debug) {
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
                     ECS::Entity entity = _coordinator->createEntity();
 
@@ -266,7 +266,7 @@ namespace RT {
 
                         sliderBars.push_back(
                             ECS::SlideBar{
-                                {1920 / 2 - 200, 1080 / 2 - 400, 400, 20},
+                                {1920 / 2 - 200, 1080 / 2 - 200, 400, 20},
                                 "Master volume",
                                 "",
                                 50,
@@ -278,13 +278,23 @@ namespace RT {
                             }
                         );
 
-
                         buttons.push_back(
                             ECS::Button{
-                                {1920 / 2 - 200, 1080 / 2 - 200, 400, 100},
-                                "C'est ciao",
-                                []() {
-                                    std::cout << "C'est ciao" << std::endl;
+                                {1920 / 2 - 50, 1080 / 2 + 300, 100, 25},
+                                "Disconnect",
+                                [&]() {
+                                    shouldCLose = true;
+                                }
+                            }
+                        );
+
+                        checkBoxes.push_back(
+                            ECS::CheckBox{
+                                {1920 / 2 - 200, 1080 / 2 -100, 20, 20},
+                                "Debeug mode",
+                                false,
+                                [&](bool value) {
+                                    debug = value;
                                 }
                             }
                         );
@@ -296,7 +306,7 @@ namespace RT {
                                 .height = 1080 - 1080 / 4,
                                 .title = "Options",
                                 .titleWidth = 20,
-                                .color = {115, 90, 160, 50},
+                                .color = {0, 0, 0, 250},
                                 .openClose = [](bool &active) {
                                     if (RL::Utils::isKeyPressed(KEY_ESCAPE)) {
                                         active = !active;
@@ -304,6 +314,7 @@ namespace RT {
                                 },
                                 .slideBars = sliderBars,
                                 .checkBoxes = checkBoxes,
+                                .buttons = buttons
                             }
                         );
 

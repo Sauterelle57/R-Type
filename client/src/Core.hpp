@@ -92,6 +92,9 @@ namespace RT {
 
             std::shared_ptr<std::mutex> _messageQueueMutex;
             std::shared_ptr<std::mutex> _isRunningMutex;
+
+            bool _shouldClose = false;
+            bool _debug = false;
     };
 };
 
