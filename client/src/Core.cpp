@@ -25,6 +25,7 @@
 #include "Menu.hpp"
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
+#include "renderer/RenderTexture.hpp"
 
 namespace RT {
 
@@ -340,16 +341,8 @@ namespace RT {
         initEntities();
 
         SetConfigFlags(FLAG_MSAA_4X_HINT);
-        std::unique_ptr<RL::IShader> blurShader = std::make_unique<RL::ZShader>("./client/resources/shaders/blur.fs");
-        RenderTexture2D target = LoadRenderTexture(_window->getRenderWidth(), _window->getRenderHeight());
 
-        int renderWidthLoc = blurShader->getLocation("renderWidth");
-        float renderWidth = 1920;
-        blurShader->setValue(renderWidthLoc, &renderWidth, SHADER_UNIFORM_FLOAT);
-        int renderHeightLoc = blurShader->getLocation("renderHeight");
-        float renderHeight = 1080;
-        blurShader->setValue(renderHeightLoc, &renderHeight, SHADER_UNIFORM_FLOAT);
-
+        std::shared_ptr<RL::IRenderTexture> target = std::make_shared<RL::ZRenderTexture2D>(_window->getRenderWidth(), _window->getRenderHeight());
 
         while (!_window->shouldClose()) {
             _systems._systemVelocity->getOldPosition();
@@ -367,7 +360,8 @@ namespace RT {
             _listener->onEvent();
             if (_clock->isTimeElapsed()) {
                 _systems._systemMusic->update();
-                BeginTextureMode(target);
+
+                target->beginMode();
                 _window->clearBackground(BLACK);
                 _systems._systemCamera->begin();
                 _systems._systemCamera->update();
@@ -382,11 +376,12 @@ namespace RT {
                 _systems._systemSelfDestruct->update();
                 _systems._systemTraveling->update();
                 _systems._systemCamera->end();
-                EndTextureMode();
+                target->endMode();
 
                 _window->beginDrawing();
-                _window->clearBackground(WHITE);
-                _systems._systemModal->update(_window, blurShader, target);
+                _window->clearBackground(BLACK);
+                target->draw(0, 0, WHITE);
+                _systems._systemModal->update(_window, target);
                 _window->drawFPS(10, 10);
                 _window->endDrawing();
             }

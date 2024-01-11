@@ -267,7 +267,7 @@ namespace RT {
                                 .height = 1080 - 1080 / 4,
                                 .title = "Options",
                                 .titleWidth = 20,
-                                .color = {120, 120, 120, static_cast<unsigned char>(0.5 * 255)},
+                                .color = {115, 90, 160, 50},
                                 .openClose = [](bool &active) {
                                     if (RL::Utils::isKeyPressed(KEY_ESCAPE)) {
                                         active = !active;
