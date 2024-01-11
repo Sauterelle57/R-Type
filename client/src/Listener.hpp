@@ -260,6 +260,22 @@ namespace RT {
                                 ECS::Velocity{}
                         );
 
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Modal {
+                                .width = 1920 - 1920 / 4,
+                                .height = 1080 - 1080 / 4,
+                                .title = "Options",
+                                .titleWidth = 20,
+                                .color = {120, 120, 120, static_cast<unsigned char>(0.5 * 255)},
+                                .openClose = [](bool &active) {
+                                    if (RL::Utils::isKeyPressed(KEY_ESCAPE)) {
+                                        active = !active;
+                                    }
+                                }
+                            }
+                        );
+
                         const int nbLights = 4;
 
                         float _x[nbLights] = { -20.0f, -20.0f, 40.0f, 40.0f };

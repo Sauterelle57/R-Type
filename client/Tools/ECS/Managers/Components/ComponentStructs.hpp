@@ -180,6 +180,16 @@ namespace ECS {
     struct Music {
         std::shared_ptr<RL::IMusic> music;
     };
+
+    struct Modal {
+        int width;
+        int height;
+        std::string title;
+        int titleWidth;
+        bool active = false;
+        Color color;
+        std::function<void(bool &active)> openClose;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

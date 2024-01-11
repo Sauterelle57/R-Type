@@ -235,6 +235,7 @@ add_executable(rtype_client
         client/Tools/ECS/Managers/Systems/Velocity.hpp
         client/Tools/ECS/Managers/Systems/Bdb.hpp
         client/Tools/ECS/Managers/Systems/Music.hpp
+        client/Tools/ECS/Managers/Systems/Modal.hpp
 )
 
 target_include_directories(rtype_server PRIVATE

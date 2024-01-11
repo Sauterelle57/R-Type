@@ -201,6 +201,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::ShaderComponent>();
         _coordinator->registerComponent<ECS::Velocity>();
         _coordinator->registerComponent<ECS::Bdb>();
+        _coordinator->registerComponent<ECS::Modal>();
         _coordinator->registerComponent<ECS::Music>();
     }
 
@@ -221,6 +222,7 @@ namespace RT {
         _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
         _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
         _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
+        _systems._systemModal = _coordinator->registerSystem<ECS::ModalSystem>();
 
 
 //        {
@@ -325,12 +327,29 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Music>());
             _coordinator->setSystemSignature<ECS::MusicSystem>(signature);
         }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Modal>());
+            _coordinator->setSystemSignature<ECS::ModalSystem>(signature);
+        }
     }
 
     void Core::loop() {
         initComponents();
         initSystem();
         initEntities();
+
+        SetConfigFlags(FLAG_MSAA_4X_HINT);
+        std::unique_ptr<RL::IShader> blurShader = std::make_unique<RL::ZShader>("./client/resources/shaders/blur.fs");
+        RenderTexture2D target = LoadRenderTexture(_window->getRenderWidth(), _window->getRenderHeight());
+
+        int renderWidthLoc = blurShader->getLocation("renderWidth");
+        float renderWidth = 1920;
+        blurShader->setValue(renderWidthLoc, &renderWidth, SHADER_UNIFORM_FLOAT);
+        int renderHeightLoc = blurShader->getLocation("renderHeight");
+        float renderHeight = 1080;
+        blurShader->setValue(renderHeightLoc, &renderHeight, SHADER_UNIFORM_FLOAT);
+
 
         while (!_window->shouldClose()) {
             _systems._systemVelocity->getOldPosition();
@@ -348,10 +367,9 @@ namespace RT {
             _listener->onEvent();
             if (_clock->isTimeElapsed()) {
                 _systems._systemMusic->update();
-                _window->beginDrawing();
+                BeginTextureMode(target);
                 _window->clearBackground(BLACK);
                 _systems._systemCamera->begin();
-
                 _systems._systemCamera->update();
                 _systems._systemLight->update();
                 _systems._systemShaderUpdater->update(_camera->getPosition());
@@ -363,9 +381,12 @@ namespace RT {
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
                 _systems._systemTraveling->update();
-
-                _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();
+                EndTextureMode();
+
+                _window->beginDrawing();
+                _window->clearBackground(WHITE);
+                _systems._systemModal->update(_window, blurShader, target);
                 _window->drawFPS(10, 10);
                 _window->endDrawing();
             }
