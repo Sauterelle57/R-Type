@@ -260,6 +260,35 @@ namespace RT {
                                 ECS::Velocity{}
                         );
 
+                        std::vector<ECS::SlideBar> sliderBars;
+                        std::vector<ECS::CheckBox> checkBoxes;
+                        std::vector<ECS::Button> buttons;
+
+                        sliderBars.push_back(
+                            ECS::SlideBar{
+                                {1920 / 2 - 200, 1080 / 2 - 400, 400, 20},
+                                "Master volume",
+                                "",
+                                50,
+                                0,
+                                100,
+                                [](float value) {
+                                    RL::Utils::setMasterVolume(value / 100);
+                                }
+                            }
+                        );
+
+
+                        buttons.push_back(
+                            ECS::Button{
+                                {1920 / 2 - 200, 1080 / 2 - 200, 400, 100},
+                                "C'est ciao",
+                                []() {
+                                    std::cout << "C'est ciao" << std::endl;
+                                }
+                            }
+                        );
+
                         _coordinator->addComponent(
                             *_entities->rbegin(),
                             ECS::Modal {
@@ -272,7 +301,9 @@ namespace RT {
                                     if (RL::Utils::isKeyPressed(KEY_ESCAPE)) {
                                         active = !active;
                                     }
-                                }
+                                },
+                                .slideBars = sliderBars,
+                                .checkBoxes = checkBoxes,
                             }
                         );
 

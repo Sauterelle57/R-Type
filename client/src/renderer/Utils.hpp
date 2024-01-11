@@ -351,6 +351,14 @@ namespace RL {
             static bool isKeyDown(int key) {
                 return IsKeyDown(key);
             };
+
+            static void setMasterVolume(float volume) {
+                return SetMasterVolume(volume);
+            };
+
+            static float getMasterVolume() {
+                return GetMasterVolume();
+            };
     };
 
 } // RayGui
