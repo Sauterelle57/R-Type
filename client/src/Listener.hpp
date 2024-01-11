@@ -28,30 +28,25 @@ namespace RT {
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
                     matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-11, 4.5, 0));
                     _playerModel->_model->transform = matr;
                 }
                 {
                     _tileBMmodel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-//                    Matrix matr = MatrixIdentity();
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-//                    _tileBMmodel->_model->transform = matr;
                 }
                 {
                     _tileModel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-//                    Matrix matr = MatrixIdentity();
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-//                    _tileModel->_model->transform = matr;
                 }
                 {
                     _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
-//                    matr = MatrixMultiply(matr, MatrixTranslate(0, -2 , 0));
                     _modelEnemy->_model->transform = matr;
-////                    _textureEnemy = std::make_shared<RL::ZTexture>(
-//                    "./client/resources/images/duck_text.png");
+                }
+                {
+                    _modelBoss = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                }
+                {
+                    _modelChild = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
                 }
                 {
                     _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
@@ -101,7 +96,7 @@ namespace RT {
             };
 
             ~Listener() = default;
-            
+
             void onEvent() {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
@@ -343,7 +338,33 @@ namespace RT {
                         _coordinator->addComponent(
                                 *_entities->rbegin(),
                                 ECS::Model{
-                                        .model = _modelEnemy,
+                                    .model = _modelEnemy,
+                                }
+                        );
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::ShaderComponent{
+                                        .shader = _lightShader,
+                                }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::BOSS) {
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Model{
+                                    .model = _modelBoss,
+                                }
+                        );
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::ShaderComponent{
+                                        .shader = _lightShader,
+                                }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::CHILD) {
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Model{
+                                    .model = _modelChild,
                                 }
                         );
                         _coordinator->addComponent(
@@ -466,7 +487,7 @@ namespace RT {
                     }
                 } else {
                     auto &transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[ecsID]);
-                    
+
                     transform.position._x = (signature[0] ? position._x : transform.position._x);
                     transform.position._y = (signature[1] ? position._y : transform.position._y);
                     transform.position._z = (signature[2] ? position._z : transform.position._z);
@@ -501,6 +522,8 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _tileBMmodel;
             std::shared_ptr<RL::ZModel> _tileModel;
             std::shared_ptr<RL::ZModel> _modelEnemy;
+            std::shared_ptr<RL::ZModel> _modelBoss;
+            std::shared_ptr<RL::ZModel> _modelChild;
             std::shared_ptr<RL::ZModel> _modelShot;
             std::shared_ptr<RL::ZModel> _modelEnemyShot;
             std::shared_ptr<RL::ZTexture> _textureEnemy;

@@ -30,7 +30,9 @@ namespace rt
         BASIC_ENEMY_SHOT,
         SIN_SHOT,
 
-        BDB
+        BDB,
+        BOSS,
+        CHILD
     };
 
     struct Entity

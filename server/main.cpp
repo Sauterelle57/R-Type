@@ -16,6 +16,7 @@
 #include "ServerController.hpp"
 #include "GameController.hpp"
 #include "Protocol.hpp"
+#include "IServerController.hpp"
 
 void signalHandler(int signum) {
     if (signum == SIGINT) {

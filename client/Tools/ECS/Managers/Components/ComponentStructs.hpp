@@ -103,9 +103,9 @@ namespace ECS {
     };
 
     struct Projectile {
-        int damage;
+        float damage;
         float speed;
-        bool active;
+        bool active = active;
     };
 
     struct Trajectory {
@@ -114,15 +114,17 @@ namespace ECS {
     };
 
     struct Weapon {
-        int damage;
+        float damage;
         float speed;
         float durability;
+        bool autoShoot = false;
+        tls::Clock shootFrequency = tls::Clock(2);
         std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos)> create_projectile;
     };
 
     struct Alive {
-        int life;
-        int max_life;
+        float life;
+        float max_life;
     };
 
     struct Cam {

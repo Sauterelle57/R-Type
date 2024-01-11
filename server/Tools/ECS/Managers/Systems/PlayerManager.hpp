@@ -23,7 +23,9 @@ namespace ECS {
 
                 for (auto const &entity : _entities) {
                     auto &player = coordinatorPtr->getComponent<Player>(entity);
-                    auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
+                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                    // auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
+                    auto &updater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     if (wave == 4) {
@@ -56,7 +58,8 @@ namespace ECS {
                                 std::cerr << "Error extracting values from the string." << std::endl;
                             }
                         } else if (command == "SHOOT") {
-                            shooter.isShooting = true;
+                            // shooter.isShooting = true;
+                            weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
                         }
                     }
                 }

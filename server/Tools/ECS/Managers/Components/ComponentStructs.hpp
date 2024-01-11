@@ -55,7 +55,7 @@ namespace ECS {
     };
 
     struct Projectile {
-        int damage;
+        float damage;
         float speed;
         bool active;
     };
@@ -66,15 +66,17 @@ namespace ECS {
     };
 
     struct Weapon {
-        int damage;
+        float damage;
         float speed;
         float durability;
+        bool autoShoot = false;
+        tls::Clock shootFrequency = tls::Clock(2);
         std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc)> create_projectile;
     };
 
     struct Alive {
-        int life;
-        int max_life;
+        float life;
+        float max_life;
     };
 
     struct Traveling {
@@ -121,14 +123,10 @@ namespace ECS {
         tls::Vec3 mooving = {0,0,0};
     };
 
-    struct Shooter {
-        bool isShooting = false;
-    };
-
-    struct Enemy {
-        bool isGoingUp = false;
-        bool isTurningLeft = false;
-        tls::Clock clock;
+    struct Parent {
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, Entity parent)> create_child;
+        tls::Clock spawnFrequency = tls::Clock(10);
+        int nbChildren = 2;
     };
 }
 

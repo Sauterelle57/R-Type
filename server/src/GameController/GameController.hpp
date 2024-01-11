@@ -24,7 +24,7 @@
 #include "Collider.hpp"
 #include "ClientUpdater.hpp"
 #include "PlayerManager.hpp"
-#include "Enemy.hpp"
+#include "ParentManager.hpp"
 
 namespace rt {
 
@@ -54,9 +54,9 @@ namespace rt {
                 std::shared_ptr<ECS::ColliderSystem> _systemCollider;
                 std::shared_ptr<ECS::ClientUpdaterSystem> _systemClientUpdater;
                 std::shared_ptr<ECS::PlayerManager> _systemPlayerManager;
+                std::shared_ptr<ECS::ParentManager> _systemParent;
                 std::shared_ptr<ECS::Move> _systemMove;
                 std::shared_ptr<ECS::AutoMove> _systemAutoMove;
-                std::shared_ptr<ECS::EnemySystem> _systemEnemy;
             };
         private:
             int i = 0;
@@ -73,7 +73,9 @@ namespace rt {
             void _initializeECSEntities();
 
             void _createPlayer(std::string ip, int port);
-            void _createEnnemy(tls::Vec3 pos, float clockSpeed);
+            void _createEnemy(tls::Vec3 pos, float clockSpeed);
+            void _createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren);
+            void _createChild(ECS::Entity parent);
             void _createTile(tls::Vec3 pos);
             void _createBreakableTile(tls::Vec3 pos);
 
@@ -85,6 +87,7 @@ namespace rt {
 
             System _systems;
             tls::Clock _clock;
+            tls::Clock _clockBossChild;
             tls::Clock _clockEnemySpawn;
             int _waveEnemy;
 

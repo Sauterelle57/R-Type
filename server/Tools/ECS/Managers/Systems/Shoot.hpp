@@ -40,7 +40,7 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .damage = 1,
+                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
                         .speed = 0.5f
                     }
                 );
@@ -74,6 +74,7 @@ namespace ECS {
                     }
                 );
             }
+
             static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
                 static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
                 static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
@@ -82,7 +83,6 @@ namespace ECS {
                     boundingBox.applyMatrix(matr);
                     first = false;
                 }
-
 
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
@@ -96,7 +96,7 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .damage = 1,
+                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
                         .speed = 0.2f
                     }
                 );
@@ -157,7 +157,7 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .damage = 1,
+                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
                             .speed = 0.5f
                         }
                     );
@@ -207,7 +207,7 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .damage = 1,
+                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
                         .speed = 0.5f
                     }
                 );
@@ -293,7 +293,7 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .damage = 1,
+                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
                             .speed = 0.5f
                         }
                     );
@@ -330,11 +330,9 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
                     auto &updater = coordinatorPtr->getComponent<ClientUpdater>(entity);
-                    auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
 
-                    if (shooter.isShooting) {
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
-                        shooter.isShooting = false;
+                    if (weapon.autoShoot && weapon.shootFrequency.isTimeElapsed()) {
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
                     }
                 }
             }
