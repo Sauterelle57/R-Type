@@ -369,7 +369,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {-0.04, 0, 0}
+                .speed = {-0.02, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -442,15 +442,18 @@ namespace rt {
                 .active = true
             }
         );
-        // HERE
-        // _coordinator->addComponent(
-        //     *_entities.rbegin(),
-        //     ECS::Trajectory {
-        //         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-        //             return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
-        //         }
-        //     }
-        // );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Trajectory {
+                .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += 0.003f;
+                    int amplitude = 14;
+                    int height = 13;
+                    int gap = 4;
+                    return tls::Vec3{pos._x, asin(sin((*t) * gap)) * amplitude + height, pos._z};
+                }
+            }
+        );
     }
 
     void GameController::_createChild(ECS::Entity parent) {
