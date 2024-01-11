@@ -18,7 +18,11 @@ FetchContent_Declare(
         assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG ${ASSIMP_VERSION}
+        GIT_SHALLOW TRUE
 )
+
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
 FetchContent_MakeAvailable(assimp)
 
 if (UNIX)
