@@ -34,6 +34,7 @@
 #include "Velocity.hpp"
 #include "Bdb.hpp"
 #include "Music.hpp"
+#include "Modal.hpp"
 #include <mutex>
 
 namespace RT {
@@ -53,6 +54,7 @@ namespace RT {
         std::shared_ptr<ECS::VelocitySystem> _systemVelocity;
         std::shared_ptr<ECS::BdbSystem> _systemBdb;
         std::shared_ptr<ECS::MusicSystem> _systemMusic;
+        std::shared_ptr<ECS::ModalSystem> _systemModal;
     };
 
     class Core {
@@ -90,6 +92,9 @@ namespace RT {
 
             std::shared_ptr<std::mutex> _messageQueueMutex;
             std::shared_ptr<std::mutex> _isRunningMutex;
+
+            bool _shouldClose = false;
+            bool _debug = false;
     };
 };
 

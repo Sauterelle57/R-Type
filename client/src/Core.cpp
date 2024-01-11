@@ -25,6 +25,7 @@
 #include "Menu.hpp"
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
+#include "renderer/RenderTexture.hpp"
 
 namespace RT {
 
@@ -201,6 +202,7 @@ namespace RT {
         _coordinator->registerComponent<ECS::ShaderComponent>();
         _coordinator->registerComponent<ECS::Velocity>();
         _coordinator->registerComponent<ECS::Bdb>();
+        _coordinator->registerComponent<ECS::Modal>();
         _coordinator->registerComponent<ECS::Music>();
     }
 
@@ -221,6 +223,7 @@ namespace RT {
         _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
         _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
         _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
+        _systems._systemModal = _coordinator->registerSystem<ECS::ModalSystem>();
 
 
 //        {
@@ -325,6 +328,11 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Music>());
             _coordinator->setSystemSignature<ECS::MusicSystem>(signature);
         }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Modal>());
+            _coordinator->setSystemSignature<ECS::ModalSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -332,7 +340,11 @@ namespace RT {
         initSystem();
         initEntities();
 
-        while (!_window->shouldClose()) {
+        SetConfigFlags(FLAG_MSAA_4X_HINT);
+
+        std::shared_ptr<RL::IRenderTexture> target = std::make_shared<RL::ZRenderTexture2D>(_window->getRenderWidth(), _window->getRenderHeight());
+
+        while (!_window->shouldClose() && !_shouldClose) {
             _systems._systemVelocity->getOldPosition();
             {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
@@ -345,27 +357,32 @@ namespace RT {
                     _listener->addEvent(message);
                 }
             }
-            _listener->onEvent();
+            _listener->onEvent(_shouldClose, _debug);
             if (_clock->isTimeElapsed()) {
                 _systems._systemMusic->update();
-                _window->beginDrawing();
+
+                target->beginMode();
                 _window->clearBackground(BLACK);
                 _systems._systemCamera->begin();
-
                 _systems._systemCamera->update();
                 _systems._systemLight->update();
                 _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
-                _systems._systemBdb->update();
+                if (_debug)
+                    _systems._systemBdb->update();
                 _systems._systemPlayer->update(_event, _udpClient);
                 _systems._systemVelocity->update();
                 _systems._systemParticles->update(_camera);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
                 _systems._systemTraveling->update();
-
-                _window->drawGrid(10, 1.0f);
                 _systems._systemCamera->end();
+                target->endMode();
+
+                _window->beginDrawing();
+                _window->clearBackground(BLACK);
+                target->draw(0, 0, WHITE);
+                _systems._systemModal->update(_window, target);
                 _window->drawFPS(10, 10);
                 _window->endDrawing();
             }

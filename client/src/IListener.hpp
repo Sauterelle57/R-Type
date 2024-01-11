@@ -15,7 +15,7 @@ namespace RT {
         public:
             virtual ~IListener() = default;
 
-            virtual void onEvent() = 0;
+            virtual void onEvent(bool &shouldClose, bool &debug) = 0;
 
             virtual void addEvent(const std::string &event) = 0;
     };
