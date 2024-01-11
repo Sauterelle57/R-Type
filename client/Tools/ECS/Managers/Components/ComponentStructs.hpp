@@ -26,8 +26,10 @@
 #include "Coordinator.hpp"
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
-#include "rlights.h"
 #include "renderer/IMusic.hpp"
+
+#include "rlights.h"
+
 
 namespace ECS {
     enum Direction {
@@ -179,6 +181,42 @@ namespace ECS {
 
     struct Music {
         std::shared_ptr<RL::IMusic> music;
+    };
+
+    struct SlideBar {
+        Rectangle bounds;
+        std::string textLeft;
+        std::string textRight;
+        float value;
+        float minValue;
+        float maxValue;
+        std::function<void(float value)> onChange;
+    };
+
+    struct CheckBox {
+        Rectangle bounds;
+        std::string text;
+        bool value;
+        std::function<void(bool value)> onChange;
+    };
+
+    struct Button {
+        Rectangle bounds;
+        std::string text;
+        std::function<void(void)> onClick;
+    };
+
+    struct Modal {
+        int width;
+        int height;
+        std::string title;
+        int titleWidth;
+        bool active = false;
+        Color color;
+        std::function<void(bool &active)> openClose;
+        std::vector<SlideBar> slideBars;
+        std::vector<CheckBox> checkBoxes;
+        std::vector<Button> buttons;
     };
 }
 

@@ -21,6 +21,9 @@ namespace RL {
             ZShader(const std::string &vsFileName, const std::string &fsFileName) {
                 _shader = std::make_unique<Shader>(LoadShader(vsFileName.c_str(), fsFileName.c_str()));
             };
+            ZShader(const std::string &fsFileName) {
+                _shader = std::make_unique<Shader>(LoadShader(0, fsFileName.c_str()));
+            };
             ~ZShader() {
                 UnloadShader(*_shader);
             };

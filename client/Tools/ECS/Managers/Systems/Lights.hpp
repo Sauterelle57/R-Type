@@ -10,10 +10,8 @@
 
 #include "System.hpp"
 #include "Coordinator.hpp"
-//#include "ComponentStructs.hpp"
-#include "../Components/ComponentStructs.hpp"
-#include "../../../../src/renderer/Shader.hpp"
-#include "../../../../src/renderer/Window.hpp"
+#include "ComponentStructs.hpp"
+#include "renderer/Shader.hpp"
 
 namespace ECS {
     class LightSystem : public System {

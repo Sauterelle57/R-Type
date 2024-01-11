@@ -343,6 +343,22 @@ namespace RL {
             static Vector2 getMousePosition() {
                 return GetMousePosition();
             }
+
+            static bool isKeyPressed(int key) {
+                return IsKeyPressed(key);
+            };
+
+            static bool isKeyDown(int key) {
+                return IsKeyDown(key);
+            };
+
+            static void setMasterVolume(float volume) {
+                return SetMasterVolume(volume);
+            };
+
+            static float getMasterVolume() {
+                return GetMasterVolume();
+            };
     };
 
 } // RayGui
