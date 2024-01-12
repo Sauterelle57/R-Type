@@ -11,6 +11,7 @@
 #include <iostream>
 #include <queue>
 #include <functional>
+#include <unordered_map>
 #include "Coordinator.hpp"
 
 #include "Utils.hpp"
@@ -68,6 +69,7 @@ namespace rt {
             std::map<rt::PROTOCOL_TYPE, std::function<void(const rt::Protocol &, const std::string &, const int)>> _commands;
 
             void _initializeCommands();
+            void _pushToReceivedList();
             void _initializeECS();
             void _initializeECSComponents();
             void _initializeECSSystems();
@@ -90,6 +92,8 @@ namespace rt {
             int _waveEnemy;
 
             std::shared_ptr<ProtocolController> _pc;
+
+            std::unordered_map<std::string, std::pair<std::pair<std::string, int>, std::pair<long long, std::queue<rt::Protocol>>>> _receivedDataBuffer;
     };
 
 }

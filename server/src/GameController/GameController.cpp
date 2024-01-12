@@ -35,8 +35,41 @@ namespace rt {
         };
     }
 
+    void GameController::_pushToReceivedList() {
+        long long currentTime = tls::Clock::getTimeStamp();
+
+        for (auto &x : _receivedDataBuffer) {
+            rt::ProtocolController pc;
+            tls::Vec3 pos;
+            bool isShooting = false;
+
+            if (((currentTime - x.second.second.first) / 1000000) >= 5) {
+                while (!x.second.second.second.empty()) {
+                    PROTOCOL_TYPE ptype = x.second.second.second.front().protocol;
+                    p_client client = x.second.second.second.front().client;
+                    if (ptype == rt::PROTOCOL_TYPE::MOVE) {
+                        pos += client.move;
+                    } else if (ptype == rt::PROTOCOL_TYPE::SHOOT) {
+                        isShooting = true;
+                    }
+
+                    rt::Protocol p;
+                    p.sender = rt::SENDER_TYPE::CLIENT;
+                    p.protocol = rt::PROTOCOL_TYPE::MOVE;
+                    p.client.move = pos;
+                    // if (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0)
+                    //     std::cout << "isShooting: " << isShooting << std::endl;
+                    _receivedData.push({p, x.second.first.first, x.second.first.second});
+                    x.second.second.second.pop();
+                }                   
+                x.second.second.first = tls::Clock::getTimeStamp();
+            }
+        }
+    }
+
     int GameController::exec() {
         while (1) {
+            _pushToReceivedList();
             // get data from queue
             if (!_receivedData.empty()) {
                 ReceivedData data = _receivedData.front();
@@ -67,7 +100,18 @@ namespace rt {
     }
 
     void GameController::addReceivedData(const rt::Protocol &data, const std::string &ip, const int port) {
-        _receivedData.push({data, ip, port});
+        // std::cout << "=> Pushing to buffer(-1)" << std::endl;
+
+        if (data.sender == rt::SENDER_TYPE::CLIENT && data.protocol == rt::PROTOCOL_TYPE::PING || data.protocol == rt::PROTOCOL_TYPE::ID || data.protocol == rt::PROTOCOL_TYPE::CONNECTION_REQUEST || data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
+            _receivedData.push({data, ip, port});
+            return;
+        }
+        if (_receivedDataBuffer.find(ip + ":" + std::to_string(port)) == _receivedDataBuffer.end()) {
+            _receivedDataBuffer[ip + ":" + std::to_string(port)] = std::make_pair(std::make_pair(ip, port), std::make_pair(tls::Clock::getTimeStamp(), std::queue<rt::Protocol>()));
+        }
+        _receivedDataBuffer[ip + ":" + std::to_string(port)].second.second.push(data);
+        // std::cout << "Received data from " << ip << ":" << port << std::endl;
+        // _receivedData.push({data, ip, port});
     }
 
     void GameController::addWrapper(std::shared_ptr<IWrapper> wrapper) {
