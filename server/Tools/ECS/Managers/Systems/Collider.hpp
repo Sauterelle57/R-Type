@@ -37,7 +37,7 @@ namespace ECS {
 //                            transform.bounds.min.y < transform2.bounds.max.y && transform.bounds.max.y > transform2.bounds.min.y) {
 //                            std::cout << "Collision" << std::endl;
 //                        }
-                        if (collider.bounds.transform(transform.position, {transform.scale, transform.scale, transform.scale}).intersects(collider2.bounds.transform(transform2.position, {transform2.scale, transform2.scale, transform2.scale}))) {
+                        if (collider.bounds.transform(transform.position, transform.scale).intersects(collider2.bounds.transform(transform2.position, transform2.scale))) {
                             if (collider.breakable && collider2.breakable && collider.team != collider2.team) {
                                 {
                                     // std::ostringstream responseStream;

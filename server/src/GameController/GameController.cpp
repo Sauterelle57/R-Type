@@ -252,7 +252,7 @@ namespace rt {
             ECS::Transform {
                 .position = {0.0, 10, 100},
                 .rotation = {0, 0, 0, 0},
-                .scale = 0.5f
+                .scale = {0.5f, 0.5f, 0.5f}
             }
         );
         _coordinator->addComponent(
@@ -303,7 +303,7 @@ namespace rt {
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
-                .scale = 0.5f
+                .scale = {0.5f, 0.5f, 0.5f}
             }
         );
         _coordinator->addComponent(
@@ -318,7 +318,7 @@ namespace rt {
 
         tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
         tls::Matrix matr = tls::MatrixIdentity();
-        matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(90 * DEG2RAD));
+        matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(90 * DEG2RAD));
         matr = tls::MatrixMultiply(matr, tls::MatrixRotateZ(-90 * DEG2RAD));
         bdb.applyMatrix(matr);
 
@@ -371,7 +371,7 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = .6f
+                .scale = {0.6f, 0.6f, 0.6f}
             }
         );
         _coordinator->addComponent(
@@ -389,7 +389,7 @@ namespace rt {
         static tls::Matrix matr = tls::MatrixIdentity();
         static bool first = true;
         if (first) {
-            matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
+            matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(-180 * DEG2RAD));
             bdb.applyMatrix(matr);
             first = false;
         }
@@ -471,7 +471,7 @@ namespace rt {
         // static tls::Matrix matr = tls::MatrixIdentity();
         static bool first = true;
         if (first) {
-            // matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
+            // matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(-180 * DEG2RAD));
             // bdb.applyMatrix(matr);
             first = false;
         }
@@ -500,7 +500,7 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 1.0f
+                .scale = {1.0f, 1.0f, 1.0f}
             }
         );
         _coordinator->addComponent(
@@ -568,7 +568,7 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 1.5f
+                .scale = {1.5f, 1.5f, 1.5f}
             }
         );
 
@@ -613,7 +613,7 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = 1.f
+                .scale = {1.0f, 1.0f, 1.0f}
             }
         );
         static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");

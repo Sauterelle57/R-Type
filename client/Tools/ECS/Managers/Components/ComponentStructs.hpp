@@ -45,18 +45,18 @@ namespace ECS {
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
-        float scale;
+        tls::Vec3 scale;
         BoundingBox bounds{};
         Transform() = default;
-        Transform(float px, float py, float pz, float rx, float ry, float rz, float ra, float s) :
+        Transform(float px, float py, float pz, float rx, float ry, float rz, float ra, float sx, float sy, float sz) :
             position(px, py, pz),
             rotation(rx, ry, rz, ra),
-            scale(s)
+            scale(sx, sy, sz)
         {}
-        Transform(tls::Vec3 pos, tls::Vec4 rot, float s) :
+        Transform(tls::Vec3 pos, tls::Vec4 rot, tls::Vec3 scale) :
             position(pos),
             rotation(rot),
-            scale(s)
+            scale(scale)
         {}
     };
 
@@ -83,14 +83,14 @@ namespace ECS {
         tls::Vec3 speed;
         float alpha;
         bool active;
-        float scale;
+        tls::Vec3 scale;
     };
 
     struct Particles {
         std::vector<Particle> particles;
         std::vector<std::shared_ptr<RL::ZTexture>> texture;
         float speed;
-        float scaleOffset;
+        tls::Vec3 scaleOffset;
         tls::Vec3 positionOffset;
         float lifeTime;
         float spawnRate;

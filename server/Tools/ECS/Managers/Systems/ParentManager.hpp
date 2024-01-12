@@ -41,7 +41,7 @@ namespace ECS {
                 static tls::Matrix matr = tls::MatrixIdentity();
                 static bool first = true;
                 if (first) {
-                    matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
+                    matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(-180 * DEG2RAD));
                     bdb.applyMatrix(matr);
                     first = false;
                 }

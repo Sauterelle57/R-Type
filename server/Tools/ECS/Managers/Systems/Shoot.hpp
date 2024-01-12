@@ -20,12 +20,14 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
-                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(180 * DEG2RAD));
-                // static tls::Matrix matr = tls::MatrixIdentity();
+                // static tls::Matrix scaleMatrix = tls::MatrixScale(1.f, 1.f, 1.f);
+                static tls::Matrix rotationMatrix = tls::MatrixRotateY(180 * DEG2RAD);
+                static tls::Matrix finalTransformation = MatrixMultiply(tls::MatrixIdentity(), rotationMatrix);
+
                 static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
                 static bool first = true;
                 if (first) {
-                    boundingBox.applyMatrix(matr);
+                    boundingBox.applyMatrix(finalTransformation);
                     first = false;
                 }
 
@@ -33,9 +35,9 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = _pos,
-                        .rotation = {1, 0, 0, 180},
-                        .scale = 0.03f
+                        .position = _pos + 10,
+                        .rotation = {0, 1, 0, 180},
+                        .scale = {0.2f, 0.2f, 0.2f}
                     }
                 );
                 _coordinator->addComponent(
@@ -91,7 +93,7 @@ namespace ECS {
                     Transform {
                         .position = _pos,
                         .rotation = {0, 0, 1, 90},
-                        .scale = 0.15f
+                        .scale = {0.15f, 0.15f, 0.15f}
                     }
                 );
                 _coordinator->addComponent(
@@ -160,7 +162,7 @@ namespace ECS {
                         Transform {
                             .position = _pos,
                             .rotation = {0, 0, 1, -90},
-                            .scale = 0.05f
+                            .scale = {0.15f, 0.15f, 0.15f}
                         }
                     );
                     _coordinator->addComponent(
@@ -218,7 +220,7 @@ namespace ECS {
                     Transform {
                         .position = _pos,
                         .rotation = {0, 0, 1, -90},
-                        .scale = 0.05f
+                        .scale = {0.15f, 0.15f, 0.15f}
                     }
                 );
                 _coordinator->addComponent(
@@ -297,7 +299,7 @@ namespace ECS {
                         Transform {
                             .position = _pos,
                             .rotation = rotations[i],
-                            .scale = 0.05f
+                            .scale = {0.15f, 0.15f, 0.15f}
                         }
                     );
                     _coordinator->addComponent(

@@ -50,7 +50,7 @@ namespace ECS {
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
-        float scale;
+        tls::Vec3 scale;
         BoundingBox bounds;
     };
 

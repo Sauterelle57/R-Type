@@ -37,7 +37,7 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &colliderStruct = coordinatorPtr->getComponent<Collider>(entity);
-                    auto collider = colliderStruct.bounds.transform(transform.position, {transform.scale, transform.scale, transform.scale});
+                    auto collider = colliderStruct.bounds.transform(transform.position, transform.scale);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     clu = clientUpdater;
                     clu_available = true;

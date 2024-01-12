@@ -33,7 +33,9 @@ namespace ECS {
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
                 particle.speed = { RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                    RL::Utils::getRandomValue(100, 200) / (particles.speed * 10),
                                    RL::Utils::getRandomValue(-10, 10) / particles.speed };
@@ -51,7 +53,9 @@ namespace ECS {
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
                 particle.speed = {RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                   RL::Utils::getRandomValue(-200, -100) / (particles.speed * 10),
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed};
@@ -73,7 +77,9 @@ namespace ECS {
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed,
                                   RL::Utils::getRandomValue(-10, 10) / particles.speed};
 
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
             }
@@ -87,7 +93,9 @@ namespace ECS {
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
                 float angleRadians = RL::Utils::getRandomValue(0, 360) * (M_PI / 180);
 
                 particle.speed = {
@@ -128,7 +136,9 @@ namespace ECS {
                     particle.speed._z = .1;
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
             }
 
             static void initParticleConeRight(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -145,7 +155,9 @@ namespace ECS {
                                    RL::Utils::getRandomValue(-10, 10) / particles.speed };
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
             }
 
             static void initParticleLineLeft(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -162,7 +174,9 @@ namespace ECS {
                                   0};
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
             }
 
             static void initParticleLineRight(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -174,12 +188,12 @@ namespace ECS {
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 particle.position = transform.position + particles.positionOffset;
-                particle.speed = {RL::Utils::getRandomValue(200, 100) / (particles.speed * 10),
-                                  0,
-                                  0};
+                particle.speed = {RL::Utils::getRandomValue(200, 100) / (particles.speed * 10), 0, 0};
                 particle.alpha = particles.lifeTime;
                 particle.active = true;
-                particle.scale = transform.scale * particles.scaleOffset;
+                particle.scale._x = transform.scale._x * particles.scaleOffset._x;
+                particle.scale._y = transform.scale._y * particles.scaleOffset._y;
+                particle.scale._z = transform.scale._z * particles.scaleOffset._z;
             }
 
             static void initParticleField(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
@@ -263,7 +277,7 @@ namespace ECS {
                 for (auto &particle : particles.particles) {
                     if (particle.active) {
                         if (particles.texture.size() > 0)
-                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, RL::Utils::fade(WHITE, particle.alpha));
+                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale._x, RL::Utils::fade(WHITE, particle.alpha));
                     }
                 }
                 mode.endBlend();
@@ -282,15 +296,15 @@ namespace ECS {
                         if (particles.texture.size() > 1) {
                             if (RL::Utils::getRandomValue(0, 100) < 2) {
                                 if (particle.id != 0) {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale * 4, colors[particle.id]);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale._x, colors[particle.id]);
                                 } else {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale * 4, WHITE);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale._x, WHITE);
                                 }
                             } else {
                                 if (particle.id != 0) {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, colors[particle.id]);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale._x, colors[particle.id]);
                                 } else {
-                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, WHITE);
+                                    camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale._x, WHITE);
                                 }
                             }
                         }
@@ -311,18 +325,22 @@ namespace ECS {
                     if (particle.active) {
                         if (particles.texture.size() > 8) {
                             if (particle.id > 0) {
-                                particle.scale += 0.3;
-                                if (particle.scale > 2.5) {
+                                particle.scale._x += 0.3;
+                                particle.scale._y += 0.3;
+                                particle.scale._z += 0.3;
+                                if (particle.scale._x > 2.5 && particle.scale._y > 2.5 && particle.scale._z > 2.5) {
                                     particle.id *= -1;
                                 }
                             } else if (particle.id < 0) {
                                 particle.speed -= particle.speed * 0.05;
-                                particle.scale -= 0.2;
+                                particle.scale._x -= 0.2;
+                                particle.scale._y -= 0.2;
+                                particle.scale._z -= 0.2;
                             }
-                            if (particle.scale < 0.1) {
-                                particle.scale = 0.1;
+                            if (particle.scale._x < 0.1 && particle.scale._y < 0.1 && particle.scale._z < 0.1) {
+                                particle.scale = {0.1, 0.1, 0.1};
                             }
-                            camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale,  RL::Utils::fade(WHITE, particle.alpha));
+                            camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale._x,  RL::Utils::fade(WHITE, particle.alpha));
                         }
                     }
                 }
@@ -358,7 +376,7 @@ namespace ECS {
                         } else {
                             float distance = sqrt(distanceSquared);
                             float alpha = 2.0f - (distance * 1.5);
-                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, RL::Utils::fade(WHITE, alpha));
+                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale._x, RL::Utils::fade(WHITE, alpha));
                         }
                     }
                 }
