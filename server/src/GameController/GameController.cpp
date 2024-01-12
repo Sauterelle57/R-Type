@@ -36,34 +36,40 @@ namespace rt {
     }
 
     int GameController::exec() {
-        while (1) {
-            // get data from queue
-            if (!_receivedData.empty()) {
-                ReceivedData data = _receivedData.front();
-                // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
-                commandHandler(data.data, data.ip, data.port);
-                // std::cout << "End of traitment" << std::endl;
-                _receivedData.pop();
-            }
-            if (_clock.isTimeElapsed()) {
-                _systems._systemTraveling->update();
-                _systems._systemProjectile->update(_camera);
-                _systems._systemShoot->update();
-                _systems._systemCollider->update();
-                _systems._systemMove->update();
-                _systems._systemAutoMove->update();
-                _systems._systemEnemy->update();
-                _systems._systemClientUpdater->update();
-            }
-            if (_clockEnemySpawn.isTimeElapsed()) {
-                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+        try {
+            while (1) {
+                // get data from queue
+                if (!_receivedData.empty()) {
+                    ReceivedData data = _receivedData.front();
+                    // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
+                    commandHandler(data.data, data.ip, data.port);
+                    // std::cout << "End of traitment" << std::endl;
+                    _receivedData.pop();
                 }
+                if (_clock.isTimeElapsed()) {
+                    _systems._systemTraveling->update();
+                    _systems._systemProjectile->update(_camera);
+                    _systems._systemShoot->update();
+                    _systems._systemCollider->update();
+                    _systems._systemMove->update();
+                    _systems._systemAutoMove->update();
+                    _systems._systemEnemy->update();
+                    _systems._systemClientUpdater->update();
+                }
+                if (_clockEnemySpawn.isTimeElapsed()) {
+                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+                        _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+                    }
 
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
+                    if (_waveEnemy < 8)
+                        _waveEnemy++;
+                }
             }
+        } catch (...) {
+            std::cout << "Error in GameController::exec()" << std::endl;
+            this->exec();
         }
+        return 0;
     }
 
     void GameController::addReceivedData(const rt::Protocol &data, const std::string &ip, const int port) {
