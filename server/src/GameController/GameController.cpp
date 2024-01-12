@@ -51,6 +51,7 @@ namespace rt {
                 _systems._systemShoot->update();
                 _systems._systemCollider->update();
                 _systems._systemMove->update();
+                _systems._systemAutoMove->update();
                 _systems._systemEnemy->update();
                 _systems._systemClientUpdater->update();
             }
@@ -112,6 +113,7 @@ namespace rt {
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Projectile>();
+        _coordinator->registerComponent<ECS::Trajectory>();
         _coordinator->registerComponent<ECS::Collider>();
         _coordinator->registerComponent<ECS::Type>();
         _coordinator->registerComponent<ECS::ClientUpdater>();
@@ -133,6 +135,7 @@ namespace rt {
         _systems._systemClientUpdater = _coordinator->registerSystem<ECS::ClientUpdaterSystem>();
         _systems._systemPlayerManager = _coordinator->registerSystem<ECS::PlayerManager>();
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
+        _systems._systemAutoMove = _coordinator->registerSystem<ECS::AutoMove>();
         _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
         _systems._systemEnemy->init();
 
@@ -150,6 +153,13 @@ namespace rt {
             signature.set(_coordinator->getComponentType<ECS::Type>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
             _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Trajectory>());
+            _coordinator->setSystemSignature<ECS::AutoMove>(signature);
         }
 
         {
@@ -291,9 +301,9 @@ namespace rt {
        );
 
         tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
-        Matrix matr = MatrixIdentity();
-        matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
-        matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
+        tls::Matrix matr = tls::MatrixIdentity();
+        matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(90 * DEG2RAD));
+        matr = tls::MatrixMultiply(matr, tls::MatrixRotateZ(-90 * DEG2RAD));
         bdb.applyMatrix(matr);
 
        _coordinator->addComponent(
@@ -364,10 +374,10 @@ namespace rt {
            }
        );
         static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb");
-        static Matrix matr = MatrixIdentity();
+        static tls::Matrix matr = tls::MatrixIdentity();
         static bool first = true;
         if (first) {
-            matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+            matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
             bdb.applyMatrix(matr);
             first = false;
         }

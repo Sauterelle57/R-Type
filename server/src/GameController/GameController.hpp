@@ -15,6 +15,7 @@
 
 #include "Utils.hpp"
 #include "Move.hpp"
+#include "AutoMove.hpp"
 #include "Traveling.hpp"
 #include "Clock.hpp"
 #include "ClientController.hpp"
@@ -55,6 +56,7 @@ namespace rt {
                 std::shared_ptr<ECS::ClientUpdaterSystem> _systemClientUpdater;
                 std::shared_ptr<ECS::PlayerManager> _systemPlayerManager;
                 std::shared_ptr<ECS::Move> _systemMove;
+                std::shared_ptr<ECS::AutoMove> _systemAutoMove;
                 std::shared_ptr<ECS::EnemySystem> _systemEnemy;
             };
         private:

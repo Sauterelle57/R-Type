@@ -12,6 +12,7 @@
 #include "renderer/Image.hpp"
 #include "renderer/Utils.hpp"
 #include "renderer/Model.hpp"
+#include "renderer/Music.hpp"
 
 namespace RT {
     Menu::Menu() {
@@ -36,6 +37,9 @@ namespace RT {
         std::shared_ptr<RL::IImage> imgCursor = std::make_shared<RL::ZImage>("./client/resources/menu/arrow.png");
         imgCursor->resize(200/3, 200/3);
         _cursor = std::make_shared<RL::ZTexture>(*imgCursor->getImage());
+
+        _music = std::make_shared<RL::ZMusic>("./client/resources/sounds/main.mp3");
+        _music->play();
     }
 
     unsigned int Menu::getPort() const {
@@ -67,6 +71,10 @@ namespace RT {
         Color errorColor = {255, 0, 0, static_cast<unsigned char>((error ? 255 : 0))};
 
         while (status) {
+            if (_music->isReady() && !_music->isPlaying())
+                _music->play();
+            if (_music->isReady())
+                _music->update();
             window->beginDrawing();
             window->clearBackground(RAYWHITE);
 
