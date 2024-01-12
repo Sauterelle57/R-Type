@@ -40,10 +40,12 @@ namespace rt {
 
         for (auto &x : _receivedDataBuffer) {
             rt::ProtocolController pc;
-            tls::Vec3 pos;
+            tls::Vec3 pos = {0, 0, 0};
             bool isShooting = false;
 
             if (((currentTime - x.second.second.first) / 1000000) >= 5) {
+                rt::Protocol p;
+                p.sender = rt::SENDER_TYPE::CLIENT;
                 while (!x.second.second.second.empty()) {
                     PROTOCOL_TYPE ptype = x.second.second.second.front().protocol;
                     p_client client = x.second.second.second.front().client;
@@ -53,15 +55,13 @@ namespace rt {
                         isShooting = true;
                     }
 
-                    rt::Protocol p;
-                    p.sender = rt::SENDER_TYPE::CLIENT;
-                    p.protocol = rt::PROTOCOL_TYPE::MOVE;
-                    p.client.move = pos;
                     // if (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0)
                     //     std::cout << "isShooting: " << isShooting << std::endl;
-                    _receivedData.push({p, x.second.first.first, x.second.first.second});
                     x.second.second.second.pop();
                 }                   
+                p.protocol = rt::PROTOCOL_TYPE::MOVE;
+                p.client.move = pos;
+                _receivedData.push({p, x.second.first.first, x.second.first.second});
                 x.second.second.first = tls::Clock::getTimeStamp();
             }
         }
