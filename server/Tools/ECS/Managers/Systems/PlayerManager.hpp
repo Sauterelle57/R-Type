@@ -46,13 +46,9 @@ namespace ECS {
                             y = data.client.move._y;
                             z = data.client.move._z;
 
-                            if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
-                                // std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
-
-                                player.mooving._x = x * 0.25f;
-                                player.mooving._y = y * 0.25f;
-                                player.mooving._z = z * 0.25f;
-                            }
+                            player.mooving._x = x * 0.25f;
+                            player.mooving._y = y * 0.25f;
+                            player.mooving._z = z * 0.25f;
                         } else if (data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
                             shooter.isShooting = true;
                         }
