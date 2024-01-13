@@ -124,9 +124,12 @@ namespace RT {
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
-                            _coordinator->destroyEntity(_serverToClient[ecsID.first]);
+                            if (!_deletedIDAlreadyRemoved.contains(ecsID.second)) {
+                                _coordinator->destroyEntity(_serverToClient[ecsID.first]);
+                                _deletedIDAlreadyRemoved.insert(ecsID.second);
+                            }
                         }
-                        
+
                         pc.actionId(receivedData.packetId);
                         auto toSend = pc.getProtocol();
                         _udpClient->sendStruct(toSend);
@@ -569,6 +572,7 @@ namespace RT {
             std::shared_ptr<RL::IShader> _lightShader;
             std::shared_ptr<RL::IShader> _shaderParticles;
             std::shared_ptr<RL::ZModel> _sphereModel;
+            std::set<long long> _deletedIDAlreadyRemoved;
 ;
     };
 }
