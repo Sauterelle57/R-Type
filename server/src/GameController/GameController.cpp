@@ -514,7 +514,7 @@ namespace rt {
             ECS::Transform {
                 .position = trajectory.trajectory(transform.position, ownTrajectory.t),
                 .rotation = {0, 0, 0, 0},
-                .scale = {0.25f, 0.25f, 0.25f}
+                .scale = {2.f, 2.f, 2.f}
             }
         );
         if (armed) {
@@ -531,7 +531,7 @@ namespace rt {
             );
         }
 
-        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/boss_body2.glb");
         static bool first = true;
         if (first) {
             first = false;
@@ -576,7 +576,7 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = {0.5f, 0.5f, 0.5f}
+                .scale = {2.5f, 2.5f, 2.5f}
             }
         );
         _coordinator->addComponent(
@@ -590,7 +590,7 @@ namespace rt {
                .create_projectile = ECS::Shoot::basicEnemyShot
            }
         );
-        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/boss2.glb");
         static bool first = true;
         if (first) {
             first = false;
@@ -625,17 +625,6 @@ namespace rt {
             ECS::Trajectory {
                 .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                     (*t) += speed;
-                    // static int amplitude = 11;
-                    // static int height = 10;
-                    // static float gap = 4;
-                    // static int maxX = 50;
-                    // static int minX = 25;
-                    // static float step = 0.05f;
-                    // if (pos._x > maxX)
-                    //     step = 0.05f;
-                    // else if (pos._x < minX)
-                    //     step = -0.05f;
-                    // return tls::Vec3{pos._x - step, asin(sin((*t) * gap)) * amplitude + height, pos._z};
                     static float radiusH = 10;
                     static float radiusV = 20;
                     return tls::Vec3{40 + radiusH * cos((*t) * 0.2), 7 + radiusV * sin((*t) * 0.2), pos._z};
@@ -643,10 +632,10 @@ namespace rt {
             }
         );
 
-        static float offset = -speed*6;
+        static float offset = -speed*9;
         for (int i = 0; i < nbChildren; i++) {
             _createChild(*_entities.rbegin(), offset, i % 3 == 2 ? true : false);
-            offset -= speed*6;
+            offset -= speed*9;
         }
     }
 
@@ -756,7 +745,7 @@ namespace rt {
             // _createEnemy({50, 0, 0}, 4.5);
             // _createEnemy({55, 0, 0}, 1.2);
             // _createEnemy({35, -6, 0}, 2);
-            _createBoss({50, 0, 0}, 1.5, 10);
+            _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 

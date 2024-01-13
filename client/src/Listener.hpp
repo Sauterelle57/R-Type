@@ -43,10 +43,10 @@ namespace RT {
                     _modelEnemy->_model->transform = matr;
                 }
                 {
-                    _modelBoss = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                    _modelBoss = std::make_shared<RL::ZModel>("./client/resources/models/boss2.glb");
                 }
                 {
-                    _modelChild = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
+                    _modelChild = std::make_shared<RL::ZModel>("./client/resources/models/boss_body2.glb");
                 }
                 {
                     _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/missile.glb");
