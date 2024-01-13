@@ -1,0 +1,23 @@
+build
+.dnp
+.github
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+ClientExecutable
+rtype_client
+ServerExecutable
+rtype_server
+
+.idea
+cmake-build-debug
+.vscode
+
+build/
+_deps/
+CPackConfig.cmake
+CPackSourceConfig.cmake

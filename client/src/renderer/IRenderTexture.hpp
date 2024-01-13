@@ -14,6 +14,9 @@ namespace RL {
         public:
             virtual ~IRenderTexture() = default;
             virtual bool isReady() = 0;
+            virtual void draw(int posX, int posY, Color tint) = 0;
+            virtual void endMode() = 0;
+            virtual void beginMode() = 0;
     };
 
 } // RL

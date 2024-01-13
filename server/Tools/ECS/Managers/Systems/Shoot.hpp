@@ -19,7 +19,15 @@ namespace ECS {
 
     class Shoot : public System {
         public:
-            static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+            static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
+                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox.applyMatrix(matr);
+                    first = false;
+                }
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -32,17 +40,23 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
-                        },
                         .damage = 1,
                         .speed = 0.5f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x + 1.5, pos._y, pos._z};
+                        }
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
                     ECS::Collider {
-                        0
+                        .team = 0,
+                        .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
@@ -54,12 +68,22 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::ClientUpdater {
+                        ._pc = _pc,
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }
                 );
             }
-            static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+            static void basicEnemyShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
+                static tls::Matrix matr = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox.applyMatrix(matr);
+                    first = false;
+                }
+
+
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -72,17 +96,23 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
-                        },
                         .damage = 1,
                         .speed = 0.2f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
+                        }
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
                     ECS::Collider {
-                        1
+                        .team = 1,
+                        .bounds = boundingBox
                     }
                 );
                 _coordinator->addComponent(
@@ -94,13 +124,14 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::ClientUpdater {
+                        ._pc = _pc,
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }
                 );
             }
 
-            static void doubleSinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+            static void doubleSinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         *t += 0.01f;
@@ -126,15 +157,24 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .t = std::make_shared<float>(start[i]),
-                            .trajectory = trajectories[i],
                             .damage = 1,
                             .speed = 0.5f
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
+                        Trajectory {
+                            .t = std::make_shared<float>(start[i]),
+                            .trajectory = trajectories[i]
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
                         ECS::Collider {
+                            .bounds = {
+                                    .min = {-2, -2, -2},
+                                    .max = {2, 2, 2}
+                            }
                         }
                     );
                     _coordinator->addComponent(
@@ -146,6 +186,7 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::ClientUpdater {
+                            ._pc = _pc,
                             .wrapper = _wrapper,
                             .clientController = _clientController
                         }
@@ -153,7 +194,7 @@ namespace ECS {
                 }
             }
 
-            static void sinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+            static void sinShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
                 _entities.insert(_entities.end(), _coordinator->createEntity());
                 _coordinator->addComponent(
                     *_entities.rbegin(),
@@ -166,17 +207,26 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            *t += 0.01f;
-                            return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
-                        },
                         .damage = 1,
                         .speed = 0.5f
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
+                    Trajectory {
+                        .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                            *t += 0.01f;
+                            return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
+                        }
+                    }
+                );
+                _coordinator->addComponent(
+                    *_entities.rbegin(),
                     ECS::Collider {
+                        .bounds = {
+                                .min = {-2, -2, -2},
+                                .max = {2, 2, 2}
+                        }
                     }
                 );
                 _coordinator->addComponent(
@@ -188,13 +238,14 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     ECS::ClientUpdater {
+                        ._pc = _pc,
                         .wrapper = _wrapper,
                         .clientController = _clientController
                     }
                 );
             }
 
-            static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper) {
+            static void tripleShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
                 std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
                     [](tls::Vec3 pos, std::shared_ptr<float> t) {
                         return tls::Vec3{pos._x + 1, pos._y, pos._z};
@@ -207,7 +258,20 @@ namespace ECS {
                     }
                 };
                 std::vector<tls::Vec4> rotations = {{0,0,1,-90}, {0,0,1,-45}, {0,0,1,-135}};
-                std::vector<ECS::Direction> directions = {ECS::Direction::LEFT, ECS::Direction::LEFT_UP, ECS::Direction::LEFT_DOWN};
+                static tls::Matrix matr0 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ(90 * DEG2RAD));
+                static tls::BoundingBox boundingBox0 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::Matrix matr1 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ((90 + 45) * DEG2RAD));
+                static tls::BoundingBox boundingBox1 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static tls::Matrix matr2 = tls::MatrixMultiply(tls::MatrixIdentity(), tls::MatrixRotateZ((90 - 45) * DEG2RAD));
+                static tls::BoundingBox boundingBox2 = tls::loadModelAndGetBoundingBox("./client/resources/models/boom.glb");
+                static bool first = true;
+                if (first) {
+                    boundingBox0.applyMatrix(matr0);
+                    boundingBox1.applyMatrix(matr1);
+                    boundingBox2.applyMatrix(matr2);
+                    first = false;
+                }
+                static std::vector<tls::BoundingBox> boundingBoxes = {boundingBox0, boundingBox1, boundingBox2};
 
                 for (int i = 0; i < 3; i++) {
                     _entities.insert(_entities.end(), _coordinator->createEntity());
@@ -220,12 +284,23 @@ namespace ECS {
                         }
                     );
                     _coordinator->addComponent(
+                            *_entities.rbegin(),
+                            ECS::Collider {
+                                    .team = 0,
+                                    .bounds = boundingBoxes[i]
+                            }
+                    );
+                    _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                            .direction = directions[i],
-                            .trajectory = trajectories[i],
                             .damage = 1,
                             .speed = 0.5f
+                        }
+                    );
+                    _coordinator->addComponent(
+                        *_entities.rbegin(),
+                        Trajectory {
+                            .trajectory = trajectories[i]
                         }
                     );
                     _coordinator->addComponent(
@@ -237,13 +312,9 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         ECS::ClientUpdater {
+                            ._pc = _pc,
                             .wrapper = _wrapper,
                             .clientController = _clientController
-                        }
-                    );
-                    _coordinator->addComponent(
-                        *_entities.rbegin(),
-                        ECS::Collider {
                         }
                     );
                 }
@@ -262,7 +333,7 @@ namespace ECS {
                     auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
 
                     if (shooter.isShooting) {
-                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{-2, 2.7, 0}, updater.clientController, updater.wrapper);
+                        weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
                         shooter.isShooting = false;
                     }
                 }

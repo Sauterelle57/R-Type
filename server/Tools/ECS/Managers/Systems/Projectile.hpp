@@ -47,23 +47,24 @@ namespace ECS {
                 auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                 auto clientIDS = clientUpdater.clientController->getClients();
 
-                tls::Vec3 position = transform.position;
+                // tls::Vec3 position = transform.position;
 
-                transform.position = projectile.trajectory(transform.position, projectile.t);
+                // transform.position = projectile.trajectory(transform.position, projectile.t);
 
-                tls::Vec3 newPosition = transform.position;
+                // tls::Vec3 newPosition = transform.position;
 
-                float angle = std::atan2(newPosition._y - position._y, newPosition._x - position._x) * 180 / M_PI;
+                // float angle = std::atan2(newPosition._y - position._y, newPosition._x - position._x) * 180 / M_PI;
 
-                transform.rotation = {0, 0, 1, angle - 90};
+                // transform.rotation = {0, 0, 1, angle - 90};
 
                 if (std::abs(camTransform.position._x - transform.position._x) > 100 || std::abs(camTransform.position._y - transform.position._y) > 100 ||
                         std::abs(camTransform.position._x - transform.position._x) < -100 || std::abs(camTransform.position._y - transform.position._y) < -100) {
                     for (auto const &clientID : clientIDS) {
-                        std::ostringstream responseStream;
-                        responseStream << entity << " DESTROY";
-                        std::string response = responseStream.str();
-                        clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
+                        // std::ostringstream responseStream;
+                        // responseStream << entity << " DESTROY";
+                        clientUpdater._pc->deleteEntity(entity, tls::Clock::getTimeStamp());
+                        // std::string response = responseStream.str();
+                        // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                     }
                     coordinatorPtr->destroyEntity(entity);
                     return;

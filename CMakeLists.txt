@@ -13,6 +13,18 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
+set(ASSIMP_VERSION v5.0.1)
+FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG ${ASSIMP_VERSION}
+        GIT_SHALLOW TRUE
+)
+
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(assimp)
+
 if (UNIX)
     set(RAYLIB_VERSION 5.0)
     find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
@@ -87,12 +99,14 @@ add_executable(rtype_server
         server/src/Client/Client.cpp
         server/src/Client/Client.hpp
         server/src/Client/IClient.hpp
+        server/src/Client/DeltaManager.hpp
         server/src/Client/ClientController.hpp
         # Asio Wrapper
         server/src/AsioWrapper/IWrapper.hpp
         server/src/AsioWrapper/AsioWrapper.cpp
         server/src/AsioWrapper/AsioWrapper.hpp
         protocol/Protocol.hpp
+        protocol/EntityData.hpp
         server/Tools/ECS/Managers/Systems/Projectile.hpp
         server/Tools/Vec3/IVec3.hpp
         server/Tools/Vec4/IVec4.hpp
@@ -109,6 +123,7 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/SystemsManager.hpp
         server/Tools/ECS/Managers/Systems/System.hpp
         server/Tools/ECS/Managers/Systems/Move.hpp
+        server/Tools/ECS/Managers/Systems/AutoMove.hpp
         server/Tools/ECS/Managers/Coordinator/Coordinator.hpp
         server/Tools/Utils/Utils.hpp
         server/Tools/Utils/Utils.cpp
@@ -122,6 +137,8 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
         server/Tools/ECS/Managers/Systems/Enemy.hpp
+        server/Tools/collisions/Collisions.hpp
+        server/Tools/collisions/Collisions.cpp
 )
 
 add_executable(rtype_client
@@ -173,6 +190,7 @@ add_executable(rtype_client
         client/src/Core.hpp
         client/src/Core.cpp
         protocol/Protocol.hpp
+        protocol/EntityData.hpp
         client/src/UdpClient/IUdpClient.hpp
         client/src/UdpClient/UdpClient.hpp
         client/src/UdpClient/UdpClient.cpp
@@ -216,6 +234,13 @@ add_executable(rtype_client
         client/src/Menu.cpp
         client/src/Menu.hpp
         client/Tools/ECS/Managers/Systems/SelfDestruct.hpp
+        client/Tools/ECS/Managers/Systems/Lights.hpp
+        client/Tools/ECS/Managers/Systems/ShaderUpdater.hpp
+        client/Tools/ECS/Managers/Systems/Velocity.hpp
+        client/Tools/ECS/Managers/Systems/Bdb.hpp
+        client/Tools/ECS/Managers/Systems/Music.hpp
+        client/Tools/ECS/Managers/Systems/Modal.hpp
+        client/Tools/ECS/Managers/Systems/Modal.cpp
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -235,6 +260,8 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/protocol
+        ${CMAKE_SOURCE_DIR}/server/Tools/collisions
 )
 
 target_include_directories(rtype_client PRIVATE
@@ -260,10 +287,13 @@ target_include_directories(rtype_client PRIVATE
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Entities
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Systems
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Coordinator
+        ${CMAKE_SOURCE_DIR}/protocol
+        ${CMAKE_SOURCE_DIR}/RayLibExternalIncludes
 )
 #set(raylib_VERBOSE 1)
 
-target_link_libraries(rtype_client PRIVATE raylib sfml-network)
+target_link_libraries(rtype_client PRIVATE raylib sfml-network assimp)
+target_link_libraries(rtype_server PRIVATE assimp)
 
 
 # Web Configurations

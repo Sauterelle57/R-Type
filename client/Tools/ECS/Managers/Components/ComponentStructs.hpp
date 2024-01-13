@@ -26,6 +26,10 @@
 #include "Coordinator.hpp"
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
+#include "renderer/IMusic.hpp"
+
+#include "rlights.h"
+
 
 namespace ECS {
     enum Direction {
@@ -96,16 +100,19 @@ namespace ECS {
         bool hasStarted = false;
         float surviveChance;
         std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle)> initParticle;
-        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader)> drawParticle;
+        std::function<void(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera)> drawParticle;
+        std::shared_ptr<RL::IShader> shader;
     };
 
     struct Projectile {
-        std::shared_ptr<float> t = std::make_shared<float>(0.0f);
-        Direction direction = ECS::Direction::LEFT;
-        std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
         int damage;
         float speed;
         bool active;
+    };
+
+    struct Trajectory {
+        std::shared_ptr<float> t = std::make_shared<float>(0.0f);
+        std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
     };
 
     struct Weapon {
@@ -152,6 +159,65 @@ namespace ECS {
         tls::Clock timer;
     };
 
+    struct LightComponent {
+        Light light;
+    };
+
+    struct ShaderComponent {
+        std::shared_ptr<RL::IShader> shader;
+    };
+
+    struct Velocity {
+        tls::Vec3 speed = {0, 0, 0};
+        tls::Vec3 oldPosition = {0, 0, 0};
+    };
+
+    struct Bdb {
+        BoundingBox bounds = {
+            {0, 0, 0},
+            {0, 0, 0}
+        };
+    };
+
+    struct Music {
+        std::shared_ptr<RL::IMusic> music;
+    };
+
+    struct SlideBar {
+        Rectangle bounds;
+        std::string textLeft;
+        std::string textRight;
+        float value;
+        float minValue;
+        float maxValue;
+        std::function<void(float value)> onChange;
+    };
+
+    struct CheckBox {
+        Rectangle bounds;
+        std::string text;
+        bool value;
+        std::function<void(bool value)> onChange;
+    };
+
+    struct Button {
+        Rectangle bounds;
+        std::string text;
+        std::function<void(void)> onClick;
+    };
+
+    struct Modal {
+        int width;
+        int height;
+        std::string title;
+        int titleWidth;
+        bool active = false;
+        Color color;
+        std::function<void(bool &active)> openClose;
+        std::vector<SlideBar> slideBars;
+        std::vector<CheckBox> checkBoxes;
+        std::vector<Button> buttons;
+    };
 }
 
 #endif //RTYPE_COMPONENTSTRUCTS_HPP

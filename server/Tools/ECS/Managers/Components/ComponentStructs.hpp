@@ -22,6 +22,7 @@
 #include "Coordinator.hpp"
 #include "ClientController.hpp"
 #include "IWrapper.hpp"
+#include "Collisions.hpp"
 
 namespace ECS {
     enum Direction {
@@ -54,19 +55,21 @@ namespace ECS {
     };
 
     struct Projectile {
-        std::shared_ptr<float> t = std::make_shared<float>(0.0f);
-        Direction direction = ECS::Direction::LEFT;
-        std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
         int damage;
         float speed;
         bool active;
+    };
+
+    struct Trajectory {
+        std::shared_ptr<float> t = std::make_shared<float>(0.0f);
+        std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
     };
 
     struct Weapon {
         int damage;
         float speed;
         float durability;
-        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper)> create_projectile;
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc)> create_projectile;
     };
 
     struct Alive {
@@ -97,9 +100,12 @@ namespace ECS {
         bool breakable = true;
         bool movable = true;
         tls::Vec3 velocity;
+
+        tls::BoundingBox bounds;
     };
 
     struct ClientUpdater {
+        std::shared_ptr<rt::ProtocolController> _pc;
         std::shared_ptr<rt::IWrapper> wrapper;
         std::shared_ptr<rt::ClientController> clientController;
     };
@@ -121,6 +127,7 @@ namespace ECS {
 
     struct Enemy {
         bool isGoingUp = false;
+        bool isTurningLeft = false;
         tls::Clock clock;
     };
 }

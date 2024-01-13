@@ -1,0 +1,24 @@
+name: RType CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feat/*
+      - feat/*/*
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Build the project
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Rtype solution
+        run: |
+          docker build -t build-src .

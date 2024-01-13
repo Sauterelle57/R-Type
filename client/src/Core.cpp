@@ -23,6 +23,9 @@
 #include "Listener.hpp"
 #include "renderer/Audio.hpp"
 #include "Menu.hpp"
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
+#include "renderer/RenderTexture.hpp"
 
 namespace RT {
 
@@ -65,6 +68,7 @@ namespace RT {
         _receivedMessages = std::make_shared<std::queue<rt::ReceivedMessage>>();
         _udpClient = std::make_shared<rt::UdpClient>();
         _messageQueueMutex = std::make_shared<std::mutex>();
+
         _isRunningMutex = std::make_shared<std::mutex>();
         {
             std::lock_guard<std::mutex> lock(*_isRunningMutex);
@@ -76,16 +80,20 @@ namespace RT {
         Menu menu;
         menu.loop(_window, _event, false);
         bool canReach = false;
+        rt::ProtocolController pc;
+        pc.actionPing();
+        auto dt1 = pc.getProtocol();
         while (!canReach) {
             _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex, _isRunningMutex);
             tls::Clock tryingToConnect(0.1);
             while (!tryingToConnect.isTimeElapsed() && !canReach) {
-                _udpClient->send("PING");
+                _udpClient->sendStruct(dt1);
                 {
                     std::lock_guard<std::mutex> lock(*_messageQueueMutex);
                     while (!_receivedMessages->empty()) {
                         std::string message = _receivedMessages->front().message;
-                        if (message == "OK") {
+                        auto data = rt::ProtocolController::deserialize(message);
+                        if (data.sender == rt::SENDER_TYPE::SERVER && data.protocol == rt::PROTOCOL_TYPE::OK) {
                             canReach = true;
                         }
                         _receivedMessages->pop();
@@ -100,17 +108,17 @@ namespace RT {
 
                 _udpClientThread->join();
                 _isRunning = std::make_shared<bool>(true);
-
-
-
                 _udpClientThread = std::make_unique<std::thread>(([&]() {
                     _udpClient->run(_isRunning);
                 }));
                 menu.loop(_window, _event, true);
             }
         }
-        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera);
-        _udpClient->send("CONNECTION_REQUEST");
+        pc.init();
+        pc.actionConnectionRequest();
+        auto _dataToSend = pc.getProtocol();
+        _udpClient->sendStruct(_dataToSend);
+        _listener = std::make_unique<Listener>(_coordinator, _entities, _camera, _udpClient);
         _clock = std::make_unique<tls::Clock>(0.01);
     }
 
@@ -190,15 +198,24 @@ namespace RT {
         _coordinator->registerComponent<ECS::Player>();
         _coordinator->registerComponent<ECS::Particles>();
         _coordinator->registerComponent<ECS::Projectile>();
+        _coordinator->registerComponent<ECS::Trajectory>();
         _coordinator->registerComponent<ECS::Weapon>();
         _coordinator->registerComponent<ECS::Cam>();
         _coordinator->registerComponent<ECS::Traveling>();
         _coordinator->registerComponent<ECS::MultipleLink>();
         _coordinator->registerComponent<ECS::Sound>();
         _coordinator->registerComponent<ECS::SelfDestruct>();
+        _coordinator->registerComponent<ECS::LightComponent>();
+        _coordinator->registerComponent<ECS::ShaderComponent>();
+        _coordinator->registerComponent<ECS::Velocity>();
+        _coordinator->registerComponent<ECS::Bdb>();
+        _coordinator->registerComponent<ECS::Modal>();
+        _coordinator->registerComponent<ECS::Music>();
     }
 
     void Core::initSystem() {
+        _systems._systemMusic = _coordinator->registerSystem<ECS::MusicSystem>();
+
 //        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
@@ -208,7 +225,12 @@ namespace RT {
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
-//        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemLight = _coordinator->registerSystem<ECS::LightSystem>();
+        _systems._systemTraveling = _coordinator->registerSystem<ECS::TravelingSystem>();
+        _systems._systemShaderUpdater = _coordinator->registerSystem<ECS::ShaderUpdaterSystem>();
+        _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
+        _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
+        _systems._systemModal = _coordinator->registerSystem<ECS::ModalSystem>();
 
 
 //        {
@@ -236,6 +258,7 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Particles>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
 
@@ -272,12 +295,51 @@ namespace RT {
             _coordinator->setSystemSignature<ECS::SelfDestructSystem>(signature);
         }
 
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Traveling>());
-//            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
-//        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::LightComponent>());
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            _coordinator->setSystemSignature<ECS::LightSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Traveling>());
+            _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            _coordinator->setSystemSignature<ECS::ShaderUpdaterSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            signature.set(_coordinator->getComponentType<ECS::Velocity>());
+            _coordinator->setSystemSignature<ECS::VelocitySystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Bdb>());
+            _coordinator->setSystemSignature<ECS::BdbSystem>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Music>());
+            _coordinator->setSystemSignature<ECS::MusicSystem>(signature);
+        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Modal>());
+            _coordinator->setSystemSignature<ECS::ModalSystem>(signature);
+        }
     }
 
     void Core::loop() {
@@ -285,12 +347,12 @@ namespace RT {
         initSystem();
         initEntities();
 
-        std::shared_ptr<RL::ZShader> shader = std::make_shared<RL::ZShader>("./client/resources/shaders/particle.vs", "./client/resources/shaders/particle.fs");
-        int glowIntensityLoc = shader->getLocation("glowIntensity");
-        float glowIntensity = 3.0f;
-        shader->setValue(glowIntensityLoc, &glowIntensity, SHADER_UNIFORM_FLOAT);
+        SetConfigFlags(FLAG_MSAA_4X_HINT);
 
-        while (!_window->shouldClose()) {
+        std::shared_ptr<RL::IRenderTexture> target = std::make_shared<RL::ZRenderTexture2D>(_window->getRenderWidth(), _window->getRenderHeight());
+
+        while (!_window->shouldClose() && !_shouldClose) {
+            _systems._systemVelocity->getOldPosition();
             {
                 std::lock_guard<std::mutex> lock(*_messageQueueMutex);
                 while (!_receivedMessages->empty()) {
@@ -302,21 +364,32 @@ namespace RT {
                     _listener->addEvent(message);
                 }
             }
-            _listener->onEvent();
+            _listener->onEvent(_shouldClose, _debug);
             if (_clock->isTimeElapsed()) {
-                _window->beginDrawing();
+                _systems._systemMusic->update();
+
+                target->beginMode();
                 _window->clearBackground(BLACK);
                 _systems._systemCamera->begin();
-
                 _systems._systemCamera->update();
+                _systems._systemLight->update();
+                _systems._systemShaderUpdater->update(_camera->getPosition());
                 _systems._systemDrawModel->update();
+                if (_debug)
+                    _systems._systemBdb->update();
                 _systems._systemPlayer->update(_event, _udpClient);
-                _systems._systemParticles->update(_camera, shader);
+                _systems._systemVelocity->update();
+                _systems._systemParticles->update(_camera);
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
-
-                _window->drawGrid(10, 1.0f);
+                _systems._systemTraveling->update();
                 _systems._systemCamera->end();
+                target->endMode();
+
+                _window->beginDrawing();
+                _window->clearBackground(BLACK);
+                target->draw(0, 0, WHITE);
+                _systems._systemModal->update(_window, target);
                 _window->drawFPS(10, 10);
                 _window->endDrawing();
             }

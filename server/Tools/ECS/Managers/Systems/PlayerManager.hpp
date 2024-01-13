@@ -11,11 +11,12 @@
 #include "System.hpp"
 #include "Coordinator.hpp"
 #include "ComponentStructs.hpp"
+#include "Protocol.hpp"
 
 namespace ECS {
     class PlayerManager : public System {
         public:
-            void update(const std::string &data, const std::string &ip, const int port, int wave) {
+            void update(const rt::Protocol &data, const std::string &ip, const int port, int wave) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     return;
@@ -38,30 +39,26 @@ namespace ECS {
 
 
                     if (type.ip == ip && type.port == port) {
-                        std::istringstream iss(data);
-                        std::string command;
-                        iss >> command;
-
-                        if (command == "MOVE") {
+                        if (data.protocol == rt::PROTOCOL_TYPE::MOVE || data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
                             int x, y, z;
-                            if (iss >> x >> y >> z) {
-                                if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && (z >= -1 && z <= 1)) {
-                                    std::cout << "Command: " << command << ", x: " << x << ", y: " << y << ", z: " << z << std::endl;
 
-                                    player.mooving._x = x * 0.25f;
-                                    player.mooving._y = y * 0.25f;
-                                    player.mooving._z = z * 0.25f;
-                                }
-                            } else {
-                                std::cerr << "Error extracting values from the string." << std::endl;
-                            }
-                        } else if (command == "SHOOT") {
+                            x = data.client.move._x / _entities.size();
+                            y = data.client.move._y / _entities.size();
+                            z = data.client.move._z / _entities.size();
+
+                            player.mooving._x = x * 0.25f;
+                            player.mooving._y = y * 0.25f;
+                            player.mooving._z = z * 0.25f;
+                        } else if (data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
+                            shooter.isShooting = true;
+                        }
+                        if (data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
                             shooter.isShooting = true;
                         }
                     }
                 }
             }
-    };
-}
+        };
+    }
 
 #endif //RTYPE_PLAYERMANAGER_HPP

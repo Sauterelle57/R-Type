@@ -12,6 +12,7 @@
 #include "Coordinator.hpp"
 #include "ComponentStructs.hpp"
 #include "renderer/Utils.hpp"
+#include "renderer/Shader.hpp"
 
 namespace ECS {
     class DrawModel : public System {
@@ -23,9 +24,8 @@ namespace ECS {
                     return;
                 }
 
-                int count = 0;
+
                 for (auto const &entity : _entities) {
-                    count++;
                     auto &model = coordinatorPtr->getComponent<Model>(entity);
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
 

@@ -182,6 +182,35 @@ namespace ECS {
                 particle.scale = transform.scale * particles.scaleOffset;
             }
 
+            static void initParticleField(std::shared_ptr<Coordinator> coordinator, Entity entity, Particle &particle) {
+                if (!coordinator) {
+                    return;
+                }
+
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+                float a = 5.0f;
+                float b = 3.0f;
+                float c = 2.0f;
+
+                float theta = RL::Utils::getRandomValue(0, 360) * (M_PI / 180);
+                float phi = acos(1 - 2 * RL::Utils::getRandomValue(0, 100) / 100.0f);
+
+                particle.position = tls::Vec3{
+                        a * sin(phi) * cos(theta),
+                        b * sin(phi) * sin(theta),
+                        c * cos(phi)
+                } + transform.position + particles.positionOffset;
+
+                tls::Vec3 velocityDirection = tls::Vec3{-b * cos(phi) * sin(theta), a * cos(phi) * cos(theta), 0};
+                particle.speed = velocityDirection.normalized() * (particles.speed / (a + b + c));
+
+                particle.alpha = particles.lifeTime;
+                particle.active = true;
+                particle.scale = particles.scaleOffset;
+            }
+
             void updateParticles(Entity entity) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
@@ -222,12 +251,13 @@ namespace ECS {
                 }
             }
 
-            static void drawParticlesDefault(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+            static void drawParticlesDefault(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
                 RL::ZMode mode;
 
-                shader->beginMode();
-                mode.beginBlend(BLEND_ADDITIVE);
                 auto &particles = coordinator->getComponent<Particles>(entity);
+
+                particles.shader->beginMode();
+                mode.beginBlend(BLEND_ADDITIVE);
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
                 for (auto &particle : particles.particles) {
@@ -237,10 +267,10 @@ namespace ECS {
                     }
                 }
                 mode.endBlend();
-                shader->endMode();
+                particles.shader->endMode();
             }
 
-            static void drawParticlesStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+            static void drawParticlesStarfieldBackground(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
 
                 auto &particles = coordinator->getComponent<Particles>(entity);
                 auto &transform = coordinator->getComponent<Transform>(entity);
@@ -268,12 +298,12 @@ namespace ECS {
                 }
             }
 
-            static void drawParticlesExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera, std::shared_ptr<RL::IShader> shader) {
+            static void drawParticlesExplosion(std::shared_ptr<Coordinator> coordinator, Entity entity ,std::shared_ptr<RL::ICamera> camera) {
                 RL::ZMode mode;
-
-                shader->beginMode();
-                mode.beginBlend(BLEND_ADDITIVE);
                 auto &particles = coordinator->getComponent<Particles>(entity);
+
+                particles.shader->beginMode();
+                mode.beginBlend(BLEND_ADDITIVE);
                 auto &transform = coordinator->getComponent<Transform>(entity);
 
 
@@ -292,16 +322,50 @@ namespace ECS {
                             if (particle.scale < 0.1) {
                                 particle.scale = 0.1;
                             }
-                            std::cout << particle.id << " " << particle.scale << std::endl;
                             camera->drawBillboard(*particles.texture[std::abs(particle.id) -1]->getTexture(), particle.position, particle.scale,  RL::Utils::fade(WHITE, particle.alpha));
                         }
                     }
                 }
                 mode.endBlend();
-                shader->endMode();
+                particles.shader->endMode();
             }
 
-            void update(std::shared_ptr<RL::ICamera> _camera, std::shared_ptr<RL::IShader> _shader) {
+            static void drawParticleField(std::shared_ptr<Coordinator> coordinator, Entity entity, std::shared_ptr<RL::ICamera> camera) {
+                if (!coordinator) {
+                    return;
+                }
+
+                auto &particles = coordinator->getComponent<Particles>(entity);
+                auto &velocity = coordinator->getComponent<Velocity>(entity);
+                RL::ZMode mode;
+                mode.beginBlend(BLEND_ADDITIVE);
+                auto &transform = coordinator->getComponent<Transform>(entity);
+
+                float a = 5.0f;
+                float b = 3.0f;
+                float c = 2.0f;
+
+                for (auto &particle : particles.particles) {
+                    if (particle.active) {
+                        particle.position += velocity.speed;
+
+                        tls::Vec3 offset = particle.position - (transform.position + particles.positionOffset);
+                        float distanceSquared = (offset._x * offset._x) / (a * a) +
+                                                (offset._y * offset._y) / (b * b) +
+                                                (offset._z * offset._z) / (c * c);
+                        if (distanceSquared > 2.0f) {
+                            particle.active = false;
+                        } else {
+                            float distance = sqrt(distanceSquared);
+                            float alpha = 2.0f - (distance * 1.5);
+                            camera->drawBillboard(*particles.texture[0]->getTexture(), particle.position, particle.scale, RL::Utils::fade(WHITE, alpha));
+                        }
+                    }
+                }
+                mode.endBlend();
+            }
+
+            void update(std::shared_ptr<RL::ICamera> _camera) {
                 auto coordinatorPtr = _coordinator.lock();
 
                 for (auto const &entity: _entities) {
@@ -311,7 +375,7 @@ namespace ECS {
                         emitParticles(entity);
                         particles.hasStarted = true;
                     }
-                    particles.drawParticle(coordinatorPtr, entity, _camera, _shader);
+                    particles.drawParticle(coordinatorPtr, entity, _camera);
                 }
             }
     };
