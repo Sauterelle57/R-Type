@@ -42,14 +42,14 @@ namespace ECS {
                                 {
                                     // std::ostringstream responseStream;
                                     // responseStream << entity << " DESTROY";
-                                    clientUpdater._pc->deleteEntity(entity);
+                                    clientUpdater._pc->deleteEntity(entity, tls::Clock::getTimeStamp());
                                     // std::string response = responseStream.str();
                                     // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                 }
                                 {
                                     // std::ostringstream responseStream;
                                     // responseStream << entity2 << " DESTROY";
-                                    clientUpdater._pc->deleteEntity(entity2);
+                                    clientUpdater._pc->deleteEntity(entity2, tls::Clock::getTimeStamp());
                                     // std::string response = responseStream.str();
                                     // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                 }

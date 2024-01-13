@@ -225,17 +225,24 @@ int main() {
 
 
     // return 0;
-    std::signal(SIGINT, signalHandler);
-    std::shared_ptr<rt::IGameController> gameCtrl = std::make_shared<rt::GameController>();
-    std::shared_ptr<rt::IServerController> serverCtrl = std::make_shared<rt::ServerController>(1234, gameCtrl);
+    try {
+        std::signal(SIGINT, signalHandler);
+        std::shared_ptr<rt::IGameController> gameCtrl = std::make_shared<rt::GameController>();
+        std::shared_ptr<rt::IServerController> serverCtrl = std::make_shared<rt::ServerController>(1234, gameCtrl);
 
-    gameCtrl->addWrapper(serverCtrl->getWrapper());
+        gameCtrl->addWrapper(serverCtrl->getWrapper());
 
-    std::thread gameThread([&]() {
-        gameCtrl->exec();
-    });
+        std::thread gameThread([&]() {
+            gameCtrl->exec();
+        });
 
-    serverCtrl->run();
+        serverCtrl->run();
+    } catch (...) {
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "Rtype Server - An error occured." << std::endl;
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "Please check that the port is not already in use." << std::endl;
+    }
     return 0;
 }
 

@@ -18,7 +18,11 @@ FetchContent_Declare(
         assimp
         GIT_REPOSITORY https://github.com/assimp/assimp.git
         GIT_TAG ${ASSIMP_VERSION}
+        GIT_SHALLOW TRUE
 )
+
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
 FetchContent_MakeAvailable(assimp)
 
 if (UNIX)
@@ -235,6 +239,8 @@ add_executable(rtype_client
         client/Tools/ECS/Managers/Systems/Velocity.hpp
         client/Tools/ECS/Managers/Systems/Bdb.hpp
         client/Tools/ECS/Managers/Systems/Music.hpp
+        client/Tools/ECS/Managers/Systems/Modal.hpp
+        client/Tools/ECS/Managers/Systems/Modal.cpp
 )
 
 target_include_directories(rtype_server PRIVATE
@@ -282,6 +288,7 @@ target_include_directories(rtype_client PRIVATE
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Systems
         ${CMAKE_SOURCE_DIR}/client/Tools/ECS/Managers/Coordinator
         ${CMAKE_SOURCE_DIR}/protocol
+        ${CMAKE_SOURCE_DIR}/RayLibExternalIncludes
 )
 #set(raylib_VERBOSE 1)
 

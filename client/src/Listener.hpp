@@ -100,7 +100,8 @@ namespace RT {
 
             ~Listener() = default;
 
-            void onEvent() {
+            
+            void onEvent(bool &shouldClose, bool &debug) {
                 while (!_queue.empty()) {
                     std::string front = _queue.front();
                     _queue.pop();
@@ -118,16 +119,19 @@ namespace RT {
                             tls::BoundingBox bounds = x.bounds;
                             tls::Vec3 scale = x.scale;
                             int type = x.entityType;
-                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds);
+                            _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds, shouldClose, debug);
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
-                            _coordinator->destroyEntity(_serverToClient[ecsID]);
+                            if (!_deletedIDAlreadyRemoved.contains(ecsID.second)) {
+                                _coordinator->destroyEntity(_serverToClient[ecsID.first]);
+                                _deletedIDAlreadyRemoved.insert(ecsID.second);
+                            }
                         }
 
-                        std::ostringstream oss;
-                        oss << "ID " << receivedData.packetId;
-                        _udpClient->send(oss.str());
+                        pc.actionId(receivedData.packetId);
+                        auto toSend = pc.getProtocol();
+                        _udpClient->sendStruct(toSend);
                     }
                 }
             }
@@ -136,7 +140,9 @@ namespace RT {
                 _queue.push(event);
             }
 
-            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, tls::Vec3 scale, int type, tls::BoundingBox bounds) {
+
+            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds, bool &shouldCLose, bool &debug) {
+
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
                     ECS::Entity entity = _coordinator->createEntity();
 
@@ -256,6 +262,64 @@ namespace RT {
                         _coordinator->addComponent(
                                 *_entities->rbegin(),
                                 ECS::Velocity{}
+                        );
+
+                        std::vector<ECS::SlideBar> sliderBars;
+                        std::vector<ECS::CheckBox> checkBoxes;
+                        std::vector<ECS::Button> buttons;
+
+                        sliderBars.push_back(
+                            ECS::SlideBar{
+                                {1920 / 2 - 200, 1080 / 2 - 200, 400, 20},
+                                "Master volume",
+                                "",
+                                50,
+                                0,
+                                100,
+                                [](float value) {
+                                    RL::Utils::setMasterVolume(value / 100);
+                                }
+                            }
+                        );
+
+                        buttons.push_back(
+                            ECS::Button{
+                                {1920 / 2 - 50, 1080 / 2 + 300, 100, 25},
+                                "Disconnect",
+                                [&]() {
+                                    shouldCLose = true;
+                                }
+                            }
+                        );
+
+                        checkBoxes.push_back(
+                            ECS::CheckBox{
+                                {1920 / 2 - 200, 1080 / 2 -100, 20, 20},
+                                "Debeug mode",
+                                false,
+                                [&](bool value) {
+                                    debug = value;
+                                }
+                            }
+                        );
+
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Modal {
+                                .width = 1920 - 1920 / 4,
+                                .height = 1080 - 1080 / 4,
+                                .title = "Options",
+                                .titleWidth = 20,
+                                .color = {0, 0, 0, 250},
+                                .openClose = [](bool &active) {
+                                    if (RL::Utils::isKeyPressed(KEY_ESCAPE)) {
+                                        active = !active;
+                                    }
+                                },
+                                .slideBars = sliderBars,
+                                .checkBoxes = checkBoxes,
+                                .buttons = buttons
+                            }
                         );
 
                         const int nbLights = 4;
@@ -540,6 +604,7 @@ namespace RT {
             std::shared_ptr<RL::IShader> _lightShader;
             std::shared_ptr<RL::IShader> _shaderParticles;
             std::shared_ptr<RL::ZModel> _sphereModel;
+            std::set<long long> _deletedIDAlreadyRemoved;
 ;
     };
 }
