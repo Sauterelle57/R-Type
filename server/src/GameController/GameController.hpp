@@ -26,7 +26,6 @@
 #include "ClientUpdater.hpp"
 #include "PlayerManager.hpp"
 #include "ParentManager.hpp"
-#include "Enemy.hpp"
 #include "Protocol.hpp"
 #include <mutex>
 

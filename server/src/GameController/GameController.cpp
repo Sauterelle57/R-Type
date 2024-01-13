@@ -94,13 +94,12 @@ namespace rt {
                     _systems._systemCollider->update();
                     _systems._systemMove->update();
                     _systems._systemAutoMove->update();
-                    _systems._systemEnemy->update();
                     _systems._systemClientUpdater->update();
                 }
                 if (_clockEnemySpawn.isTimeElapsed()) {
-                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                        _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-                    }
+//                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+//                        _createEnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+//                    }
 
                     if (_waveEnemy < 8)
                         _waveEnemy++;
@@ -645,10 +644,6 @@ namespace rt {
            }
         );
         static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/boss2.glb");
-        static bool first = true;
-        if (first) {
-            first = false;
-        }
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {

@@ -141,8 +141,7 @@ namespace RT {
             }
 
 
-            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds, bool &shouldCLose, bool &debug) {
-
+            void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, tls::Vec3 scale, int type, tls::BoundingBox bounds, bool &shouldCLose, bool &debug) {
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
                     ECS::Entity entity = _coordinator->createEntity();
 
@@ -167,6 +166,7 @@ namespace RT {
                                     }
                             }
                     );
+//                    std::cout << "Create entity with [" << ecsID << "] and type : " << type << std::endl;
                     if (type == rt::ENTITY_TYPE::PLAYER) {
                         std::cout << "Create player ! with [" << ecsID << "]" << std::endl;
                         _coordinator->addComponent(

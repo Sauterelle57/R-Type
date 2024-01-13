@@ -50,10 +50,10 @@ namespace ECS {
                             player.mooving._y = y * 0.25f;
                             player.mooving._z = z * 0.25f;
                         } else if (data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
-                            shooter.isShooting = true;
+                            weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
                         }
                         if (data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
-                            shooter.isShooting = true;
+                            weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc);
                         }
                     }
                 }
