@@ -13,6 +13,7 @@
 #include "Vec3.hpp"
 #include "Vec4.hpp"
 #include "EntityData.hpp"
+#include "Clock.hpp"
 
 namespace rt
 {
@@ -45,7 +46,7 @@ namespace rt
     // Server
     struct p_server {
         int destroyedEntitiesSize = 0;
-        std::vector<std::uint32_t> destroyedEntities; // List entities from server to client
+        std::vector<std::pair<std::uint32_t, long long>> destroyedEntities; // List entities from server to client
         // std::vector<std::bitset<554>> entities; // List entities from server to client
         std::vector<rt::Entity> entities;
     };
@@ -149,12 +150,12 @@ namespace rt
             return *this;
         }
 
-        ProtocolController& deleteEntity(std::uint32_t ECSId)
+        ProtocolController& deleteEntity(std::uint32_t ECSId, long long currentTime)
         {
             _protocol->sender = rt::SENDER_TYPE::SERVER;
             _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
-            _protocol->server.destroyedEntities.push_back(ECSId);
+            _protocol->server.destroyedEntities.push_back({ECSId, currentTime});
             return *this;
         }
 
@@ -168,9 +169,10 @@ namespace rt
 
             // Serialize destroyedEntitiesSize and destroyedEntities vector
             _protocol->server.destroyedEntitiesSize = _protocol->server.destroyedEntities.size();
-            oss.write(reinterpret_cast<const char*>(&_protocol->server.destroyedEntitiesSize), sizeof(_protocol->server.destroyedEntitiesSize));
-            oss.write(reinterpret_cast<const char*>(_protocol->server.destroyedEntities.data()), _protocol->server.destroyedEntities.size() * sizeof(std::uint32_t));
-
+            for (const auto& entity : _protocol->server.destroyedEntities) {
+                oss.write(reinterpret_cast<const char*>(&entity.first), sizeof(entity.first));
+                oss.write(reinterpret_cast<const char*>(&entity.second), sizeof(entity.second));
+            }
 
             for (const auto& entity : _protocol->server.entities)
             {
@@ -191,8 +193,11 @@ namespace rt
                 // Serialize destroyedEntitiesSize and destroyedEntities vector
                 protocol.server.destroyedEntitiesSize = protocol.server.destroyedEntities.size();
                 oss.write(reinterpret_cast<const char*>(&protocol.server.destroyedEntitiesSize), sizeof(protocol.server.destroyedEntitiesSize));
-                oss.write(reinterpret_cast<const char*>(protocol.server.destroyedEntities.data()), protocol.server.destroyedEntities.size() * sizeof(std::uint32_t));
-
+                //std::vector<std::pair<std::uint32_t, long long>> destroyedEntities = protocol.server.destroyedEntities;
+                for (const auto& entity : protocol.server.destroyedEntities) {
+                    oss.write(reinterpret_cast<const char*>(&entity.first), sizeof(entity.first));
+                    oss.write(reinterpret_cast<const char*>(&entity.second), sizeof(entity.second));
+                }
 
                 for (const auto& entity : protocol.server.entities)
                 {
@@ -224,8 +229,11 @@ namespace rt
                 // Deserialize destroyedEntitiesSize and destroyedEntities vector
                 iss.read(reinterpret_cast<char*>(&deserializedData.server.destroyedEntitiesSize), sizeof(deserializedData.server.destroyedEntitiesSize));
                 deserializedData.server.destroyedEntities.resize(deserializedData.server.destroyedEntitiesSize);
-                iss.read(reinterpret_cast<char*>(deserializedData.server.destroyedEntities.data()), deserializedData.server.destroyedEntities.size() * sizeof(std::uint32_t));
 
+                for (auto& entity : deserializedData.server.destroyedEntities) {
+                    iss.read(reinterpret_cast<char*>(&entity.first), sizeof(entity.first));
+                    iss.read(reinterpret_cast<char*>(&entity.second), sizeof(entity.second));
+                }
 
                 while (iss.peek() != EOF)
                 {
