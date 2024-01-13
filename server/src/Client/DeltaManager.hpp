@@ -33,10 +33,10 @@ namespace rt
                 }
 
                 //std::vector<std::uint32_t> _toDelete
-                std::vector<std::uint32_t> destroyedEntities = protocol.server.destroyedEntities;
+                std::vector<std::pair<std::uint32_t, long long>> destroyedEntities = protocol.server.destroyedEntities;
                 // do : _toDelete = _toDelete - protocol.server.destroyedEntities;
                 _toDelete.erase(std::remove_if(_toDelete.begin(), _toDelete.end(),
-                [&destroyedEntities](std::uint32_t id) {
+                [&destroyedEntities](std::pair<std::uint32_t, long long> id) {
                     return std::find(destroyedEntities.begin(), destroyedEntities.end(), id) != destroyedEntities.end();
                 }), _toDelete.end());
 
@@ -87,12 +87,12 @@ namespace rt
                 return entityNow;
             }
 
-            void deleteEntity(std::uint32_t ECSId) {
-                if (_entities.find(ECSId) != _entities.end())
-                    _entities.erase(ECSId);
+            void deleteEntity(std::pair<std::uint32_t, long long> ECSId) {
+                if (_entities.find(ECSId.first) != _entities.end())
+                    _entities.erase(ECSId.first);
             }
 
-            std::vector<std::uint32_t> getDeletedEntities(std::vector<std::uint32_t> toDelete) {
+            std::vector<std::pair<std::uint32_t, long long>> getDeletedEntities(std::vector<std::pair<std::uint32_t, long long>> toDelete) {
 
                 toDelete.insert(toDelete.end(), _toDelete.begin(), _toDelete.end());
 
@@ -101,12 +101,12 @@ namespace rt
                 return toDelete;
             }   
 
-            void setDeletedEntities(std::vector<std::uint32_t> entities) {
+            void setDeletedEntities(std::vector<std::pair<std::uint32_t, long long>> entities) {
                 _toDelete = entities;
             }
         private:
             std::map<std::uint32_t, rt::Entity> _entities;
-            std::vector<std::uint32_t> _toDelete;
+            std::vector<std::pair<std::uint32_t, long long>> _toDelete;
             std::map<long long, rt::Protocol> _packets;
 
             float _calculDelta(tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, rt::Entity& diff) {

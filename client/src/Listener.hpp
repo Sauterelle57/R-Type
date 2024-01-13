@@ -124,7 +124,7 @@ namespace RT {
                         }
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
-                            _coordinator->destroyEntity(_serverToClient[ecsID]);
+                            _coordinator->destroyEntity(_serverToClient[ecsID.first]);
                         }
                         
                         pc.actionId(receivedData.packetId);
