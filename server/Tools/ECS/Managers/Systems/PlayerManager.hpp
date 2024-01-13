@@ -42,9 +42,9 @@ namespace ECS {
                         if (data.protocol == rt::PROTOCOL_TYPE::MOVE || data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
                             int x, y, z;
 
-                            x = data.client.move._x;
-                            y = data.client.move._y;
-                            z = data.client.move._z;
+                            x = data.client.move._x / _entities.size();
+                            y = data.client.move._y / _entities.size();
+                            z = data.client.move._z / _entities.size();
 
                             player.mooving._x = x * 0.25f;
                             player.mooving._y = y * 0.25f;
