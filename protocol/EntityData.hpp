@@ -30,7 +30,9 @@ namespace rt
         BASIC_ENEMY_SHOT,
         SIN_SHOT,
 
-        BDB
+        BDB,
+        BOSS,
+        CHILD
     };
 
     struct Entity
@@ -41,7 +43,7 @@ namespace rt
 
         tls::Vec3 position;
         tls::Vec4 rotation;
-        float scale;
+        tls::Vec3 scale;
         ENTITY_TYPE entityType;
         tls::BoundingBox bounds;
     };

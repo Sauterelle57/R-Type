@@ -28,37 +28,35 @@ namespace RT {
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
                     matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-11, 4.5, 0));
                     _playerModel->_model->transform = matr;
                 }
                 {
-                    _tileBMmodel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-//                    Matrix matr = MatrixIdentity();
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-//                    _tileBMmodel->_model->transform = matr;
+                    _tileBMmodel = std::make_shared<RL::ZModel>("./client/resources/models/obstacle.glb");
                 }
                 {
-                    _tileModel = std::make_shared<RL::ZModel>("./client/resources/models/cube.glb");
-//                    Matrix matr = MatrixIdentity();
-//                    matr = MatrixMultiply(matr, MatrixTranslate(-20, 5 , 0));
-//                    _tileModel->_model->transform = matr;
+                    _tileModel = std::make_shared<RL::ZModel>("./client/resources/models/obstacle.glb");
                 }
                 {
                     _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
-//                    matr = MatrixMultiply(matr, MatrixTranslate(0, -2 , 0));
                     _modelEnemy->_model->transform = matr;
-////                    _textureEnemy = std::make_shared<RL::ZTexture>(
-//                    "./client/resources/images/duck_text.png");
                 }
                 {
-                    _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
+                    _modelBoss = std::make_shared<RL::ZModel>("./client/resources/models/boss2.glb");
+                }
+                {
+                    _modelChild = std::make_shared<RL::ZModel>("./client/resources/models/boss_body2.glb");
+                }
+                {
+                    _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/missile.glb");
+                    Matrix rotationMatrix = MatrixRotateY(180 * DEG2RAD);
+                    Matrix finalTransformation = MatrixMultiply(MatrixIdentity(), rotationMatrix);
+                    _modelShot->_model->transform = finalTransformation;
                 }
                 {
                     _modelEnemyShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
-                    Matrix matr = MatrixIdentity();
+                    Matrix matr = MatrixRotateY(180 * DEG2RAD);
                     matr = MatrixMultiply(matr, MatrixRotateY(180 * DEG2RAD));
                     _modelEnemyShot->_model->transform = matr;
                 }
@@ -101,6 +99,7 @@ namespace RT {
             };
 
             ~Listener() = default;
+
             
             void onEvent(bool &shouldClose, bool &debug) {
                 while (!_queue.empty()) {
@@ -118,7 +117,7 @@ namespace RT {
                             tls::Vec3 position = x.position;
                             tls::Vec4 rotation = x.rotation;
                             tls::BoundingBox bounds = x.bounds;
-                            float scale = x.scale;
+                            tls::Vec3 scale = x.scale;
                             int type = x.entityType;
                             _interpreterCreateEntity(ecsID, x.signature, position, rotation, scale, type, bounds, shouldClose, debug);
                         }
@@ -141,7 +140,9 @@ namespace RT {
                 _queue.push(event);
             }
 
+
             void _interpreterCreateEntity(std::uint32_t ecsID, std::bitset<15> signature, tls::Vec3 position, tls::Vec4 rotation, float scale, int type, tls::BoundingBox bounds, bool &shouldCLose, bool &debug) {
+
                 if (_serverToClient.find(ecsID) == _serverToClient.end()) {
                     ECS::Entity entity = _coordinator->createEntity();
 
@@ -153,7 +154,7 @@ namespace RT {
                         ECS::Transform{
                                 {position._x, position._y, position._z},
                                 {rotation._x, rotation._y, rotation._z, rotation._a},
-                                scale
+                                {scale._x, scale._y, scale._z}
                         }
                     );
                     // DBD
@@ -199,7 +200,7 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(5000),
                                         .texture = _particleBlueTexture,
                                         .speed = .1f,
-                                        .scaleOffset = .1f,
+                                        .scaleOffset = {.1f, .1f, .1f},
                                         .positionOffset = {0, 0, 0},
                                         .lifeTime = 50,
                                         .spawnRate = 60,
@@ -248,7 +249,7 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(1000),
                                         .texture = _starTexture,
                                         .speed = 60.0f,
-                                        .scaleOffset = 1.2f,
+                                        .scaleOffset = {1.2f, 1.2f, 1.2f},
                                         .positionOffset = {95, 0, -120},
                                         .lifeTime = 550,
                                         .spawnRate = 1,
@@ -329,8 +330,9 @@ namespace RT {
                         Color _colors[nbLights] = { PURPLE, BLUE, RED, PINK };
 
                         for (int i = 0 ; i < nbLights ; i++) {
-                            float x, y, z, rx, ry, rz, ra;
+                            float x, y, z, rx, ry, rz, ra, sx, sy, sz;
                             x = y = z = rx = ry = rz = ra = 0;
+                            sx = sy = sz = 1;
                             Color color = _colors[i];
 
                             x = _x[i];
@@ -350,7 +352,7 @@ namespace RT {
                                     ECS::Transform{
                                             {x, y, z},
                                             {rx, ry, rz, ra},
-                                            1
+                                            {sx, sy, sz}
                                     }
                             );
                             _coordinator->addComponent(
@@ -404,7 +406,33 @@ namespace RT {
                         _coordinator->addComponent(
                                 *_entities->rbegin(),
                                 ECS::Model{
-                                        .model = _modelEnemy,
+                                    .model = _modelEnemy,
+                                }
+                        );
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::ShaderComponent{
+                                        .shader = _lightShader,
+                                }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::BOSS) {
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Model{
+                                    .model = _modelBoss,
+                                }
+                        );
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::ShaderComponent{
+                                        .shader = _lightShader,
+                                }
+                        );
+                    } else if (type == rt::ENTITY_TYPE::CHILD) {
+                        _coordinator->addComponent(
+                                *_entities->rbegin(),
+                                ECS::Model{
+                                    .model = _modelChild,
                                 }
                         );
                         _coordinator->addComponent(
@@ -434,7 +462,7 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(500),
                                         .texture = _particleTexture,
                                         .speed = 75.0f,
-                                        .scaleOffset = 3.0f,
+                                        .scaleOffset = {1, 1, 1},
                                         .positionOffset = {-0.5, 0, 0},
                                         .lifeTime = 2,
                                         .spawnRate = 35,
@@ -463,7 +491,7 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(500),
                                         .texture = _particleTexture,
                                         .speed = 500.0f,
-                                        .scaleOffset = 3.0f,
+                                        .scaleOffset = {3.f, 3.f, 3.f},
                                         .positionOffset = {0, 0, 0},
                                         .lifeTime = 10,
                                         .spawnRate = 2,
@@ -504,7 +532,7 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(500),
                                         .texture = _particleTexture,
                                         .speed = 75.0f,
-                                        .scaleOffset = 3.0f,
+                                        .scaleOffset = {3.f, 3.f, 3.f},
                                         .positionOffset = {0.5, 0, 0},
                                         .lifeTime = 2,
                                         .spawnRate = 35,
@@ -527,7 +555,7 @@ namespace RT {
                     }
                 } else {
                     auto &transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[ecsID]);
-                    
+
                     transform.position._x = (signature[0] ? position._x : transform.position._x);
                     transform.position._y = (signature[1] ? position._y : transform.position._y);
                     transform.position._z = (signature[2] ? position._z : transform.position._z);
@@ -537,7 +565,9 @@ namespace RT {
                     transform.rotation._z = (signature[5] ? rotation._z : transform.rotation._z);
                     transform.rotation._a = (signature[6] ? rotation._a : transform.rotation._a);
 
-                    transform.scale = (signature[7] ? scale : transform.scale);
+                    transform.scale._x = (signature[7] ? scale._x : transform.scale._x);
+                    transform.scale._y = (signature[8] ? scale._y : transform.scale._y);
+                    transform.scale._z = (signature[9] ? scale._z : transform.scale._z);
 
                     auto &bdb = _coordinator->getComponent<ECS::Bdb>(
                             _serverToClient[ecsID]);
@@ -562,6 +592,8 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _tileBMmodel;
             std::shared_ptr<RL::ZModel> _tileModel;
             std::shared_ptr<RL::ZModel> _modelEnemy;
+            std::shared_ptr<RL::ZModel> _modelBoss;
+            std::shared_ptr<RL::ZModel> _modelChild;
             std::shared_ptr<RL::ZModel> _modelShot;
             std::shared_ptr<RL::ZModel> _modelEnemyShot;
             std::shared_ptr<RL::ZTexture> _textureEnemy;

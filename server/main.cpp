@@ -16,6 +16,7 @@
 #include "ServerController.hpp"
 #include "GameController.hpp"
 #include "Protocol.hpp"
+#include "IServerController.hpp"
 
 void signalHandler(int signum) {
     if (signum == SIGINT) {
@@ -24,7 +25,7 @@ void signalHandler(int signum) {
     }
 }
 
-std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, float scale, int type)
+std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> signature, tls::Vec3 pos, tls::Vec4 rotation, tls::Vec3 scale, int type)
 {
     std::bitset<32> ecsIdBits(ecsId);
     std::bitset<2> signatureBits((signature[0] << 1) | signature[1]);
@@ -38,7 +39,10 @@ std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> 
     std::bitset<64> rotationZBits(*reinterpret_cast<uint64_t*>(&rotation._z));
     std::bitset<64> rotationABits(*reinterpret_cast<uint64_t*>(&rotation._a));
 
-    std::bitset<64> scaleBits(*reinterpret_cast<uint64_t*>(&scale));
+    // std::bitset<64> scaleBits(*reinterpret_cast<uint64_t*>(&scale));
+    std::bitset<64> scaleXBits(*reinterpret_cast<uint64_t*>(&scale._x));
+    std::bitset<64> scaleYBits(*reinterpret_cast<uint64_t*>(&scale._y));
+    std::bitset<64> scaleZBits(*reinterpret_cast<uint64_t*>(&scale._z));
 
     std::bitset<32> typeBits(type);
 
@@ -60,11 +64,14 @@ std::bitset<578> convertEntityToBitset(std::uint32_t ecsId, std::array<bool, 2> 
         result.set(i + 290, rotationYBits[i]);
         result.set(i + 354, rotationZBits[i]);
         result.set(i + 418, rotationABits[i]);
-        result.set(i + 482, scaleBits[i]);
+        // result.set(i + 482, scaleBits[i]);
+        result.set(i + 482, scaleXBits[i]);
+        result.set(i + 546, scaleYBits[i]);
+        result.set(i + 610, scaleZBits[i]);
     }
 
     for (int i = 0; i < 32; ++i)
-        result.set(i + 546, typeBits[i]);
+        result.set(i + 674, typeBits[i]);
 
     return result;
 }
@@ -75,7 +82,7 @@ void convertBitsetToEntity(std::bitset<578> x)
     std::array<bool, 2> signatureBits;
     tls::Vec3 pos;
     tls::Vec4 rotation;
-    float scale;
+    tls::Vec3 scale;
     int type;
 
     // Extracting bits individually
@@ -87,7 +94,7 @@ void convertBitsetToEntity(std::bitset<578> x)
 
     std::bitset<64> posXBits, posYBits, posZBits;
     std::bitset<64> rotationXBits, rotationYBits, rotationZBits, rotationABits;
-    std::bitset<64> scaleBits;
+    std::bitset<64> scaleXBits, scaleYBits, scaleZBits;
 
     for (int i = 0; i < 64; ++i)
     {
@@ -98,13 +105,15 @@ void convertBitsetToEntity(std::bitset<578> x)
         rotationYBits[i] = x[i + 290];
         rotationZBits[i] = x[i + 354];
         rotationABits[i] = x[i + 418];
-        scaleBits[i] = x[i + 482];
+        scaleXBits[i] = x[i + 482];
+        scaleYBits[i] = x[i + 546];
+        scaleZBits[i] = x[i + 610];
     }
 
     std::bitset<32> typeBits;
 
     for (int i = 0; i < 32; ++i)
-        typeBits[i] = x[i + 546];
+        typeBits[i] = x[i + 674];
 
     // Converting back to original types
     std::uint32_t ecsId = static_cast<std::uint32_t>(ecsIdBits.to_ulong());
@@ -121,7 +130,9 @@ void convertBitsetToEntity(std::bitset<578> x)
     rotation._z = *reinterpret_cast<double*>(&rotationZBits);
     rotation._a = *reinterpret_cast<double*>(&rotationABits);
 
-    scale = *reinterpret_cast<float*>(&scaleBits);
+    scale._x = *reinterpret_cast<double*>(&scaleXBits);
+    scale._y = *reinterpret_cast<double*>(&scaleYBits);
+    scale._z = *reinterpret_cast<double*>(&scaleZBits);
 
     type = static_cast<int>(typeBits.to_ulong());
 
@@ -129,7 +140,7 @@ void convertBitsetToEntity(std::bitset<578> x)
     std::cout << "signature : " << signatureBits[0] << ", " << signatureBits[1] << std::endl;
     std::cout << "pos : " << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
     std::cout << "rot : " << rotation._x << ", " << rotation._y << ", " << rotation._z << ", " << rotation._a << std::endl;
-    std::cout << "scale : " << scale << std::endl;
+    std::cout << "scale : " << scale._x << ", " << scale._y << ", " << scale._z << std::endl;
     std::cout << "type : " << type << std::endl;
 }
 

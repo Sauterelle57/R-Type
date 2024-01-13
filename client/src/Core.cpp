@@ -383,6 +383,7 @@ namespace RT {
                 _systems._systemSound->update();
                 _systems._systemSelfDestruct->update();
                 _systems._systemTraveling->update();
+
                 _systems._systemCamera->end();
                 target->endMode();
 

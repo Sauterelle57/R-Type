@@ -71,16 +71,19 @@ namespace rt
                 diff.signature[5] = diff.rotation._z != entityNow.rotation._z;
                 diff.signature[6] = diff.rotation._a != entityNow.rotation._a;
 
-                diff.signature[7] = diff.scale != entityNow.scale;
-                diff.signature[8] = diff.entityType != entityNow.entityType;
+                // diff.signature[7] = diff.scale != entityNow.scale;
+                diff.signature[7] = diff.scale._x != entityNow.scale._x;
+                diff.signature[8] = diff.scale._y != entityNow.scale._y;
+                diff.signature[9] = diff.scale._z != entityNow.scale._z;
+                diff.signature[10] = diff.entityType != entityNow.entityType;
 
-                diff.signature[9] = diff.bounds.min._x != entityNow.bounds.min._x;
-                diff.signature[10] = diff.bounds.min._y != entityNow.bounds.min._y;
-                diff.signature[11] = diff.bounds.min._z != entityNow.bounds.min._z;
+                diff.signature[11] = diff.bounds.min._x != entityNow.bounds.min._x;
+                diff.signature[12] = diff.bounds.min._y != entityNow.bounds.min._y;
+                diff.signature[13] = diff.bounds.min._z != entityNow.bounds.min._z;
 
-                diff.signature[12] = diff.bounds.max._x != entityNow.bounds.max._x;
-                diff.signature[13] = diff.bounds.max._y != entityNow.bounds.max._y;
-                diff.signature[14] = diff.bounds.max._z != entityNow.bounds.max._z;
+                diff.signature[14] = diff.bounds.max._x != entityNow.bounds.max._x;
+                diff.signature[15] = diff.bounds.max._y != entityNow.bounds.max._y;
+                diff.signature[16] = diff.bounds.max._z != entityNow.bounds.max._z;
 
                 entityNow.signature = diff.signature;
 
@@ -109,9 +112,9 @@ namespace rt
             std::vector<std::pair<std::uint32_t, long long>> _toDelete;
             std::map<long long, rt::Protocol> _packets;
 
-            float _calculDelta(tls::Vec3 position, tls::Vec4 rotation, float scale, ENTITY_TYPE type, rt::Entity& diff) {
-                float finalDelta = position._x + position._y + position._z + rotation._x + rotation._y + rotation._z + rotation._a + scale + static_cast<int>(type);
-                float base = diff.position._x + diff.position._y + diff.position._z + diff.rotation._x + diff.rotation._y + diff.rotation._z + diff.rotation._a + diff.scale + static_cast<int>(diff.entityType);
+            float _calculDelta(tls::Vec3 position, tls::Vec4 rotation, tls::Vec3 scale, ENTITY_TYPE type, rt::Entity& diff) {
+                float finalDelta = position._x + position._y + position._z + rotation._x + rotation._y + rotation._z + rotation._a + scale._x + scale._y + scale._z + static_cast<int>(type);
+                float base = diff.position._x + diff.position._y + diff.position._z + diff.rotation._x + diff.rotation._y + diff.rotation._z + diff.rotation._a + diff.scale._x + diff.scale._y + diff.scale._z + static_cast<int>(diff.entityType);
                 float delta = finalDelta - base;
                 return delta;
             }

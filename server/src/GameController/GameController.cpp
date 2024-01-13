@@ -14,6 +14,7 @@ namespace rt {
         _initializeCommands();
         _initializeECS();
         _clock = tls::Clock(0.01);
+        _clockBossChild = tls::Clock(5);
         _clockEnemySpawn = tls::Clock(10);
         _waveEnemy = 1;
         _clientController = std::make_shared<ClientController>();
@@ -176,8 +177,9 @@ namespace rt {
         _coordinator->registerComponent<ECS::Type>();
         _coordinator->registerComponent<ECS::ClientUpdater>();
         _coordinator->registerComponent<ECS::Player>();
-        _coordinator->registerComponent<ECS::Enemy>();
-        _coordinator->registerComponent<ECS::Shooter>();
+        // _coordinator->registerComponent<ECS::Enemy>();
+        // _coordinator->registerComponent<ECS::Shooter>();
+        _coordinator->registerComponent<ECS::Parent>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
     }
@@ -192,10 +194,11 @@ namespace rt {
         _systems._systemCollider = _coordinator->registerSystem<ECS::ColliderSystem>();
         _systems._systemClientUpdater = _coordinator->registerSystem<ECS::ClientUpdaterSystem>();
         _systems._systemPlayerManager = _coordinator->registerSystem<ECS::PlayerManager>();
+        _systems._systemParent = _coordinator->registerSystem<ECS::ParentManager>();
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemAutoMove = _coordinator->registerSystem<ECS::AutoMove>();
-        _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
-        _systems._systemEnemy->init();
+        // _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
+        // _systems._systemEnemy->init();
 
         {
             ECS::Signature signature;
@@ -225,7 +228,7 @@ namespace rt {
            signature.set(_coordinator->getComponentType<ECS::Transform>());
            signature.set(_coordinator->getComponentType<ECS::Weapon>());
             signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
-            signature.set(_coordinator->getComponentType<ECS::Shooter>());
+            // signature.set(_coordinator->getComponentType<ECS::Shooter>());
             _coordinator->setSystemSignature<ECS::Shoot>(signature);
         }
 
@@ -251,9 +254,18 @@ namespace rt {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Player>());
             signature.set(_coordinator->getComponentType<ECS::Type>());
-            signature.set(_coordinator->getComponentType<ECS::Shooter>());
+            // signature.set(_coordinator->getComponentType<ECS::Shooter>());
             signature.set(_coordinator->getComponentType<ECS::Weapon>());
             _coordinator->setSystemSignature<ECS::PlayerManager>(signature);
+        }
+
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Parent>());
+            signature.set(_coordinator->getComponentType<ECS::Transform>());
+            // signature.set(_coordinator->getComponentType<ECS::Shooter>());
+            // signature.set(_coordinator->getComponentType<ECS::Weapon>());
+            _coordinator->setSystemSignature<ECS::ParentManager>(signature);
         }
 
         {
@@ -267,11 +279,11 @@ namespace rt {
 
         {
             ECS::Signature signature;
-            signature.set(_coordinator->getComponentType<ECS::Enemy>());
+            // signature.set(_coordinator->getComponentType<ECS::Enemy>());
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Collider>());
-            signature.set(_coordinator->getComponentType<ECS::Shooter>());
-            _coordinator->setSystemSignature<ECS::EnemySystem>(signature);
+            // signature.set(_coordinator->getComponentType<ECS::Shooter>());
+            // _coordinator->setSystemSignature<ECS::EnemySystem>(signature);
         }
 
         std::cout << "SERVER/ECS systems configured" << std::endl;
@@ -294,7 +306,7 @@ namespace rt {
             ECS::Transform {
                 .position = {0.0, 10, 100},
                 .rotation = {0, 0, 0, 0},
-                .scale = 0.5f
+                .scale = {0.5f, 0.5f, 0.5f}
             }
         );
         _coordinator->addComponent(
@@ -325,8 +337,8 @@ namespace rt {
             _createTile({i, 35, 0});
             _createTile({i, -18, 0});
         }
-        _createTile({30, 29, 0});
-        _createBreakableTile({10, 20, 0});
+        // _createTile({30, 29, 0});
+        // _createBreakableTile({10, 20, 0});
 
         std::cout << "SERVER/ECS entities configured" << std::endl;
     }
@@ -345,22 +357,22 @@ namespace rt {
             ECS::Transform {
                 .position = {0, 0, 0},
                 .rotation = {0, 0, 0, 0},
-                .scale = 0.5f
+                .scale = {0.5f, 0.5f, 0.5f}
             }
         );
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Weapon {
-               .damage = 1,
-               .speed = 1,
-               .durability = 1,
+               .damage = 1.f,
+               .speed = 1.f,
+               .durability = 1.f,
                .create_projectile = ECS::Shoot::basicShot
            }
        );
 
         tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
         tls::Matrix matr = tls::MatrixIdentity();
-        matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(90 * DEG2RAD));
+        matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(90 * DEG2RAD));
         matr = tls::MatrixMultiply(matr, tls::MatrixRotateZ(-90 * DEG2RAD));
         bdb.applyMatrix(matr);
 
@@ -397,21 +409,15 @@ namespace rt {
                 .mooving = {0, 0, 0}
             }
         );
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Shooter {
-                .isShooting = false
-            }
-        );
     }
 
-    void GameController::_createEnnemy(tls::Vec3 pos, float clockSpeed) {
+    void GameController::_createEnemy(tls::Vec3 pos, float clockSpeed) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Traveling {
-                .speed = {-0.1, 0, 0}
+                .speed = {-0.02, 0, 0}
             }
         );
         _coordinator->addComponent(
@@ -419,23 +425,14 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = .6f
+                .scale = {0.6f, 0.6f, 0.6f}
             }
         );
-        _coordinator->addComponent(
-           *_entities.rbegin(),
-           ECS::Weapon {
-               .damage = 1,
-               .speed = 1,
-               .durability = 1,
-               .create_projectile = ECS::Shoot::basicEnemyShot
-           }
-       );
         static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/spaceship2.glb");
         static tls::Matrix matr = tls::MatrixIdentity();
         static bool first = true;
         if (first) {
-            matr = tls::MatrixMultiply(matr, tls::MatrixRotateY(-180 * DEG2RAD));
+            matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(-180 * DEG2RAD));
             bdb.applyMatrix(matr);
             first = false;
         }
@@ -464,19 +461,236 @@ namespace rt {
                 .clientController = _clientController
             }
         );
+        static float shotSpeed = 1.f;
         _coordinator->addComponent(
             *_entities.rbegin(),
-            ECS::Enemy {
-                .isGoingUp = false,
-                .clock = tls::Clock(clockSpeed)
+            ECS::Weapon {
+                .damage = 0.5f,
+                .speed = shotSpeed,
+                .durability = 1.f,
+                .autoShoot = true,
+                .shootFrequency = tls::Clock(clockSpeed),
+                .create_projectile = ECS::Shoot::basicEnemyShot
             }
         );
         _coordinator->addComponent(
             *_entities.rbegin(),
-            ECS::Shooter {
-                .isShooting = false
+            ECS::Projectile {
+                .damage = 0.5f,
+                .speed = shotSpeed,
+                .active = true
             }
         );
+        static float speed = 0.003f;
+        std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += speed;
+                    int amplitude = 14;
+                    int height = 13;
+                    int gap = 4;
+                    int randAmplitude = 5;
+                    int randHeight = 13;
+                    int randGap = 4;
+                    srand(time(0));
+                    double randomY = asin(sin((*t) * randGap)) * randAmplitude + randHeight;
+                return tls::Vec3{pos._x, asin(sin((*t) * gap)) * amplitude + height, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += speed;
+                    int amplitude = 14;
+                    int height = 13;
+                    int gap = 4;
+                    int randAmplitude = 5;
+                    int randHeight = 13;
+                    int randGap = 4;
+                    srand(time(0));
+                    double randomY = acos(sin((*t) * randGap)) * randAmplitude + randHeight;
+                return tls::Vec3{pos._x, acos(sin((*t) * gap)) * amplitude + height, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += speed;
+                    int amplitude = 1;
+                    int height = 15;
+                    int gap = 1.0;
+                    int randAmplitude = 0.5;
+                    int randHeight = 0.1;
+                    int randGap = 0.2;
+                    srand(time(0));
+                    double randomY = atan(cos((*t) * randGap + rand() % 100)) * randAmplitude + randHeight;
+                return tls::Vec3{pos._x, atan(cos((*t) * gap)) * amplitude + height + randomY, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += speed;
+                    static int maxY = -18 + rand() % 43 + 10;
+                    static int minY = 35 - (rand() % 43 + 10);
+                    srand(time(0));
+                    static int tmp = 0.1;
+                    if (pos._y >= maxY) {
+                        tmp = -0.1;
+                    }
+                return tls::Vec3{pos._x, pos._y, pos._z};
+            }
+        };
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Trajectory {
+                .t = std::make_shared<float>(rand() % 100),
+                .trajectory = trajectories[0]
+            }
+        );
+    }
+
+    void GameController::_createChild(ECS::Entity parent, float offset, bool armed) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+        auto &traveling = _coordinator->getComponent<ECS::Traveling>(parent);
+        auto &transform = _coordinator->getComponent<ECS::Transform>(parent);
+        auto &weapon = _coordinator->getComponent<ECS::Weapon>(parent);
+        auto &collider = _coordinator->getComponent<ECS::Collider>(parent);
+        auto &clientUpdater = _coordinator->getComponent<ECS::ClientUpdater>(parent);
+        auto &trajectory = _coordinator->getComponent<ECS::Trajectory>(parent);
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = traveling.speed
+            }
+        );
+        float tmp = offset;
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Trajectory {
+                .t = std::make_shared<float>(tmp),
+                .trajectory = trajectory.trajectory
+            }
+        );
+        auto &ownTrajectory = _coordinator->getComponent<ECS::Trajectory>(*_entities.rbegin());
+        _coordinator->addComponent(*_entities.rbegin(),
+            ECS::Transform {
+                .position = trajectory.trajectory(transform.position, ownTrajectory.t),
+                .rotation = {0, 0, 0, 0},
+                .scale = {2.f, 2.f, 2.f}
+            }
+        );
+        if (armed) {
+            _coordinator->addComponent(
+                *_entities.rbegin(),
+                ECS::Weapon {
+                    .damage = weapon.damage / 2,
+                    .speed = weapon.speed,
+                    .durability = weapon.durability,
+                    .autoShoot = true,
+                    .shootFrequency = tls::Clock(1.5),
+                    .create_projectile = ECS::Shoot::basicEnemyShot
+                }
+            );
+        }
+
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/boss_body2.glb");
+        static bool first = true;
+        if (first) {
+            first = false;
+        }
+
+        _coordinator->addComponent(*_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = true,
+                .movable = false,
+                .velocity = {0.005, 0, 0},
+                .bounds = bdb
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "CHILD"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+    }
+
+    void GameController::_createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Traveling {
+                .speed = {0.02, 0, 0}
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {2.5f, 2.5f, 2.5f}
+            }
+        );
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Weapon {
+               .damage = 2.f,
+               .speed = .3f,
+               .durability = 1.f,
+               .autoShoot = true,
+               .shootFrequency = tls::Clock(clockSpeed),
+               .create_projectile = ECS::Shoot::basicEnemyShot
+           }
+        );
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/boss2.glb");
+        static bool first = true;
+        if (first) {
+            first = false;
+        }
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Collider {
+               .team = 1,
+               .breakable = true,
+               .movable = false,
+               .velocity = {0.005, 0, 0},
+               .bounds = bdb
+           }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "BOSS"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+        static float speed = .1;
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Trajectory {
+                .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += speed;
+                    static float radiusH = 10;
+                    static float radiusV = 20;
+                    return tls::Vec3{40 + radiusH * cos((*t) * 0.2), 7 + radiusV * sin((*t) * 0.2), pos._z};
+                }
+            }
+        );
+
+        static float offset = -speed*9;
+        for (int i = 0; i < nbChildren; i++) {
+            _createChild(*_entities.rbegin(), offset, i % 3 == 2 ? true : false);
+            offset -= speed*9;
+        }
     }
 
     void GameController::_createTile(tls::Vec3 pos) {
@@ -493,11 +707,11 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = .3f
+                .scale = {1.5f, 1.5f, 1.5f}
             }
         );
 
-        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Collider {
@@ -538,10 +752,10 @@ namespace rt {
             ECS::Transform {
                 .position = pos,
                 .rotation = {0, 0, 0, 0},
-                .scale = .2f
+                .scale = {1.0f, 1.0f, 1.0f}
             }
         );
-        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/cube.glb");
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Collider {
@@ -584,10 +798,11 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnnemy({40, 20, 0}, 1.5);
-            _createEnnemy({50, 10, 0}, 1.7);
-            _createEnnemy({55, 0, 0}, 1.2);
-            _createEnnemy({35, -6, 0}, 2);
+            // _createEnemy({50, 0, 0}, 1.0);
+            // _createEnemy({50, 0, 0}, 4.5);
+            // _createEnemy({55, 0, 0}, 1.2);
+            // _createEnemy({35, -6, 0}, 2);
+            _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 

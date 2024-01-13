@@ -66,20 +66,29 @@ namespace tls {
         return result;
     }
 
-    inline Matrix MatrixIdentity(void) {
-        Matrix result = { 1.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 1.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 1.0f, 0.0f,
+    inline Matrix MatrixScale(float scaleX = 1.0f, float scaleY = 1.0f, float scaleZ = 1.0f) {
+        Matrix result = { scaleX, 0.0f, 0.0f, 0.0f,
+                          0.0f, scaleY, 0.0f, 0.0f,
+                          0.0f, 0.0f, scaleZ, 0.0f,
                           0.0f, 0.0f, 0.0f, 1.0f };
 
         return result;
     }
 
-    inline Matrix MatrixRotateX(float angle) {
+    inline Matrix MatrixIdentity(void) {
         Matrix result = { 1.0f, 0.0f, 0.0f, 0.0f,
                           0.0f, 1.0f, 0.0f, 0.0f,
                           0.0f, 0.0f, 1.0f, 0.0f,
                           0.0f, 0.0f, 0.0f, 1.0f }; // MatrixIdentity()
+
+        return result;
+    }
+
+    inline Matrix MatrixRotateY(float angle) {
+        Matrix result = { 1.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 1.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 1.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 1.0f };
 
         float cosres = cosf(angle);
         float sinres = sinf(angle);
@@ -92,7 +101,7 @@ namespace tls {
         return result;
     }
 
-    inline Matrix MatrixRotateY(float angle)
+    inline Matrix MatrixRotateX(float angle)
     {
         Matrix result = { 1.0f, 0.0f, 0.0f, 0.0f,
                           0.0f, 1.0f, 0.0f, 0.0f,
