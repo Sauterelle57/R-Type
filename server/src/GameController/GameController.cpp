@@ -21,6 +21,7 @@ namespace rt {
         _pc->init();
         _pc->setSender(rt::SENDER_TYPE::SERVER);
         _pc->setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
+        _receivedMutex = std::make_shared<std::mutex>();
     }
 
     void GameController::_initializeCommands() {
@@ -36,76 +37,89 @@ namespace rt {
     }
 
     void GameController::_pushToReceivedList() {
-        long long currentTime = tls::Clock::getTimeStamp();
+        static tls::Clock tickrate_manager(0.01667);
 
+        if (!tickrate_manager.isTimeElapsed()) {
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(*_receivedMutex);
         for (auto &x : _receivedDataBuffer) {
             rt::ProtocolController pc;
             tls::Vec3 pos = {0, 0, 0};
             bool isShooting = false;
 
-            if (((currentTime - x.second.second.first) / 1000000) >= 5) {
-                rt::Protocol p;
-                p.sender = rt::SENDER_TYPE::CLIENT;
-                while (!x.second.second.second.empty()) {
-                    PROTOCOL_TYPE ptype = x.second.second.second.front().protocol;
-                    p_client client = x.second.second.second.front().client;
-                    if (ptype == rt::PROTOCOL_TYPE::MOVE) {
-                        pos += client.move;
-                    } else if (ptype == rt::PROTOCOL_TYPE::SHOOT) {
-                        isShooting = true;
-                    }
+            rt::Protocol p;
+            p.sender = rt::SENDER_TYPE::CLIENT;
+            while (!x.second.second.second.empty()) {
+                PROTOCOL_TYPE ptype = x.second.second.second.front().protocol;
+                p_client client = x.second.second.second.front().client;
+                if (ptype == rt::PROTOCOL_TYPE::MOVE) {
+                    pos += client.move;
+                } else if (ptype == rt::PROTOCOL_TYPE::SHOOT) {
+                    isShooting = true;
+                }
 
-                    // if (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0)
-                    //     std::cout << "isShooting: " << isShooting << std::endl;
-                    x.second.second.second.pop();
-                }                   
-                p.protocol = rt::PROTOCOL_TYPE::MOVE;
-                p.client.move = pos;
-                _receivedData.push({p, x.second.first.first, x.second.first.second});
-                x.second.second.first = tls::Clock::getTimeStamp();
+                // if (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0)
+                //     std::cout << "isShooting: " << isShooting << std::endl;
+                x.second.second.second.pop();
             }
+            p.protocol = rt::PROTOCOL_TYPE::MOVE;
+            p.client.move = pos;
+            if (isShooting)
+                p.protocol = rt::PROTOCOL_TYPE::SHOOT;
+            else if (isShooting && (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0))
+                p.protocol = rt::PROTOCOL_TYPE::MOVE_AND_SHOOT;
+            _receivedData.push({p, x.second.first.first, x.second.first.second});
         }
     }
 
     int GameController::exec() {
-        while (1) {
-            _pushToReceivedList();
-            // get data from queue
-            if (!_receivedData.empty()) {
-                ReceivedData data = _receivedData.front();
-                // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
-                commandHandler(data.data, data.ip, data.port);
-                // std::cout << "End of traitment" << std::endl;
-                _receivedData.pop();
-            }
-            if (_clock.isTimeElapsed()) {
-                _systems._systemTraveling->update();
-                _systems._systemProjectile->update(_camera);
-                _systems._systemShoot->update();
-                _systems._systemCollider->update();
-                _systems._systemMove->update();
-                _systems._systemAutoMove->update();
-                _systems._systemEnemy->update();
-                _systems._systemClientUpdater->update();
-            }
-            if (_clockEnemySpawn.isTimeElapsed()) {
-                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+        try {
+            while (1) {
+                _pushToReceivedList();
+                // get data from queue
+                if (!_receivedData.empty()) {
+                    ReceivedData data = _receivedData.front();
+                    // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
+                    commandHandler(data.data, data.ip, data.port);
+                    // std::cout << "End of traitment" << std::endl;
+                    _receivedData.pop();
                 }
+                if (_clock.isTimeElapsed()) {
+                    _systems._systemTraveling->update();
+                    _systems._systemProjectile->update(_camera);
+                    _systems._systemShoot->update();
+                    _systems._systemCollider->update();
+                    _systems._systemMove->update();
+                    _systems._systemAutoMove->update();
+                    _systems._systemEnemy->update();
+                    _systems._systemClientUpdater->update();
+                }
+                if (_clockEnemySpawn.isTimeElapsed()) {
+                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+                        _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+                    }
 
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
+                    if (_waveEnemy < 8)
+                        _waveEnemy++;
+                }
             }
+        } catch (...) {
+            std::cout << "Error in GameController::exec()" << std::endl;
+            this->exec();
         }
+        return 0;
     }
 
     void GameController::addReceivedData(const rt::Protocol &data, const std::string &ip, const int port) {
         // std::cout << "=> Pushing to buffer(-1)" << std::endl;
 
-        if (data.sender == rt::SENDER_TYPE::CLIENT && data.protocol == rt::PROTOCOL_TYPE::PING || data.protocol == rt::PROTOCOL_TYPE::ID || data.protocol == rt::PROTOCOL_TYPE::CONNECTION_REQUEST || data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
+        if (data.sender == rt::SENDER_TYPE::CLIENT && data.protocol == rt::PROTOCOL_TYPE::PING || data.protocol == rt::PROTOCOL_TYPE::ID || data.protocol == rt::PROTOCOL_TYPE::CONNECTION_REQUEST) {
             _receivedData.push({data, ip, port});
             return;
         }
+        std::lock_guard<std::mutex> lock(*_receivedMutex);
         if (_receivedDataBuffer.find(ip + ":" + std::to_string(port)) == _receivedDataBuffer.end()) {
             _receivedDataBuffer[ip + ":" + std::to_string(port)] = std::make_pair(std::make_pair(ip, port), std::make_pair(tls::Clock::getTimeStamp(), std::queue<rt::Protocol>()));
         }
@@ -128,7 +142,7 @@ namespace rt {
 
         try {
             // std::cout << "[" << command << "] " << data.length() << std::endl;
-            if (data.protocol == rt::PROTOCOL_TYPE::SHOOT || data.protocol == rt::PROTOCOL_TYPE::MOVE)
+            if (data.protocol == rt::PROTOCOL_TYPE::SHOOT || data.protocol == rt::PROTOCOL_TYPE::MOVE || data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT)
                 _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
             else
                 _commands.at(data.protocol)(data, ip, port);

@@ -27,6 +27,7 @@
 #include "PlayerManager.hpp"
 #include "Enemy.hpp"
 #include "Protocol.hpp"
+#include <mutex>
 
 namespace rt {
 
@@ -94,6 +95,8 @@ namespace rt {
             std::shared_ptr<ProtocolController> _pc;
 
             std::unordered_map<std::string, std::pair<std::pair<std::string, int>, std::pair<long long, std::queue<rt::Protocol>>>> _receivedDataBuffer;
+
+            std::shared_ptr<std::mutex> _receivedMutex;
     };
 
 }

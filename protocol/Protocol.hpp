@@ -32,7 +32,8 @@ namespace rt
         CONNECTION_REFUSED,
         OK,
         ENTITIES,
-        ID
+        ID,
+        MOVE_AND_SHOOT
     };
 
     // Client
@@ -142,7 +143,7 @@ namespace rt
             _protocol->protocol = rt::PROTOCOL_TYPE::ENTITIES;
 
             // auto bits = ProtocolController::convertEntityToBitset(ECSId, {true, true}, position, rotation, scale, type);
-            rt::Entity ent = {ECSId, std::bitset<15>(0b111111111111111), position, rotation, scale, type, bounds};
+            rt::Entity ent = {ECSId, std::bitset<15>(0b000000111111111), position, rotation, scale, type, bounds};
             // std::cout << bits << std::endl;
             _protocol->server.entities.push_back(ent);
             return *this;
@@ -456,16 +457,18 @@ namespace rt
             if (entity.signature[8])
                 oss.write(reinterpret_cast<const char*>(&entity.entityType), sizeof(entity.entityType));
 
-            oss.write(reinterpret_cast<const char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
-            oss.write(reinterpret_cast<const char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
-            oss.write(reinterpret_cast<const char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
-            oss.write(reinterpret_cast<const char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
-            oss.write(reinterpret_cast<const char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
-            oss.write(reinterpret_cast<const char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
+            // oss.write(reinterpret_cast<const char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
+            // oss.write(reinterpret_cast<const char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
+            // oss.write(reinterpret_cast<const char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
+            // oss.write(reinterpret_cast<const char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
+            // oss.write(reinterpret_cast<const char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
+            // oss.write(reinterpret_cast<const char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
         }
 
         static void deserializeEntity(std::istringstream& iss, rt::Entity& entity)
         {
+            entity.bounds.min = {0, 0, 0};
+            entity.bounds.max = {0, 0, 0};
             // Deserialize ECSEntity
             iss.read(reinterpret_cast<char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
 
@@ -503,12 +506,12 @@ namespace rt
                 iss.read(reinterpret_cast<char*>(&entity.entityType), sizeof(entity.entityType));
             }
 
-            iss.read(reinterpret_cast<char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
-            iss.read(reinterpret_cast<char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
-            iss.read(reinterpret_cast<char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
-            iss.read(reinterpret_cast<char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
-            iss.read(reinterpret_cast<char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
-            iss.read(reinterpret_cast<char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
+            // iss.read(reinterpret_cast<char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
+            // iss.read(reinterpret_cast<char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
+            // iss.read(reinterpret_cast<char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
+            // iss.read(reinterpret_cast<char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
+            // iss.read(reinterpret_cast<char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
+            // iss.read(reinterpret_cast<char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
         }
 
     };

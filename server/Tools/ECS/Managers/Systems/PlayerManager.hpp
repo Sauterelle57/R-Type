@@ -39,7 +39,7 @@ namespace ECS {
 
 
                     if (type.ip == ip && type.port == port) {
-                        if (data.protocol == rt::PROTOCOL_TYPE::MOVE) {
+                        if (data.protocol == rt::PROTOCOL_TYPE::MOVE || data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
                             int x, y, z;
 
                             x = data.client.move._x;
@@ -50,6 +50,9 @@ namespace ECS {
                             player.mooving._y = y * 0.25f;
                             player.mooving._z = z * 0.25f;
                         } else if (data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
+                            shooter.isShooting = true;
+                        }
+                        if (data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
                             shooter.isShooting = true;
                         }
                     }
