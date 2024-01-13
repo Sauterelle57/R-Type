@@ -10,11 +10,12 @@
 #include "IWrapper.hpp"
 #include <map>
 #include <memory>
+#include "Protocol.hpp"
 
 namespace rt {
 
     struct ReceivedData {
-        std::string data;
+        rt::Protocol data;
         std::string ip;
         int port;
     };
@@ -29,7 +30,7 @@ namespace rt {
         public:
             virtual ~IGameController() = default;
             virtual int exec() = 0;
-            virtual void addReceivedData(const std::string &data, const std::string &ip, const int port) = 0;
+            virtual void addReceivedData(const rt::Protocol &data, const std::string &ip, const int port) = 0;
 
             virtual void addWrapper(std::shared_ptr<IWrapper> wrapper) = 0;
     };

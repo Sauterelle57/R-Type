@@ -126,10 +126,10 @@ namespace RT {
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
                             _coordinator->destroyEntity(_serverToClient[ecsID]);
                         }
-
-                        std::ostringstream oss;
-                        oss << "ID " << receivedData.packetId;
-                        _udpClient->send(oss.str());
+                        
+                        pc.actionId(receivedData.packetId);
+                        auto toSend = pc.getProtocol();
+                        _udpClient->sendStruct(toSend);
                     }
                 }
             }

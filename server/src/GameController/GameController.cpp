@@ -21,58 +21,118 @@ namespace rt {
         _pc->init();
         _pc->setSender(rt::SENDER_TYPE::SERVER);
         _pc->setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
+        _receivedMutex = std::make_shared<std::mutex>();
     }
 
     void GameController::_initializeCommands() {
-        _commands["PING"] = [&](const std::string &data, const std::string &ip, const int port) {
+        _commands[rt::PROTOCOL_TYPE::PING] = [&](const rt::Protocol &data, const std::string &ip, const int port) {
             commandPing(data, ip, port);
         };
-        _commands["CONNECTION_REQUEST"] = [&](const std::string &data, const std::string &ip, const int port) {
+        _commands[rt::PROTOCOL_TYPE::CONNECTION_REQUEST] = [&](const rt::Protocol &data, const std::string &ip, const int port) {
             commandRequestConnection(data, ip, port);
         };
-        _commands["ID"] = [&](const std::string &data, const std::string &ip, const int port) {
+        _commands[rt::PROTOCOL_TYPE::ID] = [&](const rt::Protocol &data, const std::string &ip, const int port) {
             commandID(data, ip, port);
         };
     }
 
-    int GameController::exec() {
-        while (1) {
-            // get data from queue
-            if (!_receivedData.empty()) {
-                ReceivedData data = _receivedData.front();
-                commandHandler(data.data, data.ip, data.port);
-                _receivedData.pop();
-            }
-            if (_clock.isTimeElapsed()) {
-                _systems._systemTraveling->update();
-                _systems._systemProjectile->update(_camera);
-                _systems._systemShoot->update();
-                _systems._systemCollider->update();
-                _systems._systemMove->update();
-                _systems._systemAutoMove->update();
-                _systems._systemEnemy->update();
-                _systems._systemClientUpdater->update();
-            }
-            if (_clockEnemySpawn.isTimeElapsed()) {
-                for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-                    _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+    void GameController::_pushToReceivedList() {
+        static tls::Clock tickrate_manager(0.01667);
+
+        if (!tickrate_manager.isTimeElapsed()) {
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(*_receivedMutex);
+        for (auto &x : _receivedDataBuffer) {
+            rt::ProtocolController pc;
+            tls::Vec3 pos = {0, 0, 0};
+            bool isShooting = false;
+
+            rt::Protocol p;
+            p.sender = rt::SENDER_TYPE::CLIENT;
+            while (!x.second.second.second.empty()) {
+                PROTOCOL_TYPE ptype = x.second.second.second.front().protocol;
+                p_client client = x.second.second.second.front().client;
+                if (ptype == rt::PROTOCOL_TYPE::MOVE) {
+                    pos += client.move;
+                } else if (ptype == rt::PROTOCOL_TYPE::SHOOT) {
+                    isShooting = true;
                 }
 
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
+                // if (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0)
+                //     std::cout << "isShooting: " << isShooting << std::endl;
+                x.second.second.second.pop();
             }
+            p.protocol = rt::PROTOCOL_TYPE::MOVE;
+            p.client.move = pos;
+            if (isShooting)
+                p.protocol = rt::PROTOCOL_TYPE::SHOOT;
+            else if (isShooting && (p.client.move._x != 0 || p.client.move._y != 0 || p.client.move._z != 0))
+                p.protocol = rt::PROTOCOL_TYPE::MOVE_AND_SHOOT;
+            _receivedData.push({p, x.second.first.first, x.second.first.second});
         }
     }
 
-    void GameController::addReceivedData(const std::string &data, const std::string &ip, const int port) {
-        _receivedData.push({data, ip, port});
+    int GameController::exec() {
+        try {
+            while (1) {
+                _pushToReceivedList();
+                // get data from queue
+                if (!_receivedData.empty()) {
+                    ReceivedData data = _receivedData.front();
+                    // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
+                    commandHandler(data.data, data.ip, data.port);
+                    // std::cout << "End of traitment" << std::endl;
+                    _receivedData.pop();
+                }
+                if (_clock.isTimeElapsed()) {
+                    _systems._systemTraveling->update();
+                    _systems._systemProjectile->update(_camera);
+                    _systems._systemShoot->update();
+                    _systems._systemCollider->update();
+                    _systems._systemMove->update();
+                    _systems._systemAutoMove->update();
+                    _systems._systemEnemy->update();
+                    _systems._systemClientUpdater->update();
+                }
+                if (_clockEnemySpawn.isTimeElapsed()) {
+                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
+                        _createEnnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
+                    }
+
+                    if (_waveEnemy < 8)
+                        _waveEnemy++;
+                }
+            }
+        } catch (...) {
+            std::cout << "Error in GameController::exec()" << std::endl;
+            this->exec();
+        }
+        return 0;
+    }
+
+    void GameController::addReceivedData(const rt::Protocol &data, const std::string &ip, const int port) {
+        // std::cout << "=> Pushing to buffer(-1)" << std::endl;
+
+        if (data.sender == rt::SENDER_TYPE::CLIENT && data.protocol == rt::PROTOCOL_TYPE::PING || data.protocol == rt::PROTOCOL_TYPE::ID || data.protocol == rt::PROTOCOL_TYPE::CONNECTION_REQUEST) {
+            _receivedData.push({data, ip, port});
+            return;
+        }
+        std::lock_guard<std::mutex> lock(*_receivedMutex);
+        if (_receivedDataBuffer.find(ip + ":" + std::to_string(port)) == _receivedDataBuffer.end()) {
+            _receivedDataBuffer[ip + ":" + std::to_string(port)] = std::make_pair(std::make_pair(ip, port), std::make_pair(tls::Clock::getTimeStamp(), std::queue<rt::Protocol>()));
+        }
+        _receivedDataBuffer[ip + ":" + std::to_string(port)].second.second.push(data);
+        // std::cout << "Received data from " << ip << ":" << port << std::endl;
+        // _receivedData.push({data, ip, port});
     }
 
     void GameController::addWrapper(std::shared_ptr<IWrapper> wrapper) {
         _wrapper = wrapper;
     }
 
-    void GameController::commandHandler(const std::string &data, const std::string &ip, const int port) {
+    void GameController::commandHandler(const rt::Protocol &data, const std::string &ip, const int port) {
 
         // std::cout << "-------------------" << std::endl;
         // std::cout << "COMMAND HANDLER" << std::endl;
@@ -80,17 +140,12 @@ namespace rt {
         // std::cout << "data: " << data << std::endl;
         // std::cout << "-------------------" << std::endl;
 
-        std::istringstream iss(data);
-        std::string command;
-        iss >> command;
-
-
         try {
             // std::cout << "[" << command << "] " << data.length() << std::endl;
-            if (command == "SHOOT" || command == "MOVE")
+            if (data.protocol == rt::PROTOCOL_TYPE::SHOOT || data.protocol == rt::PROTOCOL_TYPE::MOVE || data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT)
                 _systems._systemPlayerManager->update(data, ip, port, _waveEnemy);
             else
-                _commands.at(command)(data, ip, port);
+                _commands.at(data.protocol)(data, ip, port);
         } catch (const std::out_of_range &e) {
             //_wrapper->sendTo("404", ip, port);
         }
@@ -514,12 +569,15 @@ namespace rt {
     }
 
     // Commands
-    void GameController::commandPing(const std::string &data, const std::string &ip, const int port) {
-        _wrapper->sendTo("OK", ip, port);
+    void GameController::commandPing(const rt::Protocol &data, const std::string &ip, const int port) {
+        rt::ProtocolController pc;
+        pc.responseOK();
+        auto toSend = pc.getProtocol();
+        _wrapper->sendStruct(toSend, ip, port);
         std::cout << "(>) Sent information" << std::endl;
     }
 
-    void GameController::commandRequestConnection(const std::string &data, const std::string &ip, const int port) {
+    void GameController::commandRequestConnection(const rt::Protocol &data, const std::string &ip, const int port) {
         if (!_clientController->isClientExist(ip, port))
             _clientController->addClient(ip, port);
         _createPlayer(ip, port);
@@ -533,19 +591,15 @@ namespace rt {
         }
     }
 
-    void GameController::commandID(const std::string &data, const std::string &ip, const int port) {
+    void GameController::commandID(const rt::Protocol &data, const std::string &ip, const int port) {
         // std::cout << "ID: " << data << std::endl;
         if (!_clientController->isClientExist(ip, port)) {
             return;
         }
 
         std::shared_ptr<rt::Client> _client = _clientController->getClient(ip, port);
-        long long id;
-        std::string command;
-        std::istringstream iss(data);
+        long long id = data.packetId;
 
-        iss >> command;
-        iss >> id;
         _client->getDeltaManager()->validatePacket(id);
     }
 }

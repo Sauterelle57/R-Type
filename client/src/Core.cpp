@@ -80,16 +80,20 @@ namespace RT {
         Menu menu;
         menu.loop(_window, _event, false);
         bool canReach = false;
+        rt::ProtocolController pc;
+        pc.actionPing();
+        auto dt1 = pc.getProtocol();
         while (!canReach) {
             _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex, _isRunningMutex);
             tls::Clock tryingToConnect(0.1);
             while (!tryingToConnect.isTimeElapsed() && !canReach) {
-                _udpClient->send("PING");
+                _udpClient->sendStruct(dt1);
                 {
                     std::lock_guard<std::mutex> lock(*_messageQueueMutex);
                     while (!_receivedMessages->empty()) {
                         std::string message = _receivedMessages->front().message;
-                        if (message == "OK") {
+                        auto data = rt::ProtocolController::deserialize(message);
+                        if (data.sender == rt::SENDER_TYPE::SERVER && data.protocol == rt::PROTOCOL_TYPE::OK) {
                             canReach = true;
                         }
                         _receivedMessages->pop();
@@ -110,7 +114,10 @@ namespace RT {
                 menu.loop(_window, _event, true);
             }
         }
-        _udpClient->send("CONNECTION_REQUEST");
+        pc.init();
+        pc.actionConnectionRequest();
+        auto _dataToSend = pc.getProtocol();
+        _udpClient->sendStruct(_dataToSend);
         _listener = std::make_unique<Listener>(_coordinator, _entities, _camera, _udpClient);
         _clock = std::make_unique<tls::Clock>(0.01);
     }
