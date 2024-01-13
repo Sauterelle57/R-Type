@@ -75,10 +75,9 @@ namespace rt {
             void _createPlayer(std::string ip, int port);
             void _createEnemy(tls::Vec3 pos, float clockSpeed);
             void _createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren);
-            void _createChild(ECS::Entity parent);
+            void _createChild(ECS::Entity parent, float offset, bool armed);
             void _createTile(tls::Vec3 pos);
             void _createBreakableTile(tls::Vec3 pos);
-
 
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;

@@ -20,8 +20,7 @@ namespace ECS {
     class Shoot : public System {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
-                // static tls::Matrix scaleMatrix = tls::MatrixScale(1.f, 1.f, 1.f);
-                static tls::Matrix rotationMatrix = tls::MatrixRotateY(180 * DEG2RAD);
+                static tls::Matrix rotationMatrix = tls::MatrixRotateX(180 * DEG2RAD);
                 static tls::Matrix finalTransformation = MatrixMultiply(tls::MatrixIdentity(), rotationMatrix);
 
                 static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
@@ -35,9 +34,9 @@ namespace ECS {
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Transform {
-                        .position = _pos + 10,
-                        .rotation = {0, 1, 0, 180},
-                        .scale = {0.2f, 0.2f, 0.2f}
+                        .position = _pos,
+                        .rotation = {0, 0, 0, 0},
+                        .scale = {0.06f, 0.03f, 0.06f}
                     }
                 );
                 _coordinator->addComponent(
@@ -96,18 +95,19 @@ namespace ECS {
                         .scale = {0.15f, 0.15f, 0.15f}
                     }
                 );
+                static float speed = 0.2f;
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Projectile {
-                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
-                        .speed = 0.2f
+                        .damage = 1,
+                        .speed = speed
                     }
                 );
                 _coordinator->addComponent(
                     *_entities.rbegin(),
                     Trajectory {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                            return tls::Vec3{pos._x - 0.2, pos._y, pos._z};
+                            return tls::Vec3{pos._x - speed, pos._y, pos._z};
                         }
                     }
                 );
