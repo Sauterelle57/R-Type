@@ -75,15 +75,8 @@ namespace rt
                 diff.signature[7] = diff.scale._x != entityNow.scale._x;
                 diff.signature[8] = diff.scale._y != entityNow.scale._y;
                 diff.signature[9] = diff.scale._z != entityNow.scale._z;
+
                 diff.signature[10] = diff.entityType != entityNow.entityType;
-
-                diff.signature[11] = diff.bounds.min._x != entityNow.bounds.min._x;
-                diff.signature[12] = diff.bounds.min._y != entityNow.bounds.min._y;
-                diff.signature[13] = diff.bounds.min._z != entityNow.bounds.min._z;
-
-                diff.signature[14] = diff.bounds.max._x != entityNow.bounds.max._x;
-                diff.signature[15] = diff.bounds.max._y != entityNow.bounds.max._y;
-                diff.signature[16] = diff.bounds.max._z != entityNow.bounds.max._z;
 
                 entityNow.signature = diff.signature;
 
