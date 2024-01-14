@@ -25,6 +25,18 @@ void ECS::LvlManager::update(rt::GameController &gameController) {
             if (level.alreadyReached.contains(step.pos_x) || step.pos_x > camera.position._x)
                 continue;
 
+            for (auto &player : gameController._players) {
+                auto &weapon = coordinatorPtr->getComponent<Weapon>(player);
+                if (step.weapon == "sin")
+                    weapon.create_projectile = Shoot::sinShot;
+                else if (step.weapon == "doubleSin")
+                    weapon.create_projectile = Shoot::doubleSinShot;
+                else if (step.weapon == "triple")
+                    weapon.create_projectile = Shoot::tripleShot;
+                else
+                    weapon.create_projectile = Shoot::basicShot;
+            }
+
             for (const auto& entity : step.entity) {
                 if (entity.type == "enemy1") {
                     gameController._createEnemy({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed);

@@ -414,13 +414,6 @@ namespace RT {
                                             .shader = _lightShader
                                     }
                             );
-                            _coordinator->addComponent(
-                                    *_entities->rbegin(),
-                                    ECS::Model{
-                                            .model = _sphereModel,
-                                            .color = color
-                                    }
-                            );
                         }
                     } else if (type == rt::ENTITY_TYPE::TILE_BREAKABLE) {
                         _coordinator->addComponent(

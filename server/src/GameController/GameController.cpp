@@ -340,7 +340,9 @@ namespace rt {
     }
 
     void GameController::_createPlayer(std::string ip, int port) {
-        _entities.insert(_entities.end(), _coordinator->createEntity());
+        auto entityCreated = _coordinator->createEntity();
+        _entities.insert(_entities.end(), entityCreated);
+        _players.push_back(entityCreated);
 
         _coordinator->addComponent(
             *_entities.rbegin(),

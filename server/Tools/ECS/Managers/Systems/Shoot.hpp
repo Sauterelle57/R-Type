@@ -296,7 +296,7 @@ namespace ECS {
                         Transform {
                             .position = _pos,
                             .rotation = rotations[i],
-                            .scale = {0.15f, 0.15f, 0.15f}
+                            .scale = {0.05f, 0.05f, 0.05f}
                         }
                     );
                     _coordinator->addComponent(
