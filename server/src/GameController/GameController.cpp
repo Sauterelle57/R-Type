@@ -76,38 +76,33 @@ namespace rt {
     }
 
     int GameController::exec() {
-        try {
-            while (1) {
-                _pushToReceivedList();
-                // get data from queue
-                if (!_receivedData.empty()) {
-                    ReceivedData data = _receivedData.front();
-                    // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
-                    commandHandler(data.data, data.ip, data.port);
-                    // std::cout << "End of traitment" << std::endl;
-                    _receivedData.pop();
-                }
-                if (_clock.isTimeElapsed()) {
-                    _systems._systemTraveling->update();
-                    _systems._systemProjectile->update(_camera);
-                    _systems._systemShoot->update();
-                    _systems._systemCollider->update();
-                    _systems._systemMove->update();
-                    _systems._systemAutoMove->update();
-                    _systems._systemClientUpdater->update();
-                }
-                if (_clockEnemySpawn.isTimeElapsed()) {
+        while (1) {
+            _pushToReceivedList();
+            // get data from queue
+            if (!_receivedData.empty()) {
+                ReceivedData data = _receivedData.front();
+                // std::cout << "Received : " << data.data.sender << ", " << data.data.protocol << std::endl;
+                commandHandler(data.data, data.ip, data.port);
+                // std::cout << "End of traitment" << std::endl;
+                _receivedData.pop();
+            }
+            if (_clock.isTimeElapsed()) {
+                _systems._systemTraveling->update();
+                _systems._systemProjectile->update(_camera);
+                _systems._systemShoot->update();
+                _systems._systemCollider->update();
+                _systems._systemMove->update();
+                _systems._systemAutoMove->update();
+                _systems._systemClientUpdater->update();
+            }
+            if (_clockEnemySpawn.isTimeElapsed()) {
 //                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
 //                        _createEnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
 //                    }
 
-                    if (_waveEnemy < 8)
-                        _waveEnemy++;
-                }
+                if (_waveEnemy < 8)
+                    _waveEnemy++;
             }
-        } catch (...) {
-            std::cout << "Error in GameController::exec()" << std::endl;
-            this->exec();
         }
         return 0;
     }
@@ -328,7 +323,7 @@ namespace rt {
                 .team = 8,
                 .breakable = false,
                 .movable = false,
-                .bounds = tls::BoundingBox({-1000, -1000, -1000}, {-1000, -1000, -1000}),
+                .bounds = tls::BoundingBox({-45, -45, -45}, {45, 45, 45}),
             }
         );
 
@@ -411,14 +406,9 @@ namespace rt {
     }
 
     void GameController::_createEnemy(tls::Vec3 pos, float clockSpeed) {
+        std::cout << "Creating enemy : " << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
-        _coordinator->addComponent(
-            *_entities.rbegin(),
-            ECS::Traveling {
-                .speed = {-0.02, 0, 0}
-            }
-        );
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
@@ -480,73 +470,25 @@ namespace rt {
                 .active = true
             }
         );
-        static float speed = 0.003f;
-        std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
-            [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    int amplitude = 14;
-                    int height = 13;
-                    int gap = 4;
-                    int randAmplitude = 5;
-                    int randHeight = 13;
-                    int randGap = 4;
-                    srand(time(0));
-                    double randomY = asin(sin((*t) * randGap)) * randAmplitude + randHeight;
-                return tls::Vec3{pos._x, asin(sin((*t) * gap)) * amplitude + height, pos._z};
-            },
-            [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    int amplitude = 14;
-                    int height = 13;
-                    int gap = 4;
-                    int randAmplitude = 5;
-                    int randHeight = 13;
-                    int randGap = 4;
-                    srand(time(0));
-                    double randomY = acos(sin((*t) * randGap)) * randAmplitude + randHeight;
-                return tls::Vec3{pos._x, acos(sin((*t) * gap)) * amplitude + height, pos._z};
-            },
-            [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    int amplitude = 1;
-                    int height = 15;
-                    int gap = 1.0;
-                    int randAmplitude = 0.5;
-                    int randHeight = 0.1;
-                    int randGap = 0.2;
-                    srand(time(0));
-                    double randomY = atan(cos((*t) * randGap + rand() % 100)) * randAmplitude + randHeight;
-                return tls::Vec3{pos._x, atan(cos((*t) * gap)) * amplitude + height + randomY, pos._z};
-            },
-            [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    static int maxY = -18 + rand() % 43 + 10;
-                    static int minY = 35 - (rand() % 43 + 10);
-                    srand(time(0));
-                    static int tmp = 0.1;
-                    if (pos._y >= maxY) {
-                        tmp = -0.1;
-                    }
-                return tls::Vec3{pos._x, pos._y, pos._z};
-            }
-        };
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Trajectory {
                 .t = std::make_shared<float>(rand() % 100),
-                .trajectory = trajectories[0]
+                .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    return tls::Vec3{pos._x - 0.1, pos._y, pos._z};
+                }
             }
         );
     }
 
     void GameController::_createChild(ECS::Entity parent, float offset, bool armed) {
-        _entities.insert(_entities.end(), _coordinator->createEntity());
         auto &traveling = _coordinator->getComponent<ECS::Traveling>(parent);
         auto &transform = _coordinator->getComponent<ECS::Transform>(parent);
         auto &weapon = _coordinator->getComponent<ECS::Weapon>(parent);
         auto &collider = _coordinator->getComponent<ECS::Collider>(parent);
         auto &clientUpdater = _coordinator->getComponent<ECS::ClientUpdater>(parent);
         auto &trajectory = _coordinator->getComponent<ECS::Trajectory>(parent);
+        _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
             *_entities.rbegin(),
@@ -682,8 +624,10 @@ namespace rt {
         );
 
         static float offset = -speed*9;
+        int parentId =  *_entities.rbegin();
+
         for (int i = 0; i < nbChildren; i++) {
-            _createChild(*_entities.rbegin(), offset, i % 3 == 2 ? true : false);
+            _createChild(parentId, offset, i % 3 == 2 ? true : false);
             offset -= speed*9;
         }
     }
@@ -793,10 +737,10 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            // _createEnemy({50, 0, 0}, 1.0);
-            // _createEnemy({50, 0, 0}, 4.5);
-            // _createEnemy({55, 0, 0}, 1.2);
-            // _createEnemy({35, -6, 0}, 2);
+//            _createEnemy({50, -5, 0}, 2.0);
+//            _createEnemy({50, 5, 0}, 2.5);
+//            _createEnemy({55, 0, 0}, 1.2);
+//            _createEnemy({35, -6, 0}, 2);
             _createBoss({50, 0, 0}, 1.5, 20);
         }
     }

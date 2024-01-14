@@ -57,8 +57,8 @@ namespace ECS {
 
                 // transform.rotation = {0, 0, 1, angle - 90};
 
-                if (std::abs(camTransform.position._x - transform.position._x) > 50 || std::abs(camTransform.position._y - transform.position._y) > 50 ||
-                    std::abs(camTransform.position._x - transform.position._x) < -50 || std::abs(camTransform.position._y - transform.position._y) < -50) {
+                if (std::abs(camTransform.position._x - transform.position._x) > 75 || std::abs(camTransform.position._y - transform.position._y) > 75 ||
+                    std::abs(camTransform.position._x - transform.position._x) < -75 || std::abs(camTransform.position._y - transform.position._y) < -75) {
                     for (auto const &clientID : clientIDS) {
                         // std::ostringstream responseStream;
                         // responseStream << entity << " DESTROY";

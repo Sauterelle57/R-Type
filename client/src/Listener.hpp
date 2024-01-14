@@ -39,7 +39,8 @@ namespace RT {
                 {
                     _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
                     Matrix matr = MatrixIdentity();
-                    matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixRotateX(180 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
                     _modelEnemy->_model->transform = matr;
                 }
                 {
@@ -49,10 +50,10 @@ namespace RT {
                     _modelChild = std::make_shared<RL::ZModel>("./client/resources/models/boss_body2.glb");
                 }
                 {
-                    _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/missile.glb");
-                    Matrix rotationMatrix = MatrixRotateY(180 * DEG2RAD);
-                    Matrix finalTransformation = MatrixMultiply(MatrixIdentity(), rotationMatrix);
-                    _modelShot->_model->transform = finalTransformation;
+                    _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
+                    Matrix matr = MatrixRotateY(180 * DEG2RAD);
+                    matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
+                    _modelShot->_model->transform = matr;
                 }
                 {
                     _modelEnemyShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
@@ -124,8 +125,44 @@ namespace RT {
 
                         for (auto &ecsID : receivedData.server.destroyedEntities) {
                             if (!_deletedIDAlreadyRemoved.contains(ecsID.second)) {
+                                auto transform = _coordinator->getComponent<ECS::Transform>(_serverToClient[ecsID.first]);
                                 _coordinator->destroyEntity(_serverToClient[ecsID.first]);
                                 _deletedIDAlreadyRemoved.insert(ecsID.second);
+
+
+
+                                _entities->insert(_entities->end(), _coordinator->createEntity());
+                                transform.scale = {1, 1, 1};
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        transform
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Particles{
+                                                .particles = std::vector<ECS::Particle>(10),
+                                                .texture = _explosionTexture,
+                                                .speed = 400.0f,
+                                                .scaleOffset = {.3f, .3f, .3f},
+                                                .positionOffset = {0, 0, 0},
+                                                .lifeTime = 6000,
+                                                .spawnRate = 1,
+                                                .surviveChance = 30,
+                                                .initParticle = ECS::ParticleSystem::initParticleExplosion,
+                                                .drawParticle = ECS::ParticleSystem::drawParticlesExplosion,
+                                                .shader = _shaderParticles
+                                        }
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::Velocity{}
+                                );
+                                _coordinator->addComponent(
+                                        *_entities->rbegin(),
+                                        ECS::SelfDestruct{
+                                                .timer = tls::Clock(.4)
+                                        }
+                                );
                             }
                         }
 
@@ -462,10 +499,10 @@ namespace RT {
                                         .particles = std::vector<ECS::Particle>(500),
                                         .texture = _particleTexture,
                                         .speed = 75.0f,
-                                        .scaleOffset = {1, 1, 1},
+                                        .scaleOffset = {3, 3, 3},
                                         .positionOffset = {-0.5, 0, 0},
                                         .lifeTime = 2,
-                                        .spawnRate = 35,
+                                        .spawnRate = 10,
                                         .surviveChance = 5,
                                         .initParticle = ECS::ParticleSystem::initParticleConeLeft,
                                         .drawParticle = ECS::ParticleSystem::drawParticlesDefault,

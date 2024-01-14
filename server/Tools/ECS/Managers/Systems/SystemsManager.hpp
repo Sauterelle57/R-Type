@@ -23,8 +23,8 @@ namespace ECS {
             std::shared_ptr<T> registerSystem() {
                 const char *typeName = typeid(T).name();
 
-//                if (_systems.find(typeName) != _systems.end())
-//                    throw tls::Error("Registering system more than once.");
+                if (_systems.find(typeName) != _systems.end())
+                    throw tls::Error("Registering system more than once.");
 
                 auto system = std::make_shared<T>(_coordinator);
                 _systems.insert({typeName, system});
@@ -35,8 +35,8 @@ namespace ECS {
             void setSignature(Signature signature) {
                 const char *typeName = typeid(T).name();
 
-//                if (_systems.find(typeName) == _systems.end())
-//                    throw tls::Error("System used before registered.");
+                if (_systems.find(typeName) == _systems.end())
+                    throw tls::Error("System used before registered.");
 
                 _signatures.insert({typeName, signature});
             }
