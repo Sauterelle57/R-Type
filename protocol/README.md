@@ -6,16 +6,6 @@ This document specifies the communication protocol for the R-Type project. The p
 
 ## 2. Client to Server Command Format
 
-Commands follow the general format:
-
-| COMMAND             | ARGUMENTS      | POSSIBLE RESPONSES                  |
-| --------------------| -------------- | ----------------------------------- |
-| PING                | ——             | "OK"                                |
-| CONNECTION_REQUEST  | ——             | "CONNECTION_ACCEPTED {ID}" <br> "CONNECTION_REFUSED" |
-| DISCONNECT          | ——             | ——                                  |
-| MOVE                | X Y Z          | ——                                  |
-| SHOOT               | ——             | ——                                  |
-
 ### 2.1 Command Details
 
 #### 2.1.1 PING
@@ -60,21 +50,20 @@ Commands follow the general format:
 
 The "Get Map" event is used to obtain information about entities present on the map.
 
-- **Format:** `[MAP ID,LVL,X,Y,PV,SPRITE_ID ID2,LVL2,X2,Y2,PV2,SPRITE_ID2 ...]`
-- **Example:** `[MAP 1,0,500,50,5,1 2,0,200,300,4,2]`
 
-This example indicates the presence of two entities on the map.
+```cpp
+The client will receive : std::vector<Entity>
 
-- Entity 1:
-  - Level: 0
-  - X: 500
-  - Y: 50
-  - PV: 5
-  - Sprite ID: 1
+struct Entity
+    {
+        std::uint32_t ECSEntity;
 
-- Entity 2:
-  - Level: 0
-  - X: 200
-  - Y: 300
-  - PV: 4
-  - Sprite ID: 2
+        std::bitset<15> signature;
+
+        tls::Vec3 position;
+        tls::Vec4 rotation;
+        tls::Vec3 scale;
+        ENTITY_TYPE entityType;
+        tls::BoundingBox bounds;
+    };
+```

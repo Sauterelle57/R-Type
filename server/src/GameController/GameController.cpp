@@ -10,10 +10,10 @@
 
 namespace rt {
 
-    GameController::GameController()
+    GameController::GameController(bool debug, std::string mapFilePath)
     {
         try {
-            const std::string path = "map_editor/map_test.json";
+            const std::string path = mapFilePath;
             _data = lvl::jsonParsing(path);
         } catch (const std::exception &e) {
             std::cerr << e.what() << std::endl;
@@ -33,6 +33,7 @@ namespace rt {
         _pc->setSender(rt::SENDER_TYPE::SERVER);
         _pc->setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
         _receivedMutex = std::make_shared<std::mutex>();
+        _debug = debug;
     }
 
     void GameController::_initializeCommands() {
@@ -103,7 +104,7 @@ namespace rt {
                 _systems._systemCollider->update();
                 _systems._systemMove->update();
                 _systems._systemAutoMove->update();
-                _systems._systemClientUpdater->update();
+                _systems._systemClientUpdater->update(_debug);
                 _systems._systemLvlManager->update(*this);
             }
         }
@@ -330,7 +331,7 @@ namespace rt {
 
         for (float i = -50; i < 55; i += 3) {
             _createTile({i, 35, 0});
-            _createTile({i, -12, 0});
+            _createTile({i, -15, 0});
         }
         // _createTile({30, 29, 0});
         // _createBreakableTile({10, 20, 0});
@@ -339,7 +340,10 @@ namespace rt {
     }
 
     void GameController::_createPlayer(std::string ip, int port) {
-        _entities.insert(_entities.end(), _coordinator->createEntity());
+        static float playerPos = 0;
+        auto entityCreated = _coordinator->createEntity();
+        _entities.insert(_entities.end(), entityCreated);
+        _players.push_back(entityCreated);
 
         _coordinator->addComponent(
             *_entities.rbegin(),
@@ -350,11 +354,12 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {0, 0, 0},
+                .position = {0, 0 + playerPos, 0},
                 .rotation = {0, 0, 0, 0},
                 .scale = {0.5f, 0.5f, 0.5f}
             }
         );
+        playerPos += 5;
         static float damage = 50.f;
         _coordinator->addComponent(
            *_entities.rbegin(),
@@ -894,6 +899,47 @@ namespace rt {
         );
     }
 
+    void GameController::_createTileWithoutTraveling(tls::Vec3 pos) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {1.5f, 1.5f, 1.5f}
+            }
+        );
+
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = false,
+                .movable = false,
+                .velocity = {0.01, 0, 0},
+                .bounds = bounds,
+                .life = INFINITY,
+                .maxLife = INFINITY
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "TILE"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+    }
+
     void GameController::_createBreakableTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
@@ -922,6 +968,47 @@ namespace rt {
                 .bounds = bounds,
                 .life = 1.0,
                 .maxLife = 1.0
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "TILE_BREAKABLE"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+    }
+
+    void GameController::_createBreakableTileWithoutTraveling(tls::Vec3 pos) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {1.0f, 1.0f, 1.0f}
+            }
+        );
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = true,
+                .movable = false,
+                .velocity = {0.01, 0, 0},
+                .bounds = bounds,
+                .life = 1.0,
+                .maxLife = 1.0,
+                .damage = 25.0
             }
         );
         _coordinator->addComponent(

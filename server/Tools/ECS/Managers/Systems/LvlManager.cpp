@@ -25,6 +25,18 @@ void ECS::LvlManager::update(rt::GameController &gameController) {
             if (level.alreadyReached.contains(step.pos_x) || step.pos_x > camera.position._x)
                 continue;
 
+            for (auto &player : gameController._players) {
+                auto &weapon = coordinatorPtr->getComponent<Weapon>(player);
+                if (step.weapon == "sin")
+                    weapon.create_projectile = Shoot::sinShot;
+                else if (step.weapon == "doubleSin")
+                    weapon.create_projectile = Shoot::doubleSinShot;
+                else if (step.weapon == "triple")
+                    weapon.create_projectile = Shoot::tripleShot;
+                else
+                    weapon.create_projectile = Shoot::basicShot;
+            }
+
             for (const auto& entity : step.entity) {
                 static tls::Random random;
                 if (entity.type == "enemy1") {
@@ -33,10 +45,16 @@ void ECS::LvlManager::update(rt::GameController &gameController) {
                 if (entity.type == "enemy2") {
                     gameController._createEnemy2({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(0.5, 2.0));
                 }
+                else if (entity.type == "breakableTile") {
+                    gameController._createBreakableTileWithoutTraveling({entity.x + camera.position._x, entity.y, entity.z});
+                }
+                else if (entity.type == "tile") {
+                    gameController._createTileWithoutTraveling({entity.x + camera.position._x, entity.y, entity.z});
+                }
                 if (entity.type == "floorEnemy") {
                     gameController._createFloorEnemy({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(1.0, 3.0), random.getRandomDouble(0.02, 0.07));
                 }
-                if (entity.type == "boss") {
+                else if (entity.type == "boss") {
                     gameController._createBoss({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed, 20);
                 }
             }

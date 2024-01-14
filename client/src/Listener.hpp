@@ -222,11 +222,12 @@ namespace RT {
                     );
 //                    std::cout << "Create entity with [" << ecsID << "] and type : " << type << std::endl;
                     if (type == rt::ENTITY_TYPE::PLAYER) {
+                        static int i = 0;
                         std::cout << "Create player ! with [" << ecsID << "]" << std::endl;
                         _coordinator->addComponent(
                             *_entities->rbegin(),
                             ECS::Model{
-                                .model = _playerModel[0]
+                                .model = _playerModel[i++ % _playerModel.size()],
                             }
                         );
                         _coordinator->addComponent(
@@ -419,13 +420,6 @@ namespace RT {
                                     *_entities->rbegin(),
                                     ECS::ShaderComponent{
                                             .shader = _lightShader
-                                    }
-                            );
-                            _coordinator->addComponent(
-                                    *_entities->rbegin(),
-                                    ECS::Model{
-                                            .model = _sphereModel,
-                                            .color = color
                                     }
                             );
                         }

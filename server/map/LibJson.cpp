@@ -20,6 +20,7 @@ namespace lvl {
         for (const auto& step : steps) {
             Step p;
             p.pos_x = step["pos_x"].get<int>();
+            p.weapon = step["weapon"].get<std::string>();
 
             if (step.find("conditions") != step.end()) {
                 auto conditions = step["conditions"];

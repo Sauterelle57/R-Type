@@ -35,7 +35,7 @@ namespace rt {
 
     class GameController : public IGameController {
         public:
-            GameController();
+            GameController(bool debug, std::string mapFilePath);
             ~GameController() = default;
 
             int exec();
@@ -74,7 +74,10 @@ namespace rt {
             void _createTile(tls::Vec3 pos);
             void _createBreakableTile(tls::Vec3 pos);
             void _createLvl();
+            void _createTileWithoutTraveling(tls::Vec3 pos);
+            void _createBreakableTileWithoutTraveling(tls::Vec3 pos);
             ECS::Entity _camera;
+            std::vector<ECS::Entity> _players;
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
@@ -107,6 +110,7 @@ namespace rt {
             std::shared_ptr<std::mutex> _receivedMutex;
 
             lvl::StageValue _data;
+            bool _debug;
     };
 
 }

@@ -18,7 +18,7 @@
 namespace ECS {
     class ClientUpdaterSystem : public System {
         public:
-            void update() {
+            void update(bool debug) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     std::cout << "ClientUpdaterSystem: coordinatorPtr is null" << std::endl;
@@ -98,7 +98,7 @@ namespace ECS {
                         clt->getDeltaManager()->deleteEntity(x);
                     }
                     clt->getDeltaManager()->setPacket(newProto);
-                    auto response = clu._pc->serialize(newProto);
+                    auto response = clu._pc->serialize(newProto, debug);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                 }
 
