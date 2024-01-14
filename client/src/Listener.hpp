@@ -24,11 +24,17 @@ namespace RT {
         public:
             Listener(std::shared_ptr<ECS::Coordinator> &coordinator, std::shared_ptr<std::set<Entity>> entities, std::shared_ptr<RL::ICamera> cam, std::shared_ptr<rt::UdpClient> udpClient) : _coordinator(coordinator), _entities(entities), _cam(cam), _udpClient(udpClient) {
                 {
-                    _playerModel = std::make_shared<RL::ZModel>("./client/resources/models/player.glb");
+                    _playerModel = std::vector<std::shared_ptr<RL::ZModel>>();
+                    _playerModel.push_back(std::make_shared<RL::ZModel>("./client/resources/models/player1.glb"));
+                    _playerModel.push_back(std::make_shared<RL::ZModel>("./client/resources/models/player2.glb"));
+                    _playerModel.push_back(std::make_shared<RL::ZModel>("./client/resources/models/player3.glb"));
+                    _playerModel.push_back(std::make_shared<RL::ZModel>("./client/resources/models/player4.glb"));
+                    _playerModel.push_back(std::make_shared<RL::ZModel>("./client/resources/models/player5.glb"));
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateY(90 * DEG2RAD));
                     matr = MatrixMultiply(matr, MatrixRotateZ(-90 * DEG2RAD));
-                    _playerModel->_model->transform = matr;
+                    for (int i = 0 ; i < _playerModel.size() ; i++)
+                        _playerModel[i]->_model->transform = matr;
                 }
                 {
                     _tileBMmodel = std::make_shared<RL::ZModel>("./client/resources/models/obstacle.glb");
@@ -193,13 +199,13 @@ namespace RT {
                     );
                     // DBD
                     _coordinator->addComponent(
-                            *_entities->rbegin(),
-                            ECS::Bdb{
-                                    .bounds = {
-                                            .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
-                                            .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
-                                    }
+                        *_entities->rbegin(),
+                        ECS::Bdb{
+                            .bounds = {
+                                .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
+                                .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
                             }
+                        }
                     );
 //                    std::cout << "Create entity with [" << ecsID << "] and type : " << type << std::endl;
                     if (type == rt::ENTITY_TYPE::PLAYER) {
@@ -207,14 +213,14 @@ namespace RT {
                         _coordinator->addComponent(
                             *_entities->rbegin(),
                             ECS::Model{
-                                .model = _playerModel,
+                                .model = _playerModel[0]
                             }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
                         );
                         _coordinator->addComponent(
                             *_entities->rbegin(),
@@ -230,33 +236,33 @@ namespace RT {
                             }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(5000),
-                                        .texture = _particleBlueTexture,
-                                        .speed = .1f,
-                                        .scaleOffset = {.1f, .1f, .1f},
-                                        .positionOffset = {0, 0, 0},
-                                        .lifeTime = 50,
-                                        .spawnRate = 60,
-                                        .surviveChance = 0,
-                                        .initParticle = ECS::ParticleSystem::initParticleField,
-                                        .drawParticle = ECS::ParticleSystem::drawParticleField,
-                                        .shader = _shaderParticles
-                                }
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(5000),
+                                .texture = _particleBlueTexture,
+                                .speed = .1f,
+                                .scaleOffset = {.1f, .1f, .1f},
+                                .positionOffset = {0, 0, 0},
+                                .lifeTime = 50,
+                                .spawnRate = 60,
+                                .surviveChance = 0,
+                                .initParticle = ECS::ParticleSystem::initParticleField,
+                                .drawParticle = ECS::ParticleSystem::drawParticleField,
+                                .shader = _shaderParticles
+                            }
                         );
                         _coordinator->addComponent(
                                 *_entities->rbegin(),
                                 ECS::Velocity{}
                         );
                     } else if (type == rt::ENTITY_TYPE::PLAYER_NY) {
-                        static int i = 0;
-                        std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
+                        static int i = 1;
+                        // std::vector<Color> colors = {RED, GREEN, YELLOW, PURPLE, ORANGE, PINK};
                         _coordinator->addComponent(
                             *_entities->rbegin(),
                             ECS::Model{
-                                .model = _playerModel,
-                                .color = colors[i++ % colors.size()]
+                                .model = _playerModel[i % _playerModel.size()],
+                                // .color = colors[i % colors.size()]
                             }
                         );
                         _coordinator->addComponent(
@@ -623,7 +629,7 @@ namespace RT {
             std::shared_ptr<std::set<Entity>> _entities;
             std::unordered_map<Entity, Entity> _serverToClient;
             std::shared_ptr<RL::ICamera> _cam;
-            std::shared_ptr<RL::ZModel> _playerModel;
+            std::vector<std::shared_ptr<RL::ZModel>> _playerModel;
             std::shared_ptr<RL::ZModel> _tileBMmodel;
             std::shared_ptr<RL::ZModel> _tileModel;
             std::shared_ptr<RL::ZModel> _modelEnemy;
@@ -636,6 +642,7 @@ namespace RT {
             std::vector<std::shared_ptr<RL::ZTexture>> _particleBlueTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _starTexture;
             std::vector<std::shared_ptr<RL::ZTexture>> _explosionTexture;
+            std::vector<std::shared_ptr<RL::ZTexture>> _playerTexture;
             std::shared_ptr<RL::IShader> _lightShader;
             std::shared_ptr<RL::IShader> _shaderParticles;
             std::shared_ptr<RL::ZModel> _sphereModel;

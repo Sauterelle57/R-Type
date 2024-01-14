@@ -9,6 +9,8 @@
 #define CORE_HPP_
 
 #include <memory>
+#include <mutex>
+#include <thread>
 #include "Coordinator.hpp"
 #include "renderer/IWindow.hpp"
 #include "renderer/ICamera.hpp"
@@ -34,7 +36,6 @@
 #include "Bdb.hpp"
 #include "Music.hpp"
 #include "Modal.hpp"
-#include <mutex>
 
 namespace RT {
 
