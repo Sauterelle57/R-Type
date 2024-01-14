@@ -777,7 +777,7 @@ namespace rt {
         pc.responseOK();
         auto toSend = pc.getProtocol();
         _wrapper->sendStruct(toSend, ip, port);
-        std::cout << "(>) Sent information" << std::endl;
+        // std::cout << "(>) Sent information" << std::endl;
     }
 
     void GameController::commandRequestConnection(const rt::Protocol &data, const std::string &ip, const int port) {

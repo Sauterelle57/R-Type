@@ -105,6 +105,8 @@ add_executable(rtype_server
         server/src/ServerController/IServerController.hpp
         server/src/ServerController/ServerController.cpp
         server/src/ServerController/ServerController.hpp
+        server/src/ServerController/ArgsManager/IArgsManager.hpp
+        server/src/ServerController/ArgsManager/ArgsManager.hpp
         # Game Controller
         server/src/GameController/IGameController.hpp
         server/src/GameController/GameController.hpp
@@ -265,6 +267,7 @@ add_executable(rtype_client
 target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/src
         ${CMAKE_SOURCE_DIR}/server/src/ServerController
+        ${CMAKE_SOURCE_DIR}/server/src/ServerController/ArgsManager
         ${CMAKE_SOURCE_DIR}/server/src/GameController
         ${CMAKE_SOURCE_DIR}/server/src/AsioWrapper
         ${CMAKE_SOURCE_DIR}/server/src/Client
