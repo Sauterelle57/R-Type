@@ -797,8 +797,17 @@ namespace rt {
     }
 
     void GameController::commandRequestConnection(const rt::Protocol &data, const std::string &ip, const int port) {
-        if (!_clientController->isClientExist(ip, port))
+        if (!_clientController->isClientExist(ip, port)) {
             _clientController->addClient(ip, port);
+
+            rt::ProtocolController pc;
+            pc.responseOK();
+            auto toSend = pc.getProtocol();
+            
+            _wrapper->sendStruct(toSend, ip, port);
+        } else {
+            return;
+        }
         _createPlayer(ip, port);
         if (!_cameraInit) {
             tls::Random random(42);

@@ -81,7 +81,7 @@ namespace RT {
         menu.loop(_window, _event, false);
         bool canReach = false;
         rt::ProtocolController pc;
-        pc.actionPing();
+        pc.actionConnectionRequest();
         auto dt1 = pc.getProtocol();
         while (!canReach) {
             _udpClient->setup(menu.getHost(), menu.getPort(), _receivedMessages, _messageQueueMutex, _isRunningMutex);
@@ -114,10 +114,10 @@ namespace RT {
                 menu.loop(_window, _event, true);
             }
         }
-        pc.init();
-        pc.actionConnectionRequest();
-        auto _dataToSend = pc.getProtocol();
-        _udpClient->sendStruct(_dataToSend);
+        // pc.init();
+        // pc.actionConnectionRequest();
+        // auto _dataToSend = pc.getProtocol();
+        // _udpClient->sendStruct(_dataToSend);
         _listener = std::make_unique<Listener>(_coordinator, _entities, _camera, _udpClient);
         _clock = std::make_unique<tls::Clock>(0.01);
     }
