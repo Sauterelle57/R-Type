@@ -104,7 +104,7 @@ Launch the client
 
 - [Server](./server/README.md)  
 - [Client](./client/README.md)  
-- [Protocol](./protocol/PROTOCOL.md) 
+- [Protocol](./protocol/README.md) 
 
 ## Contributors
 
