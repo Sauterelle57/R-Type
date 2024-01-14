@@ -38,7 +38,7 @@ namespace rt {
 
             startReceive();
         } else {
-            std::cerr << "Error receiving data: " << error.message() << std::endl;
+            // std::cerr << "Error receiving data: " << error.message() << std::endl;
             startReceive();
         }
     }

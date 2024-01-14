@@ -77,7 +77,7 @@ namespace rt {
         unsigned short senderPort;
 
         if (socket.receive(packet, sender, senderPort) != sf::Socket::Done) {
-            std::cerr << "Error receiving data" << std::endl;
+            // std::cerr << "Error receiving data" << std::endl;
             return rt::Protocol();
         } else {
             // Get the data directly from the packet

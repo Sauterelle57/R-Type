@@ -42,7 +42,7 @@ namespace rt {
             // _asioWrapper->sendStruct(pc.setSender(rt::SERVER).setProtocol(rt::OK).getProtocol(), _asioWrapper->getRemoteEndpoint().first, _asioWrapper->getRemoteEndpoint().second);
             // std::cout << "[OK]" << std::endl;
         } else {
-            std::cerr << "Error receiving data: " << error << std::endl;
+            // std::cerr << "Error receiving data: " << error << std::endl;
         }
     }
 
