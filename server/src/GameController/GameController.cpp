@@ -1,4 +1,5 @@
 #include "GameController.hpp"
+#include "Random.hpp"
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -470,6 +471,7 @@ namespace rt {
                 .active = true
             }
         );
+        static tls::Random random(42);
         std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
             [](tls::Vec3 pos, std::shared_ptr<float> t) {
                     (*t) += 0.003f;
@@ -487,16 +489,15 @@ namespace rt {
             },
             [](tls::Vec3 pos, std::shared_ptr<float> t) {
                 (*t) += .003f;
-                srand(time(0));
                 static float speed = 0.1f;
-                static int direction = rand() % 2;
-                static int targetY = direction ? rand() % 35 : rand() % 18;
-                static int targetX = pos._x + (rand() % 45 + pos._x + 1);
+                static int direction = random.getRandomNumber(0, 1);
+                static int targetY = direction ? random.getRandomNumber(0, 34) : random.getRandomNumber(0, 17);
+                static int targetX = pos._x + random.getRandomNumber(0, 44) + pos._x + 1;
                 if (pos._x <= targetX)
-                    targetX = pos._x + (rand() % 45 + pos._x + 1);
+                    targetX = pos._x + random.getRandomNumber(0, 44) + pos._x + 1;
                 if (pos._y >= targetY) {
-                    direction = rand() % 2;
-                    targetY = direction ? rand() % 35 : rand() % 18;
+                    direction = random.getRandomNumber(0, 1);
+                    targetY = direction ? random.getRandomNumber(0, 34) : random.getRandomNumber(0, 17);
                 }
                 return tls::Vec3{pos._x - speed, pos._y - targetY < 0 ? pos._y + speed : pos._y - speed, pos._z};
             },
@@ -510,7 +511,7 @@ namespace rt {
             *_entities.rbegin(),
             ECS::Trajectory {
                 .t = std::make_shared<float>(0.0f),
-                .trajectory = trajectories[rand() % trajectories.size()]
+                .trajectory = trajectories[random.getRandomNumber(0, trajectories.size() - 1)],
             }
         );
     }
@@ -535,7 +536,8 @@ namespace rt {
             *_entities.rbegin(),
             ECS::Trajectory {
                 .t = std::make_shared<float>(tmp),
-                .trajectory = trajectory.trajectory
+                .trajectory = trajectory.trajectory,
+                .oriented = true
             }
         );
         auto &ownTrajectory = _coordinator->getComponent<ECS::Trajectory>(*_entities.rbegin());
@@ -772,11 +774,11 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            _createEnemy({50, 0, 0}, 2.0);
+            // _createEnemy({50, 0, 0}, 2.0);
             // _createEnemy({50, 0, 0}, 4.5);
             // _createEnemy({55, 0, 0}, 1.2);
             // _createEnemy({35, -6, 0}, 2);
-            // _createBoss({50, 0, 0}, 1.5, 20);
+            _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 

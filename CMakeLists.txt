@@ -133,6 +133,7 @@ add_executable(rtype_server
         server/Tools/Vec4/Vec4.cpp
         server/Tools/Clock/Clock.hpp
         server/Tools/Error/Error.hpp
+        server/Tools/Random/Random.hpp
         server/Tools/ECS/Managers/Systems/Shoot.hpp
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
@@ -260,6 +261,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/server/Tools/Random
         ${CMAKE_SOURCE_DIR}/protocol
         ${CMAKE_SOURCE_DIR}/server/Tools/collisions
 )
