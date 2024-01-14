@@ -1,5 +1,6 @@
 #include "GameController.hpp"
 #include "Random.hpp"
+#include "../../map/LibJson.hpp"
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -11,12 +12,20 @@ namespace rt {
 
     GameController::GameController()
     {
+        try {
+            const std::string path = "map_editor/map_test.json";
+            _data = lvl::jsonParsing(path);
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+            exit(84);
+        }
+
+
         _cameraInit = false;
         _initializeCommands();
         _initializeECS();
         _clock = tls::Clock(0.01);
         _clockBossChild = tls::Clock(5);
-        _clockEnemySpawn = tls::Clock(10);
         _waveEnemy = 1;
         _clientController = std::make_shared<ClientController>();
         _pc = std::make_shared<ProtocolController>();
@@ -95,14 +104,7 @@ namespace rt {
                 _systems._systemMove->update();
                 _systems._systemAutoMove->update();
                 _systems._systemClientUpdater->update();
-            }
-            if (_clockEnemySpawn.isTimeElapsed()) {
-//                    for (int i = 0; i < 4 + (_waveEnemy * 4); i += 4) {
-//                        _createEnemy({static_cast<double>(50 + _waveEnemy * 5), static_cast<double>(20), 0}, (((2 - ((i * 2)/ 10))) < 0.8) ? 0.8 : (2 - ((i * 2)/ 10)));
-//                    }
-
-                if (_waveEnemy < 8)
-                    _waveEnemy++;
+                _systems._systemLvlManager->update(*this);
             }
         }
         return 0;
@@ -172,6 +174,7 @@ namespace rt {
         _coordinator->registerComponent<ECS::Type>();
         _coordinator->registerComponent<ECS::ClientUpdater>();
         _coordinator->registerComponent<ECS::Player>();
+        _coordinator->registerComponent<ECS::Level>();
         // _coordinator->registerComponent<ECS::Enemy>();
         // _coordinator->registerComponent<ECS::Shooter>();
         _coordinator->registerComponent<ECS::Parent>();
@@ -192,6 +195,7 @@ namespace rt {
         _systems._systemParent = _coordinator->registerSystem<ECS::ParentManager>();
         _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemAutoMove = _coordinator->registerSystem<ECS::AutoMove>();
+        _systems._systemLvlManager = _coordinator->registerSystem<ECS::LvlManager>();
         // _systems._systemEnemy = _coordinator->registerSystem<ECS::EnemySystem>();
         // _systems._systemEnemy->init();
 
@@ -272,13 +276,11 @@ namespace rt {
             _coordinator->setSystemSignature<ECS::Move>(signature);
         }
 
+
         {
             ECS::Signature signature;
-            // signature.set(_coordinator->getComponentType<ECS::Enemy>());
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Collider>());
-            // signature.set(_coordinator->getComponentType<ECS::Shooter>());
-            // _coordinator->setSystemSignature<ECS::EnemySystem>(signature);
+            signature.set(_coordinator->getComponentType<ECS::Level>());
+             _coordinator->setSystemSignature<ECS::LvlManager>(signature);
         }
 
         std::cout << "SERVER/ECS systems configured" << std::endl;
@@ -758,6 +760,17 @@ namespace rt {
         );
     }
 
+    void GameController::_createLvl() {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Level {
+                .data = _data,
+            }
+        );
+    }
+
     // Commands
     void GameController::commandPing(const rt::Protocol &data, const std::string &ip, const int port) {
         rt::ProtocolController pc;
@@ -774,11 +787,10 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            // _createEnemy({50, 0, 0}, 2.0);
-            // _createEnemy({50, 0, 0}, 4.5);
-            // _createEnemy({55, 0, 0}, 1.2);
-            // _createEnemy({35, -6, 0}, 2);
-            _createBoss({50, 0, 0}, 1.5, 20);
+
+            _createLvl();
+
+//            _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 
