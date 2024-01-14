@@ -32,6 +32,7 @@
 #include "SelfDestruct.hpp"
 #include "Lights.hpp"
 #include "ShaderUpdater.hpp"
+#include "ModelAnimation.hpp"
 #include "Velocity.hpp"
 #include "Bdb.hpp"
 #include "Music.hpp"
@@ -54,6 +55,7 @@ namespace RT {
         std::shared_ptr<ECS::BdbSystem> _systemBdb;
         std::shared_ptr<ECS::MusicSystem> _systemMusic;
         std::shared_ptr<ECS::ModalSystem> _systemModal;
+        std::shared_ptr<ECS::ModelAnimationSystem> _systemAnimation;
     };
 
     class Core {
