@@ -18,7 +18,7 @@
       "conditions": {
       },
       "entity": [
-        {"type": "boss", "x": 50, "y": 10, "z":  0, "shootSpeed":  1.5}
+        {"type": "boss", "x": 50, "y": 10, "z":  0, "shootSpeed":  2.5}
       ]
     }
   ]

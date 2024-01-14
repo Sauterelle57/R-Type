@@ -330,7 +330,7 @@ namespace rt {
             }
         );
 
-        for (float i = -45; i < 55; i += 3) {
+        for (float i = -50; i < 55; i += 3) {
             _createTile({i, 35, 0});
             _createTile({i, -18, 0});
         }
@@ -558,7 +558,7 @@ namespace rt {
                     .speed = weapon.speed,
                     .durability = weapon.durability,
                     .autoShoot = true,
-                    .shootFrequency = tls::Clock(1.5),
+                    .shootFrequency = tls::Clock(weapon.shootFrequency.getInterval()),
                     .create_projectile = ECS::Shoot::basicEnemyShot
                 }
             );
