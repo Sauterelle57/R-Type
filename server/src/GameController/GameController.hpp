@@ -35,7 +35,7 @@ namespace rt {
 
     class GameController : public IGameController {
         public:
-            GameController(bool debug);
+            GameController(bool debug, std::string mapFilePath);
             ~GameController() = default;
 
             int exec();
