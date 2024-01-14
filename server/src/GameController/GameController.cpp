@@ -10,10 +10,10 @@
 
 namespace rt {
 
-    GameController::GameController(bool debug)
+    GameController::GameController(bool debug, std::string mapFilePath)
     {
         try {
-            const std::string path = "map_editor/map_test.json";
+            const std::string path = mapFilePath;
             _data = lvl::jsonParsing(path);
         } catch (const std::exception &e) {
             std::cerr << e.what() << std::endl;
@@ -340,7 +340,10 @@ namespace rt {
     }
 
     void GameController::_createPlayer(std::string ip, int port) {
-        _entities.insert(_entities.end(), _coordinator->createEntity());
+        static float playerPos = 0;
+        auto entityCreated = _coordinator->createEntity();
+        _entities.insert(_entities.end(), entityCreated);
+        _players.push_back(entityCreated);
 
         _coordinator->addComponent(
             *_entities.rbegin(),
@@ -351,11 +354,12 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Transform {
-                .position = {0, 0, 0},
+                .position = {0, 0 + playerPos, 0},
                 .rotation = {0, 0, 0, 0},
                 .scale = {0.5f, 0.5f, 0.5f}
             }
         );
+        playerPos += 5;
         static float damage = 50.f;
         _coordinator->addComponent(
            *_entities.rbegin(),

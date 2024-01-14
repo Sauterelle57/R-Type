@@ -50,6 +50,19 @@ namespace rt {
                 }
                 return false;
             }
+
+            std::optional<std::string> getMapFilePath(int argc, char **argv) const {
+                for (int i = 1; i < argc; i++) {
+                    if (std::string(argv[i]) == "-m") {
+                        if (i + 1 < argc) {
+                            return std::string(argv[i + 1]);
+                        } else {
+                            return std::nullopt;
+                        }
+                    }
+                }
+                return std::nullopt;
+            }
     };
 
 }

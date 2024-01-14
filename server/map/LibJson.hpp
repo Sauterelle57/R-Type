@@ -29,6 +29,7 @@ namespace lvl {
 
     struct Step {
         int pos_x;
+        std::string weapon;
         Conditions conditions;
         std::vector<Entity> entity;
     };
