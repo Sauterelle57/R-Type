@@ -40,7 +40,7 @@ namespace RT {
                     _modelEnemy = std::make_shared<RL::ZModel>("./client/resources/models/spaceship2.glb");
                     Matrix matr = MatrixIdentity();
                     matr = MatrixMultiply(matr, MatrixRotateX(180 * DEG2RAD));
-                    matr = MatrixMultiply(matr, MatrixRotateZ(90 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixRotateZ(180 * DEG2RAD));
                     _modelEnemy->_model->transform = matr;
                 }
                 {
@@ -50,16 +50,14 @@ namespace RT {
                     _modelChild = std::make_shared<RL::ZModel>("./client/resources/models/boss_body2.glb");
                 }
                 {
-                    _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
-                    Matrix matr = MatrixRotateY(180 * DEG2RAD);
-                    matr = MatrixMultiply(matr, MatrixRotateY(-180 * DEG2RAD));
-                    _modelShot->_model->transform = matr;
+                    _modelShot = std::make_shared<RL::ZModel>("./client/resources/models/missile.glb");
+                    Matrix rotationMatrix = MatrixRotateX(-90 * DEG2RAD);
+                    Matrix rotation2Matrix = MatrixRotateZ(-90 * DEG2RAD);
+                    Matrix finalTransformation = MatrixMultiply(rotationMatrix, rotation2Matrix);
+                    _modelShot->_model->transform = finalTransformation;
                 }
                 {
                     _modelEnemyShot = std::make_shared<RL::ZModel>("./client/resources/models/boom.glb");
-                    Matrix matr = MatrixRotateY(180 * DEG2RAD);
-                    matr = MatrixMultiply(matr, MatrixRotateY(180 * DEG2RAD));
-                    _modelEnemyShot->_model->transform = matr;
                 }
                 {
                     _particleTexture = std::vector<std::shared_ptr<RL::ZTexture>>();

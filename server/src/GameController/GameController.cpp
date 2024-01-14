@@ -421,7 +421,7 @@ namespace rt {
         static tls::Matrix matr = tls::MatrixIdentity();
         static bool first = true;
         if (first) {
-            matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(-180 * DEG2RAD));
+            matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(180 * DEG2RAD));
             bdb.applyMatrix(matr);
             first = false;
         }
@@ -470,13 +470,47 @@ namespace rt {
                 .active = true
             }
         );
+        std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += 0.003f;
+                    static int amplitude = 13;
+                    static float height = 12.5;
+                    static int gap = 4;
+                return tls::Vec3{pos._x, asin(sin((*t) * gap)) * amplitude + height, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += 0.01f;
+                    static int centerX = pos._x;
+                    static int centerY = pos._y;
+                    static int size = 8;
+                return tls::Vec3{centerX + size * cos(*t) - (*t)*0.2, centerY + size * sin((*t) * 2), pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                (*t) += .003f;
+                srand(time(0));
+                static float speed = 0.1f;
+                static int direction = rand() % 2;
+                static int targetY = direction ? rand() % 35 : rand() % 18;
+                static int targetX = pos._x + (rand() % 45 + pos._x + 1);
+                if (pos._x <= targetX)
+                    targetX = pos._x + (rand() % 45 + pos._x + 1);
+                if (pos._y >= targetY) {
+                    direction = rand() % 2;
+                    targetY = direction ? rand() % 35 : rand() % 18;
+                }
+                return tls::Vec3{pos._x - speed, pos._y - targetY < 0 ? pos._y + speed : pos._y - speed, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    static float speed = 0.06f;
+                    (*t) += speed;
+                return tls::Vec3{pos._x - speed, cos((*t))*7, pos._z};
+            }
+        };
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Trajectory {
-                .t = std::make_shared<float>(rand() % 100),
-                .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    return tls::Vec3{pos._x - 0.1, pos._y, pos._z};
-                }
+                .t = std::make_shared<float>(0.0f),
+                .trajectory = trajectories[rand() % trajectories.size()]
             }
         );
     }
@@ -591,7 +625,7 @@ namespace rt {
            ECS::Collider {
                .team = 1,
                .breakable = true,
-               .movable = false,
+               .movable = true,
                .velocity = {0.005, 0, 0},
                .bounds = bdb
            }
@@ -619,7 +653,8 @@ namespace rt {
                     static float radiusH = 10;
                     static float radiusV = 20;
                     return tls::Vec3{40 + radiusH * cos((*t) * 0.2), 7 + radiusV * sin((*t) * 0.2), pos._z};
-                }
+                },
+                .oriented = true
             }
         );
 
@@ -737,11 +772,11 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-//            _createEnemy({50, -5, 0}, 2.0);
-//            _createEnemy({50, 5, 0}, 2.5);
-//            _createEnemy({55, 0, 0}, 1.2);
-//            _createEnemy({35, -6, 0}, 2);
-            _createBoss({50, 0, 0}, 1.5, 20);
+            _createEnemy({50, 0, 0}, 2.0);
+            // _createEnemy({50, 0, 0}, 4.5);
+            // _createEnemy({55, 0, 0}, 1.2);
+            // _createEnemy({35, -6, 0}, 2);
+            // _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 

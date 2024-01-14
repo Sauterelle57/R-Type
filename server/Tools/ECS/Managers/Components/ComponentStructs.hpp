@@ -63,6 +63,7 @@ namespace ECS {
     struct Trajectory {
         std::shared_ptr<float> t = std::make_shared<float>(0.0f);
         std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
+        bool oriented = false;
     };
 
     struct Weapon {
