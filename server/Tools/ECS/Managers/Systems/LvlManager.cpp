@@ -7,6 +7,7 @@
 
 #include "LvlManager.hpp"
 #include "GameController.hpp"
+#include "Random.hpp"
 
 void ECS::LvlManager::update(rt::GameController &gameController) {
     auto coordinatorPtr = _coordinator.lock();
@@ -27,6 +28,10 @@ void ECS::LvlManager::update(rt::GameController &gameController) {
             for (const auto& entity : step.entity) {
                 if (entity.type == "enemy1") {
                     gameController._createEnemy({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed);
+                }
+                if (entity.type == "enemy2") {
+                    tls::Random random;
+                    gameController._createFloorEnemy({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(1.0, 3.0), random.getRandomDouble(0.02, 0.07));
                 }
                 if (entity.type == "boss") {
                     gameController._createBoss({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed, 20);

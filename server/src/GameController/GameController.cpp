@@ -175,8 +175,6 @@ namespace rt {
         _coordinator->registerComponent<ECS::ClientUpdater>();
         _coordinator->registerComponent<ECS::Player>();
         _coordinator->registerComponent<ECS::Level>();
-        // _coordinator->registerComponent<ECS::Enemy>();
-        // _coordinator->registerComponent<ECS::Shooter>();
         _coordinator->registerComponent<ECS::Parent>();
 
         std::cout << "SERVER/ECS components configured" << std::endl;
@@ -332,7 +330,7 @@ namespace rt {
 
         for (float i = -50; i < 55; i += 3) {
             _createTile({i, 35, 0});
-            _createTile({i, -18, 0});
+            _createTile({i, -12, 0});
         }
         // _createTile({30, 29, 0});
         // _createBreakableTile({10, 20, 0});
@@ -407,6 +405,62 @@ namespace rt {
             *_entities.rbegin(),
             ECS::Player {
                 .mooving = {0, 0, 0}
+            }
+        );
+    }
+
+    void GameController::_createFloorEnemy(tls::Vec3 pos, float size, double speed) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {size, size, size}
+            }
+        );
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/mob5.glb");
+        static bool first = true;
+        if (first) {
+            first = false;
+        }
+        static float damage = 45.0f;
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Collider {
+               .team = 1,
+               .breakable = true,
+               .movable = true,
+               .velocity = {0.005, 0, 0},
+               .bounds = bdb,
+               .life = 100.0f,
+               .maxLife = 100.0f,
+               .damage = damage
+           }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "FLOOR_ENEMY"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+        static double speed2 = speed;
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Trajectory {
+                .t = std::make_shared<float>(0.0f),
+                .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    return tls::Vec3{pos._x - speed2, pos._y, pos._z};
+                }
             }
         );
     }
@@ -667,18 +721,18 @@ namespace rt {
                 .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                     (*t) += speed;
                     static float radiusH = 10;
-                    static float radiusV = 20;
-                    return tls::Vec3{40 + radiusH * cos((*t) * 0.2), 7 + radiusV * sin((*t) * 0.2), pos._z};
+                    static float radiusV = 18;
+                    return tls::Vec3{40 + radiusH * cos((*t) * 0.2), 11 + radiusV * sin((*t) * 0.2), pos._z};
                 },
                 .oriented = true
             }
         );
 
         static float offset = -speed*9;
-        int parentId =  *_entities.rbegin();
+        static int parentId =  *_entities.rbegin();
 
         for (int i = 0; i < nbChildren; i++) {
-            _createChild(parentId, offset, i % 3 == 2 ? true : false);
+            _createChild(parentId, offset, i % 5 == 2 ? true : false);
             offset -= speed*9;
         }
     }
@@ -793,7 +847,6 @@ namespace rt {
         pc.responseOK();
         auto toSend = pc.getProtocol();
         _wrapper->sendStruct(toSend, ip, port);
-        // std::cout << "(>) Sent information" << std::endl;
     }
 
     void GameController::commandRequestConnection(const rt::Protocol &data, const std::string &ip, const int port) {
@@ -813,15 +866,11 @@ namespace rt {
             tls::Random random(42);
             _cameraInit = true;
             _initializeECSEntities();
-
             _createLvl();
-
-//            _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 
     void GameController::commandID(const rt::Protocol &data, const std::string &ip, const int port) {
-        // std::cout << "ID: " << data << std::endl;
         if (!_clientController->isClientExist(ip, port)) {
             return;
         }

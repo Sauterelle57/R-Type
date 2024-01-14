@@ -66,6 +66,7 @@ namespace rt {
             };
 
             void _createPlayer(std::string ip, int port);
+            void _createFloorEnemy(tls::Vec3 pos, float size, double speed);
             void _createEnemy(tls::Vec3 pos, float clockSpeed);
             void _createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren);
             void _createChild(ECS::Entity parent, float offset, bool armed);

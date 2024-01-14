@@ -26,6 +26,7 @@
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 #include "renderer/RenderTexture.hpp"
+#include "ModelAnimation.hpp"
 
 namespace RT {
 
@@ -212,17 +213,14 @@ namespace RT {
         _coordinator->registerComponent<ECS::Bdb>();
         _coordinator->registerComponent<ECS::Modal>();
         _coordinator->registerComponent<ECS::Music>();
+        _coordinator->registerComponent<ECS::Animation>();
     }
 
     void Core::initSystem() {
         _systems._systemMusic = _coordinator->registerSystem<ECS::MusicSystem>();
-
-//        _systems._systemMove = _coordinator->registerSystem<ECS::Move>();
         _systems._systemDrawModel = _coordinator->registerSystem<ECS::DrawModel>();
         _systems._systemPlayer = _coordinator->registerSystem<ECS::Play>();
         _systems._systemParticles = _coordinator->registerSystem<ECS::ParticleSystem>();
-//        _systems._systemShoot = _coordinator->registerSystem<ECS::Shoot>();
-//        _systems._systemProjectile = _coordinator->registerSystem<ECS::ProjectileSystem>();
         _systems._systemCamera = _coordinator->registerSystem<ECS::CamSystem>();
         _systems._systemSound = _coordinator->registerSystem<ECS::SoundSystem>();
         _systems._systemSelfDestruct = _coordinator->registerSystem<ECS::SelfDestructSystem>();
@@ -232,13 +230,7 @@ namespace RT {
         _systems._systemVelocity = _coordinator->registerSystem<ECS::VelocitySystem>();
         _systems._systemBdb = _coordinator->registerSystem<ECS::BdbSystem>();
         _systems._systemModal = _coordinator->registerSystem<ECS::ModalSystem>();
-
-
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            _coordinator->setSystemSignature<ECS::Move>(signature);
-//        }
+        _systems._systemAnimation = _coordinator->registerSystem<ECS::ModelAnimationSystem>();
 
         {
             ECS::Signature signature;
@@ -246,7 +238,6 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Model>());
             _coordinator->setSystemSignature<ECS::DrawModel>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
@@ -254,7 +245,6 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Player>());
             _coordinator->setSystemSignature<ECS::Play>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
@@ -262,40 +252,22 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::ParticleSystem>(signature);
         }
-
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Weapon>());
-//            _coordinator->setSystemSignature<ECS::Shoot>(signature);
-//        }
-
-//        {
-//            ECS::Signature signature;
-//            signature.set(_coordinator->getComponentType<ECS::Transform>());
-//            signature.set(_coordinator->getComponentType<ECS::Projectile>());
-//            _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
-//        }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Cam>());
             _coordinator->setSystemSignature<ECS::CamSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Sound>());
             _coordinator->setSystemSignature<ECS::SoundSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::SelfDestruct>());
             _coordinator->setSystemSignature<ECS::SelfDestructSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
@@ -303,34 +275,29 @@ namespace RT {
             signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
             _coordinator->setSystemSignature<ECS::LightSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Traveling>());
             _coordinator->setSystemSignature<ECS::TravelingSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::ShaderComponent>());
             signature.set(_coordinator->getComponentType<ECS::Model>());
             _coordinator->setSystemSignature<ECS::ShaderUpdaterSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Transform>());
             signature.set(_coordinator->getComponentType<ECS::Velocity>());
             _coordinator->setSystemSignature<ECS::VelocitySystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Bdb>());
             _coordinator->setSystemSignature<ECS::BdbSystem>(signature);
         }
-
         {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Music>());
@@ -340,6 +307,12 @@ namespace RT {
             ECS::Signature signature;
             signature.set(_coordinator->getComponentType<ECS::Modal>());
             _coordinator->setSystemSignature<ECS::ModalSystem>(signature);
+        }
+        {
+            ECS::Signature signature;
+            signature.set(_coordinator->getComponentType<ECS::Model>());
+            signature.set(_coordinator->getComponentType<ECS::Animation>());
+            _coordinator->setSystemSignature<ECS::ModelAnimationSystem>(signature);
         }
     }
 
@@ -375,6 +348,7 @@ namespace RT {
                 _systems._systemCamera->update();
                 _systems._systemLight->update();
                 _systems._systemShaderUpdater->update(_camera->getPosition());
+                _systems._systemAnimation->update();
                 _systems._systemDrawModel->update();
                 if (_debug)
                     _systems._systemBdb->update();
