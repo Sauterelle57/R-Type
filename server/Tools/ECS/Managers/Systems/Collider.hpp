@@ -42,19 +42,25 @@ namespace ECS {
                                 {
                                     // std::ostringstream responseStream;
                                     // responseStream << entity << " DESTROY";
-                                    clientUpdater._pc->deleteEntity(entity, tls::Clock::getTimeStamp());
+                                    collider.life -= collider2.damage;
+                                    if (collider.life <= 0) {
+                                        clientUpdater._pc->deleteEntity(entity, tls::Clock::getTimeStamp());
+                                        coordinatorPtr->destroyEntity(entity);
+                                    }
                                     // std::string response = responseStream.str();
                                     // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                 }
                                 {
                                     // std::ostringstream responseStream;
                                     // responseStream << entity2 << " DESTROY";
-                                    clientUpdater._pc->deleteEntity(entity2, tls::Clock::getTimeStamp());
+                                    collider2.life -= collider.damage;
+                                    if (collider2.life <= 0) {
+                                        clientUpdater._pc->deleteEntity(entity2, tls::Clock::getTimeStamp());
+                                        coordinatorPtr->destroyEntity(entity2);
+                                    }
                                     // std::string response = responseStream.str();
                                     // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
                                 }
-                                coordinatorPtr->destroyEntity(entity);
-                                coordinatorPtr->destroyEntity(entity2);
                                 return;
                             } else if (collider.movable) {
                                 transform.position -= collider.velocity + (!collider2.movable ? collider2.velocity : tls::Vec3(0, 0, 0));

@@ -203,7 +203,6 @@ add_executable(rtype_client
         client/Tools/Vec4/IVec4.hpp
         client/Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         client/Tools/Clock/IClock.hpp
-        client/Tools/ECS/Managers/Systems/Projectile.hpp
         client/Tools/ECS/Managers/Systems/Cam.hpp
         client/Tools/ECS/Managers/Systems/Traveling.hpp
         client/Tools/ECS/Managers/Systems/Cam.hpp

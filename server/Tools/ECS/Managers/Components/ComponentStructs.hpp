@@ -72,12 +72,7 @@ namespace ECS {
         float durability;
         bool autoShoot = false;
         tls::Clock shootFrequency = tls::Clock(2);
-        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc)> create_projectile;
-    };
-
-    struct Alive {
-        float life;
-        float max_life;
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc, ECS::Weapon weapon)> create_projectile;
     };
 
     struct Traveling {
@@ -103,8 +98,10 @@ namespace ECS {
         bool breakable = true;
         bool movable = true;
         tls::Vec3 velocity;
-
         tls::BoundingBox bounds;
+        float life = 100.0;
+        float maxLife = 100.0;
+        float damage = 0.0;
     };
 
     struct ClientUpdater {
