@@ -37,7 +37,7 @@ namespace ECS {
                     Transform {
                         .position = _pos,
                         .rotation = {0, 0, 0, 0},
-                        .scale = {.1f, .1f, .1f}
+                        .scale = {.05f, .05f, .05f}
                     }
                 );
                 _coordinator->addComponent(
