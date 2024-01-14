@@ -27,6 +27,7 @@
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
 #include "renderer/IMusic.hpp"
+#include "renderer/ModelAnimation.hpp"
 
 #include "rlights.h"
 
@@ -47,18 +48,18 @@ namespace ECS {
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
-        float scale;
+        tls::Vec3 scale;
         BoundingBox bounds{};
         Transform() = default;
-        Transform(float px, float py, float pz, float rx, float ry, float rz, float ra, float s) :
+        Transform(float px, float py, float pz, float rx, float ry, float rz, float ra, float sx, float sy, float sz) :
             position(px, py, pz),
             rotation(rx, ry, rz, ra),
-            scale(s)
+            scale(sx, sy, sz)
         {}
-        Transform(tls::Vec3 pos, tls::Vec4 rot, float s) :
+        Transform(tls::Vec3 pos, tls::Vec4 rot, tls::Vec3 scale) :
             position(pos),
             rotation(rot),
-            scale(s)
+            scale(scale)
         {}
     };
 
@@ -85,14 +86,14 @@ namespace ECS {
         tls::Vec3 speed;
         float alpha;
         bool active;
-        float scale;
+        tls::Vec3 scale;
     };
 
     struct Particles {
         std::vector<Particle> particles;
         std::vector<std::shared_ptr<RL::ZTexture>> texture;
         float speed;
-        float scaleOffset;
+        tls::Vec3 scaleOffset;
         tls::Vec3 positionOffset;
         float lifeTime;
         float spawnRate;
@@ -105,9 +106,9 @@ namespace ECS {
     };
 
     struct Projectile {
-        int damage;
+        float damage;
         float speed;
-        bool active;
+        bool active = active;
     };
 
     struct Trajectory {
@@ -116,15 +117,17 @@ namespace ECS {
     };
 
     struct Weapon {
-        int damage;
+        float damage;
         float speed;
         float durability;
+        bool autoShoot = false;
+        tls::Clock shootFrequency = tls::Clock(2);
         std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos)> create_projectile;
     };
 
     struct Alive {
-        int life;
-        int max_life;
+        float life;
+        float max_life;
     };
 
     struct Cam {
@@ -217,6 +220,13 @@ namespace ECS {
         std::vector<SlideBar> slideBars;
         std::vector<CheckBox> checkBoxes;
         std::vector<Button> buttons;
+    };
+
+    struct Animation {
+        int animsCount = 0;
+        unsigned int animIndex = 0;
+        int animCurrentFrame = 0;
+        std::shared_ptr<RL::ZModelAnimation> modelAnimation;
     };
 }
 

@@ -1,0 +1,27 @@
+{
+  "stage": 1,
+  "step": [
+    {
+      "pos_x": 2,
+      "conditions": {
+      },
+      "entity": [
+        {"type": "enemy1", "x": 50, "y": 10, "z":  0, "shootSpeed":  1.5},
+        {"type": "enemy1", "x": 51, "y": 15, "z":  0, "shootSpeed":  1.4},
+        {"type": "enemy1", "x": 45, "y": 5, "z":  0, "shootSpeed":  1.7},
+        {"type": "enemy1", "x": 53, "y": 12, "z":  0, "shootSpeed":  1.9},
+        {"type": "enemy2", "x": 53, "y": -10.2, "z":  0, "shootSpeed": 0.0},
+        {"type": "tile", "x": 43, "y": 20, "z":  0, "shootSpeed": 0.0},
+        {"type": "breakableTile", "x": 43, "y": 14, "z":  0, "shootSpeed": 0.0}
+      ]
+    },
+    {
+      "pos_x": 30,
+      "conditions": {
+      },
+      "entity": [
+        {"type": "boss", "x": 50, "y": 10, "z":  0, "shootSpeed":  2.5}
+      ]
+    }
+  ]
+}

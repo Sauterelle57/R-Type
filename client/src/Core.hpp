@@ -9,6 +9,8 @@
 #define CORE_HPP_
 
 #include <memory>
+#include <mutex>
+#include <thread>
 #include "Coordinator.hpp"
 #include "renderer/IWindow.hpp"
 #include "renderer/ICamera.hpp"
@@ -21,7 +23,6 @@
 #include "DrawModel.hpp"
 #include "Play.hpp"
 #include "Particle.hpp"
-#include "Projectile.hpp"
 #include "Cam.hpp"
 #include "Traveling.hpp"
 #include "IListener.hpp"
@@ -31,11 +32,11 @@
 #include "SelfDestruct.hpp"
 #include "Lights.hpp"
 #include "ShaderUpdater.hpp"
+#include "ModelAnimation.hpp"
 #include "Velocity.hpp"
 #include "Bdb.hpp"
 #include "Music.hpp"
 #include "Modal.hpp"
-#include <mutex>
 
 namespace RT {
 
@@ -44,7 +45,6 @@ namespace RT {
         std::shared_ptr<ECS::Play> _systemPlayer;
         std::shared_ptr<ECS::DrawModel> _systemDrawModel;
         std::shared_ptr<ECS::ParticleSystem> _systemParticles;
-        std::shared_ptr<ECS::ProjectileSystem> _systemProjectile;
         std::shared_ptr<ECS::CamSystem> _systemCamera;
         std::shared_ptr<ECS::TravelingSystem> _systemTraveling;
         std::shared_ptr<ECS::SoundSystem> _systemSound;
@@ -55,6 +55,7 @@ namespace RT {
         std::shared_ptr<ECS::BdbSystem> _systemBdb;
         std::shared_ptr<ECS::MusicSystem> _systemMusic;
         std::shared_ptr<ECS::ModalSystem> _systemModal;
+        std::shared_ptr<ECS::ModelAnimationSystem> _systemAnimation;
     };
 
     class Core {

@@ -31,12 +31,12 @@ namespace ECS {
 
                     transform.bounds = model.model->getBoundingBox();
 
-                    Matrix matScale = MatrixScale(transform.scale, transform.scale, transform.scale);
+                    Matrix matScale = MatrixScale(transform.scale._x, transform.scale._y, transform.scale._z);
                     Matrix matRotation = MatrixRotateXYZ({static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)});
                     Matrix matTranslation = MatrixTranslate(transform.position._x, transform.position._y, transform.position._z);
 
-                    Vector3 scaledMin = Vector3Multiply(transform.bounds.min, {transform.scale, transform.scale, transform.scale});
-                    Vector3 scaledMax = Vector3Multiply(transform.bounds.max, {transform.scale, transform.scale, transform.scale});
+                    Vector3 scaledMin = Vector3Multiply(transform.bounds.min, {static_cast<float>(transform.scale._x), static_cast<float>(transform.scale._y), static_cast<float>(transform.scale._z)});
+                    Vector3 scaledMax = Vector3Multiply(transform.bounds.max, {static_cast<float>(transform.scale._x), static_cast<float>(transform.scale._y), static_cast<float>(transform.scale._z)});
 
                     Vector3 points[8] = {
                         {scaledMin.x, scaledMin.y, scaledMin.z},
@@ -73,7 +73,7 @@ namespace ECS {
                     if (IsKeyPressed(KEY_H)) // TODO ENLEVER CA
                         drawHitbox = !drawHitbox;
                     model.model->drawEx(transform.position, {static_cast<float>(transform.rotation._x), static_cast<float>(transform.rotation._y), static_cast<float>(transform.rotation._z)}, transform.rotation._a,
-                                    {transform.scale, transform.scale, transform.scale}, model.color);
+                                    transform.scale, model.color);
                 }
                 // std::cout << "DrawModel: " << count << std::endl;
             }

@@ -18,7 +18,7 @@
 namespace ECS {
     class ClientUpdaterSystem : public System {
         public:
-            void update() {
+            void update(bool debug) {
                 auto coordinatorPtr = _coordinator.lock();
                 if (!coordinatorPtr) {
                     std::cout << "ClientUpdaterSystem: coordinatorPtr is null" << std::endl;
@@ -37,7 +37,7 @@ namespace ECS {
                     auto &transform = coordinatorPtr->getComponent<Transform>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &colliderStruct = coordinatorPtr->getComponent<Collider>(entity);
-                    auto collider = colliderStruct.bounds.transform(transform.position, {transform.scale, transform.scale, transform.scale});
+                    auto collider = colliderStruct.bounds.transform(transform.position, transform.scale);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     clu = clientUpdater;
                     clu_available = true;
@@ -47,11 +47,14 @@ namespace ECS {
                     //                << transform.position._x << " " << transform.position._y << " " << transform.position._z << " "
                     //                << transform.rotation._x << " " << transform.rotation._y << " " << transform.rotation._z << " "
                     //                << transform.rotation._a << " " << transform.scale << " " << type.name;
-                    
+
                     static std::map<std::string, rt::ENTITY_TYPE> nameToId = {
                         {"CAMERA", rt::ENTITY_TYPE::CAMERA},
                         {"PLAYER", rt::ENTITY_TYPE::PLAYER},
                         {"ENEMY", rt::ENTITY_TYPE::ENEMY},
+                        {"FLOOR_ENEMY", rt::ENTITY_TYPE::FLOOR_ENEMY},
+                        {"BOSS", rt::ENTITY_TYPE::BOSS},
+                        {"CHILD", rt::ENTITY_TYPE::CHILD},
                         {"TILE", rt::ENTITY_TYPE::TILE},
                         {"TILE_BREAKABLE", rt::ENTITY_TYPE::TILE_BREAKABLE},
                         {"BASIC_SHOT", rt::ENTITY_TYPE::BASIC_SHOT},
@@ -94,7 +97,7 @@ namespace ECS {
                         clt->getDeltaManager()->deleteEntity(x);
                     }
                     clt->getDeltaManager()->setPacket(newProto);
-                    auto response = clu._pc->serialize(newProto);
+                    auto response = clu._pc->serialize(newProto, debug);
                     clu.wrapper->sendTo(response, clt->getIpAdress(), clt->getPort());
                 }
 
@@ -113,8 +116,8 @@ namespace ECS {
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     auto &clientUpdater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     break;
-                } 
-                
+                }
+
             }
     };
 }

@@ -29,7 +29,7 @@ namespace rt {
 
 
         if (socket.send(packet, serverEndpoint, serverPortNumber) != sf::Socket::Done) {
-            std::cerr << "Error sending message" << std::endl;
+            // std::cerr << "Error sending message" << std::endl;
         } else {
 //            std::cout << "Sending message: " << message << std::endl;
         }
@@ -38,7 +38,7 @@ namespace rt {
     void UdpClient::sendStruct(rt::Protocol &protocol) {
         sf::Packet packet;
         rt::ProtocolController pc;
-        std::string serializedData = pc.serialize(protocol);
+        std::string serializedData = pc.serialize(protocol, false);
 
         packet.append(serializedData.c_str(), serializedData.size());
 
@@ -77,7 +77,7 @@ namespace rt {
         unsigned short senderPort;
 
         if (socket.receive(packet, sender, senderPort) != sf::Socket::Done) {
-            std::cerr << "Error receiving data" << std::endl;
+            // std::cerr << "Error receiving data" << std::endl;
             return rt::Protocol();
         } else {
             // Get the data directly from the packet

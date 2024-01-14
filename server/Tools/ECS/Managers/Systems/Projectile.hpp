@@ -28,8 +28,11 @@ namespace ECS {
 
             auto &projectiles = coordinatorPtr->getComponent<Projectile>(entity);
             auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+            auto &collider = coordinatorPtr->getComponent<Collider>(entity);
 
-            projectiles.damage = weapon.damage;
+            collider.damage = weapon.damage;
+            collider.life = 1.0f;
+            collider.maxLife = 1.0f;
             projectiles.speed = weapon.speed;
         }
 
@@ -57,15 +60,16 @@ namespace ECS {
 
                 // transform.rotation = {0, 0, 1, angle - 90};
 
-                if (std::abs(camTransform.position._x - transform.position._x) > 100 || std::abs(camTransform.position._y - transform.position._y) > 100 ||
-                        std::abs(camTransform.position._x - transform.position._x) < -100 || std::abs(camTransform.position._y - transform.position._y) < -100) {
-                    for (auto const &clientID : clientIDS) {
+                if (std::abs(camTransform.position._x - transform.position._x) > 75 || std::abs(camTransform.position._y - transform.position._y) > 75 ||
+                    std::abs(camTransform.position._x - transform.position._x) < -75 || std::abs(camTransform.position._y - transform.position._y) < -75) {
+//                    for (auto const &clientID : clientIDS) {
                         // std::ostringstream responseStream;
                         // responseStream << entity << " DESTROY";
+//                        std::cout << "DESTROY " << entity << std::endl;
                         clientUpdater._pc->deleteEntity(entity, tls::Clock::getTimeStamp());
                         // std::string response = responseStream.str();
                         // clientUpdater.wrapper->sendTo(response, clientID->getIpAdress(), clientID->getPort());
-                    }
+//                    }
                     coordinatorPtr->destroyEntity(entity);
                     return;
                 }

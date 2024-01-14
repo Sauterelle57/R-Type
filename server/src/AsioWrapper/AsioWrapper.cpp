@@ -38,7 +38,7 @@ namespace rt {
 
             startReceive();
         } else {
-            std::cerr << "Error receiving data: " << error.message() << std::endl;
+            // std::cerr << "Error receiving data: " << error.message() << std::endl;
             startReceive();
         }
     }
@@ -50,7 +50,7 @@ namespace rt {
             boost::system::error_code ignored_ec;
             socket.send_to(boost::asio::buffer(message), destination, 0, ignored_ec);
             if (ignored_ec) {
-                std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
+                // std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
@@ -64,11 +64,11 @@ namespace rt {
             boost::system::error_code ignored_ec;
             rt::ProtocolController pc;
 
-            std::string tosend = pc.serialize(protocol);
+            std::string tosend = pc.serialize(protocol, false);
 
             socket.send_to(boost::asio::buffer(tosend), destination, 0, ignored_ec);
             if (ignored_ec) {
-                std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
+                // std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;

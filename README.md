@@ -104,7 +104,7 @@ Launch the client
 
 - [Server](./server/README.md)  
 - [Client](./client/README.md)  
-- [Protocol](./protocol/PROTOCOL.md) 
+- [Protocol](./protocol/README.md) 
 
 ## Contributors
 
@@ -113,3 +113,8 @@ Noah Gosciniak - [Github] - noah.gosciniak@epitech.eu
 Marie Giacomel - [GitHub] - marie.giacomel@epitech.eu  
 Lucas Hoch - [GitHub] - lucas.hoch@epitech.eu  
 Quentin Erdinger - [GitHub] - quentin.erdinger@epitech.eu  
+
+### If you want to contribute to this project
+
+- [Contribute](./CONTRIBUTE.md)  
+

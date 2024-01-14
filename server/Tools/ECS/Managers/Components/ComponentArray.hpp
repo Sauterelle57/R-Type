@@ -34,8 +34,8 @@ namespace ECS {
             }
 
             void removeData(Entity entity) {
-//                if (_entityToIndexMap.find(entity) == _entityToIndexMap.end())
-//                    throw tls::Error("Removing non-existent component.");
+                if (_entityToIndexMap.find(entity) == _entityToIndexMap.end())
+                    throw tls::Error("Removing non-existent component.");
                 size_t indexOfRemovedEntity = _entityToIndexMap[entity];
                 size_t indexOfLastElement = _size - 1;
                 _componentArray[indexOfRemovedEntity] = _componentArray[indexOfLastElement];

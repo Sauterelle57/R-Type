@@ -1,3 +1,4 @@
+
 /*
 ** EPITECH PROJECT, 2023
 ** RType
@@ -25,8 +26,8 @@ namespace ECS {
             }
 
             Entity createEntity() {
-//                if (_livingEntityCount >= MAX_ENTITIES)
-//                    throw tls::Error("Too many entities.");
+                if (_livingEntityCount >= MAX_ENTITIES)
+                    throw tls::Error("Too many entities.");
                 Entity id = _availableEntities.front();
                 _availableEntities.pop();
                 _livingEntityCount++;
@@ -34,22 +35,22 @@ namespace ECS {
             }
 
             void destroyEntity(Entity entity) {
-//                if (_signatures[entity].any())
-//                    throw tls::Error("Cannot destroy entity.");
+                if (entity > MAX_ENTITIES || entity < 0)
+                    throw tls::Error("Cannot destroy entity.");
                 _signatures[entity].reset();
                 _availableEntities.push(entity);
                 _livingEntityCount--;
             }
 
             void setSignature(Entity entity, Signature signature) {
-//                if (_signatures[entity].any())
-//                    throw tls::Error("Signature already exists.");
+                if (entity > MAX_ENTITIES || entity < 0)
+                    throw tls::Error("Cannot set signature.");
                 _signatures[entity] = signature;
             }
 
             Signature getSignature(Entity entity) {
-//                if (_signatures[entity].none())
-//                    throw tls::Error("Signature does not exist.");
+                if (entity > MAX_ENTITIES || entity < 0)
+                    throw tls::Error("Cannot get signature.");
                 return _signatures[entity];
             }
 

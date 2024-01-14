@@ -36,7 +36,8 @@ namespace ECS {
 
                     float angle = std::atan2(newPosition._y - position._y, newPosition._x - position._x) * 180 / M_PI;
 
-                    transform.rotation = {0, 0, 1, angle - 90};
+                    if (trajectory.oriented)
+                        transform.rotation = {0, 0, 1, angle - 90};
                 }
             }
     };

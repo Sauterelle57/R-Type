@@ -10,7 +10,6 @@
 
 #include <memory>
 #include "ComponentArray.hpp"
-#include "Components.hpp"
 
 namespace ECS {
     class ComponentManager {
@@ -18,8 +17,8 @@ namespace ECS {
             template<typename T>
             void registerComponent() {
                 const char* typeName = typeid(T).name();
-//                if (_componentTypes.find(typeName) != _componentTypes.end())
-//                    throw tls::Error("Registering component more than once.");
+                if (_componentTypes.find(typeName) != _componentTypes.end())
+                    throw tls::Error("Registering component more than once.");
                 _componentTypes.insert({typeName, _nextComponentType});
                 _componentArrays.insert({typeName, std::make_shared<ComponentArray<T>>()});
                 _nextComponentType++;
@@ -65,8 +64,8 @@ namespace ECS {
             std::shared_ptr<ComponentArray<T>> getComponentArray() {
                 const char* typeName = typeid(T).name();
 
-//                if (_componentTypes.find(typeName) == _componentTypes.end())
-//                    throw tls::Error("Component used before registered.");
+                if (_componentTypes.find(typeName) == _componentTypes.end())
+                    throw tls::Error("Component used before registered.");
                 return std::static_pointer_cast<ComponentArray<T>>(_componentArrays[typeName]);
             }
     };

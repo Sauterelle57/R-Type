@@ -25,15 +25,17 @@
 #include "Collider.hpp"
 #include "ClientUpdater.hpp"
 #include "PlayerManager.hpp"
-#include "Enemy.hpp"
+#include "ParentManager.hpp"
 #include "Protocol.hpp"
+#include "../../map/LibJson.hpp"
+#include "LvlManager.hpp"
 #include <mutex>
 
 namespace rt {
 
     class GameController : public IGameController {
         public:
-            GameController();
+            GameController(bool debug);
             ~GameController() = default;
 
             int exec();
@@ -57,10 +59,23 @@ namespace rt {
                 std::shared_ptr<ECS::ColliderSystem> _systemCollider;
                 std::shared_ptr<ECS::ClientUpdaterSystem> _systemClientUpdater;
                 std::shared_ptr<ECS::PlayerManager> _systemPlayerManager;
+                std::shared_ptr<ECS::ParentManager> _systemParent;
                 std::shared_ptr<ECS::Move> _systemMove;
                 std::shared_ptr<ECS::AutoMove> _systemAutoMove;
-                std::shared_ptr<ECS::EnemySystem> _systemEnemy;
+                std::shared_ptr<ECS::LvlManager> _systemLvlManager;
             };
+
+            void _createPlayer(std::string ip, int port);
+            void _createFloorEnemy(tls::Vec3 pos, float size, double speed);
+            void _createEnemy(tls::Vec3 pos, float clockSpeed);
+            void _createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren);
+            void _createChild(ECS::Entity parent, float offset, bool armed);
+            void _createTile(tls::Vec3 pos);
+            void _createBreakableTile(tls::Vec3 pos);
+            void _createLvl();
+            void _createTileWithoutTraveling(tls::Vec3 pos);
+            void _createBreakableTileWithoutTraveling(tls::Vec3 pos);
+            ECS::Entity _camera;
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
@@ -76,19 +91,13 @@ namespace rt {
             void _initializeECSSystems();
             void _initializeECSEntities();
 
-            void _createPlayer(std::string ip, int port);
-            void _createEnnemy(tls::Vec3 pos, float clockSpeed);
-            void _createTile(tls::Vec3 pos);
-            void _createBreakableTile(tls::Vec3 pos);
-
-
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
             bool _cameraInit;
-            ECS::Entity _camera;
 
             System _systems;
             tls::Clock _clock;
+            tls::Clock _clockBossChild;
             tls::Clock _clockEnemySpawn;
             int _waveEnemy;
 
@@ -97,6 +106,9 @@ namespace rt {
             std::unordered_map<std::string, std::pair<std::pair<std::string, int>, std::pair<long long, std::queue<rt::Protocol>>>> _receivedDataBuffer;
 
             std::shared_ptr<std::mutex> _receivedMutex;
+
+            lvl::StageValue _data;
+            bool _debug;
     };
 
 }

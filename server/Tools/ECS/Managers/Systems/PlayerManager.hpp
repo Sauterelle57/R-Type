@@ -24,7 +24,9 @@ namespace ECS {
 
                 for (auto const &entity : _entities) {
                     auto &player = coordinatorPtr->getComponent<Player>(entity);
-                    auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
+                    auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+                    // auto &shooter = coordinatorPtr->getComponent<Shooter>(entity);
+                    auto &updater = coordinatorPtr->getComponent<ClientUpdater>(entity);
                     auto &weapon = coordinatorPtr->getComponent<Weapon>(entity);
                     auto &type = coordinatorPtr->getComponent<Type>(entity);
                     if (wave == 4) {
@@ -37,11 +39,9 @@ namespace ECS {
                         weapon.create_projectile = Shoot::tripleShot;
                     }
 
-
                     if (type.ip == ip && type.port == port) {
                         if (data.protocol == rt::PROTOCOL_TYPE::MOVE || data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
                             int x, y, z;
-
                             x = data.client.move._x / _entities.size();
                             y = data.client.move._y / _entities.size();
                             z = data.client.move._z / _entities.size();
@@ -50,10 +50,10 @@ namespace ECS {
                             player.mooving._y = y * 0.25f;
                             player.mooving._z = z * 0.25f;
                         } else if (data.protocol == rt::PROTOCOL_TYPE::SHOOT) {
-                            shooter.isShooting = true;
+                            weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc, weapon);
                         }
                         if (data.protocol == rt::PROTOCOL_TYPE::MOVE_AND_SHOOT) {
-                            shooter.isShooting = true;
+                            weapon.create_projectile(std::shared_ptr<Coordinator>(_coordinator), _entities, transform.position + tls::Vec3{1, 0, 0}, updater.clientController, updater.wrapper, updater._pc, weapon);
                         }
                     }
                 }

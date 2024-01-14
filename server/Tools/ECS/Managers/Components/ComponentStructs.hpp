@@ -23,6 +23,7 @@
 #include "ClientController.hpp"
 #include "IWrapper.hpp"
 #include "Collisions.hpp"
+#include "../../../../map/LibJson.hpp"
 
 namespace ECS {
     enum Direction {
@@ -50,12 +51,12 @@ namespace ECS {
     struct Transform {
         tls::Vec3 position;
         tls::Vec4 rotation;
-        float scale;
+        tls::Vec3 scale;
         BoundingBox bounds;
     };
 
     struct Projectile {
-        int damage;
+        float damage;
         float speed;
         bool active;
     };
@@ -63,18 +64,16 @@ namespace ECS {
     struct Trajectory {
         std::shared_ptr<float> t = std::make_shared<float>(0.0f);
         std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float> t)> trajectory;
+        bool oriented = false;
     };
 
     struct Weapon {
-        int damage;
+        float damage;
         float speed;
         float durability;
-        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc)> create_projectile;
-    };
-
-    struct Alive {
-        int life;
-        int max_life;
+        bool autoShoot = false;
+        tls::Clock shootFrequency = tls::Clock(2);
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc, ECS::Weapon weapon)> create_projectile;
     };
 
     struct Traveling {
@@ -100,8 +99,10 @@ namespace ECS {
         bool breakable = true;
         bool movable = true;
         tls::Vec3 velocity;
-
         tls::BoundingBox bounds;
+        float life = 100.0;
+        float maxLife = 100.0;
+        float damage = 0.0;
     };
 
     struct ClientUpdater {
@@ -121,14 +122,15 @@ namespace ECS {
         tls::Vec3 mooving = {0,0,0};
     };
 
-    struct Shooter {
-        bool isShooting = false;
+    struct Parent {
+        std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, Entity parent)> create_child;
+        tls::Clock spawnFrequency = tls::Clock(10);
+        int nbChildren = 2;
     };
 
-    struct Enemy {
-        bool isGoingUp = false;
-        bool isTurningLeft = false;
-        tls::Clock clock;
+    struct Level {
+        lvl::StageValue data;
+        std::set<int> alreadyReached;
     };
 }
 

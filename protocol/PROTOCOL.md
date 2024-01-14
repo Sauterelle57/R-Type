@@ -13,12 +13,12 @@
 
 1. Display / update entity
     ```text
-    "[ID] TRANSFORM [PX] [PY] [PZ] [RX] [RY] [RZ] [RA] [SCALE] [TYPE]"
+    "[ID] TRANSFORM [PX] [PY] [PZ] [RX] [RY] [RZ] [RA] [SX] [SY] [SZ] [TYPE]"
 
     ID: ECS's ID
     PX, PY, PZ: Entity position
     RX, RY, RZ, RA: Entity rotation
-    SCALE: Entity scale
+    SX, SY, SZ: Entity scale
     TYPE: Entity type (ex: PLAYER, ENEMY, ...)
     ```
 

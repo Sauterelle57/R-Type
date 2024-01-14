@@ -13,6 +13,19 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.10.5
+)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+
 set(ASSIMP_VERSION v5.0.1)
 FetchContent_Declare(
         assimp
@@ -92,6 +105,8 @@ add_executable(rtype_server
         server/src/ServerController/IServerController.hpp
         server/src/ServerController/ServerController.cpp
         server/src/ServerController/ServerController.hpp
+        server/src/ServerController/ArgsManager/IArgsManager.hpp
+        server/src/ServerController/ArgsManager/ArgsManager.hpp
         # Game Controller
         server/src/GameController/IGameController.hpp
         server/src/GameController/GameController.hpp
@@ -133,12 +148,18 @@ add_executable(rtype_server
         server/Tools/Vec4/Vec4.cpp
         server/Tools/Clock/Clock.hpp
         server/Tools/Error/Error.hpp
+        server/Tools/Random/Random.hpp
         server/Tools/ECS/Managers/Systems/Shoot.hpp
         server/Tools/ECS/Managers/Systems/ClientUpdater.hpp
         server/Tools/ECS/Managers/Systems/PlayerManager.hpp
-        server/Tools/ECS/Managers/Systems/Enemy.hpp
+        server/Tools/ECS/Managers/Systems/ParentManager.hpp
         server/Tools/collisions/Collisions.hpp
         server/Tools/collisions/Collisions.cpp
+        server/map/Parser.hpp
+        server/map/LibJson.hpp
+        server/map/LibJson.cpp
+        server/Tools/ECS/Managers/Systems/LvlManager.hpp
+        server/Tools/ECS/Managers/Systems/LvlManager.cpp
 )
 
 add_executable(rtype_client
@@ -202,7 +223,6 @@ add_executable(rtype_client
         client/Tools/Vec4/IVec4.hpp
         client/Tools/ECS/Managers/Entities/IEntitiesManager.hpp
         client/Tools/Clock/IClock.hpp
-        client/Tools/ECS/Managers/Systems/Projectile.hpp
         client/Tools/ECS/Managers/Systems/Cam.hpp
         client/Tools/ECS/Managers/Systems/Traveling.hpp
         client/Tools/ECS/Managers/Systems/Cam.hpp
@@ -246,6 +266,7 @@ add_executable(rtype_client
 target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/src
         ${CMAKE_SOURCE_DIR}/server/src/ServerController
+        ${CMAKE_SOURCE_DIR}/server/src/ServerController/ArgsManager
         ${CMAKE_SOURCE_DIR}/server/src/GameController
         ${CMAKE_SOURCE_DIR}/server/src/AsioWrapper
         ${CMAKE_SOURCE_DIR}/server/src/Client
@@ -260,6 +281,7 @@ target_include_directories(rtype_server PRIVATE
         ${CMAKE_SOURCE_DIR}/server/Tools/Utils
         ${CMAKE_SOURCE_DIR}/server/Tools/Error
         ${CMAKE_SOURCE_DIR}/server/Tools/Clock
+        ${CMAKE_SOURCE_DIR}/server/Tools/Random
         ${CMAKE_SOURCE_DIR}/protocol
         ${CMAKE_SOURCE_DIR}/server/Tools/collisions
 )
@@ -293,7 +315,7 @@ target_include_directories(rtype_client PRIVATE
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network assimp)
-target_link_libraries(rtype_server PRIVATE assimp)
+target_link_libraries(rtype_server PRIVATE assimp nlohmann_json::nlohmann_json)
 
 
 # Web Configurations

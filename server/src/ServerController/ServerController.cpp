@@ -6,11 +6,12 @@
 
 namespace rt {
 
-    ServerController::ServerController(short port, std::shared_ptr<IGameController> &gameCtrl) {
+    ServerController::ServerController(short port, std::shared_ptr<IGameController> &gameCtrl, bool debug) {
         _asioWrapper = std::make_shared<AsioWrapper>(port, AsioWrapper::ReceiveHandler([this](int error, std::size_t bytes_transferred) {
             handleReceivedData(error, bytes_transferred);
         }));
         _gameCtrl = gameCtrl;
+        _debug = debug;
     }
 
     void ServerController::run()
@@ -42,7 +43,7 @@ namespace rt {
             // _asioWrapper->sendStruct(pc.setSender(rt::SERVER).setProtocol(rt::OK).getProtocol(), _asioWrapper->getRemoteEndpoint().first, _asioWrapper->getRemoteEndpoint().second);
             // std::cout << "[OK]" << std::endl;
         } else {
-            std::cerr << "Error receiving data: " << error << std::endl;
+            // std::cerr << "Error receiving data: " << error << std::endl;
         }
     }
 
