@@ -35,7 +35,7 @@ namespace rt {
 
     class GameController : public IGameController {
         public:
-            GameController();
+            GameController(bool debug);
             ~GameController() = default;
 
             int exec();
@@ -105,6 +105,7 @@ namespace rt {
             std::shared_ptr<std::mutex> _receivedMutex;
 
             lvl::StageValue _data;
+            bool _debug;
     };
 
 }

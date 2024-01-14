@@ -47,6 +47,7 @@ namespace rt
         int destroyedEntitiesSize = 0;
         std::vector<std::pair<std::uint32_t, long long>> destroyedEntities; // List entities from server to client
         // std::vector<std::bitset<554>> entities; // List entities from server to client
+        bool debug;
         std::vector<rt::Entity> entities;
     };
 
@@ -161,34 +162,13 @@ namespace rt
 
             // Functions :
 
-            std::string serialize() const
-            {
-                std::ostringstream oss;
-                oss.write(reinterpret_cast<const char*>(&_protocol->sender), sizeof(_protocol->sender));
-                oss.write(reinterpret_cast<const char*>(&_protocol->protocol), sizeof(_protocol->protocol));
-
-                // Serialize destroyedEntitiesSize and destroyedEntities vector
-                _protocol->server.destroyedEntitiesSize = _protocol->server.destroyedEntities.size();
-                oss.write(reinterpret_cast<const char*>(&_protocol->server.destroyedEntitiesSize), sizeof(_protocol->server.destroyedEntitiesSize));
-                for (const auto& entity : _protocol->server.destroyedEntities) {
-                    oss.write(reinterpret_cast<const char*>(&entity.first), sizeof(entity.first));
-                    oss.write(reinterpret_cast<const char*>(&entity.second), sizeof(entity.second));
-                }
-
-                for (const auto& entity : _protocol->server.entities)
-                {
-                    serializeEntity(oss, entity);
-                }
-
-                return oss.str();
-            }
-
-            std::string serialize(Protocol &protocol) const
+            std::string serialize(Protocol &protocol, bool debug) const
             {
                 std::ostringstream oss;
                 oss.write(reinterpret_cast<const char*>(&protocol.sender), sizeof(protocol.sender));
                 oss.write(reinterpret_cast<const char*>(&protocol.protocol), sizeof(protocol.protocol));
                 if (protocol.sender == SERVER) {
+                    protocol.server.debug = debug;
                     oss.write(reinterpret_cast<const char*>(&protocol.packetId), sizeof(protocol.packetId));
 
                     // Serialize destroyedEntitiesSize and destroyedEntities vector
@@ -200,9 +180,11 @@ namespace rt
                         oss.write(reinterpret_cast<const char*>(&entity.second), sizeof(entity.second));
                     }
 
+                    oss.write(reinterpret_cast<const char*>(&protocol.server.debug), sizeof(protocol.server.debug));
+
                     for (const auto& entity : protocol.server.entities)
                     {
-                        serializeEntity(oss, entity);
+                        serializeEntity(oss, entity, debug);
                     }
                 } else {
                     if (protocol.protocol == MOVE) {
@@ -215,7 +197,6 @@ namespace rt
                 }
 
                 return oss.str();
-
             }
 
             static Protocol deserialize(const std::string& data)
@@ -237,10 +218,12 @@ namespace rt
                         iss.read(reinterpret_cast<char*>(&entity.second), sizeof(entity.second));
                     }
 
+                    iss.read(reinterpret_cast<char*>(&deserializedData.server.debug), sizeof(deserializedData.server.debug));
+
                     while (iss.peek() != EOF)
                     {
                         rt::Entity entity;
-                        deserializeEntity(iss, entity);
+                        deserializeEntity(iss, entity, deserializedData.server.debug);
                         deserializedData.server.entities.push_back(entity);
                     }
                 } else {
@@ -437,7 +420,7 @@ namespace rt
         private:
             std::shared_ptr<Protocol> _protocol;
 
-            void serializeEntity(std::ostringstream& oss, const Entity& entity) const
+            void serializeEntity(std::ostringstream& oss, const Entity& entity, bool debug) const
             {
                 // Serialize ECSEntity
                 oss.write(reinterpret_cast<const char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
@@ -479,16 +462,19 @@ namespace rt
                 if (entity.signature[10])
                     oss.write(reinterpret_cast<const char*>(&entity.entityType), sizeof(entity.entityType));
 
-//                oss.write(reinterpret_cast<const char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
-//                oss.write(reinterpret_cast<const char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
-//                oss.write(reinterpret_cast<const char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
-//                oss.write(reinterpret_cast<const char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
-//                oss.write(reinterpret_cast<const char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
-//                oss.write(reinterpret_cast<const char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
+                //
+                if (debug) {
+                    oss.write(reinterpret_cast<const char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
+                    oss.write(reinterpret_cast<const char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
+                    oss.write(reinterpret_cast<const char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
+                    oss.write(reinterpret_cast<const char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
+                    oss.write(reinterpret_cast<const char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
+                    oss.write(reinterpret_cast<const char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
+                }
 
             }
 
-            static void deserializeEntity(std::istringstream& iss, rt::Entity& entity)
+            static void deserializeEntity(std::istringstream& iss, rt::Entity& entity, bool debug)
             {
                 // Deserialize ECSEntity
                 iss.read(reinterpret_cast<char*>(&entity.ECSEntity), sizeof(entity.ECSEntity));
@@ -533,12 +519,14 @@ namespace rt
                     iss.read(reinterpret_cast<char*>(&entity.entityType), sizeof(entity.entityType));
                 }
 
-                // iss.read(reinterpret_cast<char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
-                // iss.read(reinterpret_cast<char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
-                // iss.read(reinterpret_cast<char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
-                // iss.read(reinterpret_cast<char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
-                // iss.read(reinterpret_cast<char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
-                // iss.read(reinterpret_cast<char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
+                if (debug) {
+                    iss.read(reinterpret_cast<char*>(&entity.bounds.min._x), sizeof(entity.bounds.min._x));
+                    iss.read(reinterpret_cast<char*>(&entity.bounds.min._y), sizeof(entity.bounds.min._y));
+                    iss.read(reinterpret_cast<char*>(&entity.bounds.min._z), sizeof(entity.bounds.min._z));
+                    iss.read(reinterpret_cast<char*>(&entity.bounds.max._x), sizeof(entity.bounds.max._x));
+                    iss.read(reinterpret_cast<char*>(&entity.bounds.max._y), sizeof(entity.bounds.max._y));
+                    iss.read(reinterpret_cast<char*>(&entity.bounds.max._z), sizeof(entity.bounds.max._z));
+                }
             }
 
     };
