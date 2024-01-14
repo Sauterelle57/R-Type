@@ -50,7 +50,7 @@ namespace rt {
             boost::system::error_code ignored_ec;
             socket.send_to(boost::asio::buffer(message), destination, 0, ignored_ec);
             if (ignored_ec) {
-                std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
+                // std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
@@ -68,7 +68,7 @@ namespace rt {
 
             socket.send_to(boost::asio::buffer(tosend), destination, 0, ignored_ec);
             if (ignored_ec) {
-                std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
+                // std::cerr << "Error sending response: " << ignored_ec.message() << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
