@@ -25,8 +25,8 @@ namespace tls {
                 return min + rand() % (max - min + 1);
             }
 
-            double getRandomDouble() {
-                return static_cast<double>(rand()) / RAND_MAX;
+            double getRandomDouble(double min, double max) {
+                return min + (max - min) * (rand() / (RAND_MAX + 1.0));
             }
     };
 } // tls

@@ -208,11 +208,11 @@ namespace rt {
 
         {
             ECS::Signature signature;
-            signature.set(_coordinator->getComponentType<ECS::Transform>());
-            signature.set(_coordinator->getComponentType<ECS::Projectile>());
+        signature.set(_coordinator->getComponentType<ECS::Transform>());
+        signature.set(_coordinator->getComponentType<ECS::Projectile>());
             signature.set(_coordinator->getComponentType<ECS::Type>());
-            signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
-            _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
+        signature.set(_coordinator->getComponentType<ECS::ClientUpdater>());
+        _coordinator->setSystemSignature<ECS::ProjectileSystem>(signature);
         }
 
         {
@@ -357,14 +357,15 @@ namespace rt {
                 .scale = {0.5f, 0.5f, 0.5f}
             }
         );
+        static float damage = 50.f;
         _coordinator->addComponent(
            *_entities.rbegin(),
-           ECS::Weapon {
-               .damage = 1.f,
-               .speed = 1.f,
-               .durability = 1.f,
-               .create_projectile = ECS::Shoot::basicShot
-           }
+            ECS::Weapon {
+                .damage = damage,
+                .speed = 1.f,
+                .durability = 1.f,
+                .create_projectile = ECS::Shoot::basicShot
+            }
        );
 
         tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/player.glb");
@@ -381,6 +382,8 @@ namespace rt {
                .movable = true,
                .velocity = {0.01, 0, 0},
                .bounds = bdb,
+               .maxLife = 100.0,
+               .damage = damage
            }
         );
         _coordinator->addComponent(
@@ -428,7 +431,7 @@ namespace rt {
             bdb.applyMatrix(matr);
             first = false;
         }
-
+        static float damage = 35.0f;
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Collider {
@@ -436,7 +439,10 @@ namespace rt {
                .breakable = true,
                .movable = true,
                .velocity = {0.005, 0, 0},
-               .bounds = bdb
+               .bounds = bdb,
+               .life = 50.0f,
+               .maxLife = 50.0f,
+               .damage = damage
            }
         );
         _coordinator->addComponent(
@@ -457,7 +463,7 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Weapon {
-                .damage = 0.5f,
+                .damage = damage,
                 .speed = shotSpeed,
                 .durability = 1.f,
                 .autoShoot = true,
@@ -468,7 +474,6 @@ namespace rt {
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Projectile {
-                .damage = 0.5f,
                 .speed = shotSpeed,
                 .active = true
             }
@@ -513,7 +518,7 @@ namespace rt {
             *_entities.rbegin(),
             ECS::Trajectory {
                 .t = std::make_shared<float>(0.0f),
-                .trajectory = trajectories[random.getRandomNumber(0, trajectories.size() - 1)],
+                .trajectory = trajectories[random.getRandomNumber(0, trajectories.size() - 1)]
             }
         );
     }
@@ -572,11 +577,14 @@ namespace rt {
 
         _coordinator->addComponent(*_entities.rbegin(),
             ECS::Collider {
-                .team = 1,
-                .breakable = true,
-                .movable = false,
-                .velocity = {0.005, 0, 0},
-                .bounds = bdb
+                .team = collider.team,
+                .breakable = collider.breakable,
+                .movable = collider.movable,
+                .velocity = collider.velocity,
+                .bounds = bdb,
+                .life = collider.life / 2,
+                .maxLife = collider.life / 2,
+                .damage = collider.damage / 2
             }
         );
         _coordinator->addComponent(
@@ -612,10 +620,11 @@ namespace rt {
                 .scale = {2.5f, 2.5f, 2.5f}
             }
         );
+        static float damage = 75.0f;
         _coordinator->addComponent(
            *_entities.rbegin(),
            ECS::Weapon {
-               .damage = 2.f,
+               .damage = damage,
                .speed = .3f,
                .durability = 1.f,
                .autoShoot = true,
@@ -631,7 +640,10 @@ namespace rt {
                .breakable = true,
                .movable = true,
                .velocity = {0.005, 0, 0},
-               .bounds = bdb
+               .bounds = bdb,
+               .life = 300.0f,
+               .maxLife = 300.0f,
+               .damage = damage
            }
         );
         _coordinator->addComponent(
@@ -698,6 +710,8 @@ namespace rt {
                 .movable = false,
                 .velocity = {0.01, 0, 0},
                 .bounds = bounds,
+                .life = INFINITY,
+                .maxLife = INFINITY
             }
         );
         _coordinator->addComponent(
@@ -742,6 +756,8 @@ namespace rt {
                 .movable = false,
                 .velocity = {0.01, 0, 0},
                 .bounds = bounds,
+                .life = 1.0,
+                .maxLife = 1.0
             }
         );
         _coordinator->addComponent(
@@ -785,6 +801,7 @@ namespace rt {
             _clientController->addClient(ip, port);
         _createPlayer(ip, port);
         if (!_cameraInit) {
+            tls::Random random(42);
             _cameraInit = true;
             _initializeECSEntities();
 

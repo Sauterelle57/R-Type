@@ -28,8 +28,11 @@ namespace ECS {
 
             auto &projectiles = coordinatorPtr->getComponent<Projectile>(entity);
             auto &transform = coordinatorPtr->getComponent<Transform>(entity);
+            auto &collider = coordinatorPtr->getComponent<Collider>(entity);
 
-            projectiles.damage = weapon.damage;
+            collider.damage = weapon.damage;
+            collider.life = 1.0f;
+            collider.maxLife = 1.0f;
             projectiles.speed = weapon.speed;
         }
 
