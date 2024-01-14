@@ -27,6 +27,8 @@
 #include "PlayerManager.hpp"
 #include "ParentManager.hpp"
 #include "Protocol.hpp"
+#include "../../map/LibJson.hpp"
+#include "LvlManager.hpp"
 #include <mutex>
 
 namespace rt {
@@ -60,7 +62,17 @@ namespace rt {
                 std::shared_ptr<ECS::ParentManager> _systemParent;
                 std::shared_ptr<ECS::Move> _systemMove;
                 std::shared_ptr<ECS::AutoMove> _systemAutoMove;
+                std::shared_ptr<ECS::LvlManager> _systemLvlManager;
             };
+
+            void _createPlayer(std::string ip, int port);
+            void _createEnemy(tls::Vec3 pos, float clockSpeed);
+            void _createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren);
+            void _createChild(ECS::Entity parent, float offset, bool armed);
+            void _createTile(tls::Vec3 pos);
+            void _createBreakableTile(tls::Vec3 pos);
+            void _createLvl();
+            ECS::Entity _camera;
         private:
             int i = 0;
             std::queue<ReceivedData> _receivedData;
@@ -76,17 +88,9 @@ namespace rt {
             void _initializeECSSystems();
             void _initializeECSEntities();
 
-            void _createPlayer(std::string ip, int port);
-            void _createEnemy(tls::Vec3 pos, float clockSpeed);
-            void _createBoss(tls::Vec3 pos, float clockSpeed, int nbChildren);
-            void _createChild(ECS::Entity parent, float offset, bool armed);
-            void _createTile(tls::Vec3 pos);
-            void _createBreakableTile(tls::Vec3 pos);
-
             std::shared_ptr<ECS::Coordinator> _coordinator;
             std::set<ECS::Entity> _entities;
             bool _cameraInit;
-            ECS::Entity _camera;
 
             System _systems;
             tls::Clock _clock;
@@ -99,6 +103,8 @@ namespace rt {
             std::unordered_map<std::string, std::pair<std::pair<std::string, int>, std::pair<long long, std::queue<rt::Protocol>>>> _receivedDataBuffer;
 
             std::shared_ptr<std::mutex> _receivedMutex;
+
+            lvl::StageValue _data;
     };
 
 }

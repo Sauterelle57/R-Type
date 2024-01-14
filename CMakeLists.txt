@@ -13,6 +13,19 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.10.5
+)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+
 set(ASSIMP_VERSION v5.0.1)
 FetchContent_Declare(
         assimp
@@ -142,6 +155,11 @@ add_executable(rtype_server
         server/Tools/ECS/Managers/Systems/ParentManager.hpp
         server/Tools/collisions/Collisions.hpp
         server/Tools/collisions/Collisions.cpp
+        server/map/Parser.hpp
+        server/map/LibJson.hpp
+        server/map/LibJson.cpp
+        server/Tools/ECS/Managers/Systems/LvlManager.hpp
+        server/Tools/ECS/Managers/Systems/LvlManager.cpp
 )
 
 add_executable(rtype_client
@@ -298,7 +316,7 @@ target_include_directories(rtype_client PRIVATE
 #set(raylib_VERBOSE 1)
 
 target_link_libraries(rtype_client PRIVATE raylib sfml-network assimp)
-target_link_libraries(rtype_server PRIVATE assimp)
+target_link_libraries(rtype_server PRIVATE assimp nlohmann_json::nlohmann_json)
 
 
 # Web Configurations

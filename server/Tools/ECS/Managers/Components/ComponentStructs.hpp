@@ -23,6 +23,7 @@
 #include "ClientController.hpp"
 #include "IWrapper.hpp"
 #include "Collisions.hpp"
+#include "../../../../map/LibJson.hpp"
 
 namespace ECS {
     enum Direction {
@@ -128,6 +129,11 @@ namespace ECS {
         std::function<void(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, Entity parent)> create_child;
         tls::Clock spawnFrequency = tls::Clock(10);
         int nbChildren = 2;
+    };
+
+    struct Level {
+        lvl::StageValue data;
+        std::set<int> alreadyReached;
     };
 }
 
