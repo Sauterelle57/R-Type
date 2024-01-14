@@ -33,6 +33,9 @@ namespace ECS {
                         auto &transform2 = coordinatorPtr->getComponent<Transform>(entity2);
                         auto &collider2 = coordinatorPtr->getComponent<Collider>(entity2);
 
+                        if (collider.team == collider2.team) {
+                            continue;
+                        }
 //                        if (transform.bounds.min.x < transform2.bounds.max.x && transform.bounds.max.x > transform2.bounds.min.x &&
 //                            transform.bounds.min.y < transform2.bounds.max.y && transform.bounds.max.y > transform2.bounds.min.y) {
 //                            std::cout << "Collision" << std::endl;

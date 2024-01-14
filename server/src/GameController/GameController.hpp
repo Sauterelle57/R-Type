@@ -73,6 +73,8 @@ namespace rt {
             void _createTile(tls::Vec3 pos);
             void _createBreakableTile(tls::Vec3 pos);
             void _createLvl();
+            void _createTileWithoutTraveling(tls::Vec3 pos);
+            void _createBreakableTileWithoutTraveling(tls::Vec3 pos);
             ECS::Entity _camera;
         private:
             int i = 0;

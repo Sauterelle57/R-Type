@@ -330,7 +330,7 @@ namespace rt {
 
         for (float i = -50; i < 55; i += 3) {
             _createTile({i, 35, 0});
-            _createTile({i, -12, 0});
+            _createTile({i, -15, 0});
         }
         // _createTile({30, 29, 0});
         // _createBreakableTile({10, 20, 0});
@@ -784,6 +784,47 @@ namespace rt {
         );
     }
 
+    void GameController::_createTileWithoutTraveling(tls::Vec3 pos) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {1.5f, 1.5f, 1.5f}
+            }
+        );
+
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = false,
+                .movable = false,
+                .velocity = {0.01, 0, 0},
+                .bounds = bounds,
+                .life = INFINITY,
+                .maxLife = INFINITY
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "TILE"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+    }
+
     void GameController::_createBreakableTile(tls::Vec3 pos) {
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
@@ -812,6 +853,47 @@ namespace rt {
                 .bounds = bounds,
                 .life = 1.0,
                 .maxLife = 1.0
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "TILE_BREAKABLE"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+    }
+
+    void GameController::_createBreakableTileWithoutTraveling(tls::Vec3 pos) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {1.0f, 1.0f, 1.0f}
+            }
+        );
+        static auto bounds = tls::loadModelAndGetBoundingBox("./client/resources/models/obstacle.glb");
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Collider {
+                .team = 1,
+                .breakable = true,
+                .movable = false,
+                .velocity = {0.01, 0, 0},
+                .bounds = bounds,
+                .life = 1.0,
+                .maxLife = 1.0,
+                .damage = 25.0
             }
         );
         _coordinator->addComponent(

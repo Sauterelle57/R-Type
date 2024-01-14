@@ -29,11 +29,17 @@ void ECS::LvlManager::update(rt::GameController &gameController) {
                 if (entity.type == "enemy1") {
                     gameController._createEnemy({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed);
                 }
-                if (entity.type == "enemy2") {
+                else if (entity.type == "breakableTile") {
+                    gameController._createBreakableTileWithoutTraveling({entity.x + camera.position._x, entity.y, entity.z});
+                }
+                else if (entity.type == "tile") {
+                    gameController._createTileWithoutTraveling({entity.x + camera.position._x, entity.y, entity.z});
+                }
+                else if (entity.type == "enemy2") {
                     tls::Random random;
                     gameController._createFloorEnemy({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(1.0, 3.0), random.getRandomDouble(0.02, 0.07));
                 }
-                if (entity.type == "boss") {
+                else if (entity.type == "boss") {
                     gameController._createBoss({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed, 20);
                 }
             }
