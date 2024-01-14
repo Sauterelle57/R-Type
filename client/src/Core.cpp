@@ -129,6 +129,7 @@ namespace RT {
         }
 
         _udpClientThread->join();
+        exit(0);
     }
 
     void Core::initEntities() {
