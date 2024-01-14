@@ -64,7 +64,7 @@ namespace rt {
             boost::system::error_code ignored_ec;
             rt::ProtocolController pc;
 
-            std::string tosend = pc.serialize(protocol);
+            std::string tosend = pc.serialize(protocol, false);
 
             socket.send_to(boost::asio::buffer(tosend), destination, 0, ignored_ec);
             if (ignored_ec) {

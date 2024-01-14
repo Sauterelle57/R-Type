@@ -42,6 +42,14 @@ namespace rt {
                 }
                 return false;
             }
+
+            bool hasDebugFlag(int argc, char **argv) const {
+                for (int i = 1; i < argc; i++) {
+                    if (std::string(argv[i]) == "-d" || std::string(argv[i]) == "--debug")
+                        return true;
+                }
+                return false;
+            }
     };
 
 }

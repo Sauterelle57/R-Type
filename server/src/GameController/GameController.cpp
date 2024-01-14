@@ -10,7 +10,7 @@
 
 namespace rt {
 
-    GameController::GameController()
+    GameController::GameController(bool debug)
     {
         try {
             const std::string path = "map_editor/map_test.json";
@@ -33,6 +33,7 @@ namespace rt {
         _pc->setSender(rt::SENDER_TYPE::SERVER);
         _pc->setProtocol(rt::PROTOCOL_TYPE::ENTITIES);
         _receivedMutex = std::make_shared<std::mutex>();
+        _debug = debug;
     }
 
     void GameController::_initializeCommands() {
@@ -103,7 +104,7 @@ namespace rt {
                 _systems._systemCollider->update();
                 _systems._systemMove->update();
                 _systems._systemAutoMove->update();
-                _systems._systemClientUpdater->update();
+                _systems._systemClientUpdater->update(_debug);
                 _systems._systemLvlManager->update(*this);
             }
         }

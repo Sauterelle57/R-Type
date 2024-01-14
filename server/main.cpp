@@ -31,7 +31,8 @@ int main(int argc, char **argv) {
     try {
         std::signal(SIGINT, signalHandler);
         rt::ArgsManager argumentManager;
-        std::shared_ptr<rt::IGameController> gameCtrl = std::make_shared<rt::GameController>();
+        bool debug = argumentManager.hasDebugFlag(argc, argv);
+        std::shared_ptr<rt::IGameController> gameCtrl = std::make_shared<rt::GameController>(debug);
         std::optional<int> argServerPort = argumentManager.getServerPort(argc, argv);
         int serverPort = (argServerPort.has_value()) ? argServerPort.value() : 1234;
 
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
             std::cout << "Rtype Server" << std::endl;
             std::cout << "-h, --help\t:\t Help Menu" << std::endl;
             std::cout << "-p PORT\t\t:\t Custom running port" << std::endl;
+            std::cout << "-d, --debug\t:\t Debug mode" << std::endl;
             return 0;
         }
         if (serverPort <= 0 && serverPort <= 65000) {
@@ -47,7 +49,7 @@ int main(int argc, char **argv) {
         }
         std::cout << "Running server on : " << serverPort << std::endl;
         
-        std::shared_ptr<rt::IServerController> serverCtrl = std::make_shared<rt::ServerController>(serverPort, gameCtrl);
+        std::shared_ptr<rt::IServerController> serverCtrl = std::make_shared<rt::ServerController>(serverPort, gameCtrl, debug);
 
         gameCtrl->addWrapper(serverCtrl->getWrapper());
 

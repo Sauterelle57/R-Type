@@ -15,7 +15,7 @@ namespace rt {
         public:
             using ReceiveHandler = std::function<void(const boost::system::error_code&, std::size_t)>;
 
-            ServerController(short port, std::shared_ptr<IGameController> &gameCtrl);
+            ServerController(short port, std::shared_ptr<IGameController> &gameCtrl, bool debug);
 
             void run();
 
@@ -25,6 +25,7 @@ namespace rt {
         private:
             std::shared_ptr<AsioWrapper> _asioWrapper;
             std::shared_ptr<IGameController> _gameCtrl;
+            bool _debug;
     };
 
 } // namespace rt
