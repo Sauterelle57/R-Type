@@ -35,6 +35,12 @@ int main(int argc, char **argv) {
         std::optional<int> argServerPort = argumentManager.getServerPort(argc, argv);
         int serverPort = (argServerPort.has_value()) ? argServerPort.value() : 1234;
 
+        if (argumentManager.hasHelpFlag(argc, argv)) {
+            std::cout << "Rtype Server" << std::endl;
+            std::cout << "-h, --help\t:\t Help Menu" << std::endl;
+            std::cout << "-p PORT\t\t:\t Custom running port" << std::endl;
+            return 0;
+        }
         if (serverPort <= 0 && serverPort <= 65000) {
             std::cerr << "Error: Please enter a valid port" << std::endl;
             return 84;

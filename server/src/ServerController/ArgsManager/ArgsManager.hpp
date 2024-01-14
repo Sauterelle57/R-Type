@@ -29,6 +29,14 @@ namespace rt {
                 }
                 return std::nullopt;
             }
+
+            bool hasHelpFlag(int argc, char **argv) const {
+                for (int i = 1; i < argc; i++) {
+                    if (std::string(argv[i]) == "-h" || std::string(argv[i]) == "--help")
+                        return true;
+                }
+                return false;
+            }
     };
 
 }

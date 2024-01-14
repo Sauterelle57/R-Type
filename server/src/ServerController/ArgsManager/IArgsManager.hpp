@@ -17,6 +17,7 @@ namespace rt {
         public:
             virtual ~IArgsManager() = default;
             virtual std::optional<int> getServerPort(int argc, char* argv[]) const = 0;
+            virtual bool hasHelpFlag(int argc, char **argv) const = 0;
     };
 
 }
