@@ -2,7 +2,7 @@
   "stage": 1,
   "step": [
     {
-      "pos_x": 0,
+      "pos_x": 10,
       "conditions": {
       },
       "entity": [
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "pos_x": 10,
+      "pos_x": 30,
       "conditions": {
       },
       "entity": [
