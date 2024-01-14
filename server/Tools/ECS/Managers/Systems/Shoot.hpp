@@ -21,7 +21,8 @@ namespace ECS {
         public:
             static void basicShot(std::shared_ptr<Coordinator> _coordinator, std::set<Entity> _entities, tls::Vec3 _pos, std::shared_ptr<rt::ClientController> _clientController, std::shared_ptr<rt::IWrapper> _wrapper, std::shared_ptr<rt::ProtocolController> _pc) {
                 static tls::Matrix rotationMatrix = tls::MatrixRotateX(180 * DEG2RAD);
-                static tls::Matrix finalTransformation = MatrixMultiply(tls::MatrixIdentity(), rotationMatrix);
+                static tls::Matrix rotation2Matrix = tls::MatrixRotateY(90 * DEG2RAD);
+                static tls::Matrix finalTransformation = MatrixMultiply(rotation2Matrix, rotationMatrix);
 
                 static tls::BoundingBox boundingBox = tls::loadModelAndGetBoundingBox("./client/resources/models/missile.glb");
                 static bool first = true;
@@ -36,7 +37,7 @@ namespace ECS {
                     Transform {
                         .position = _pos,
                         .rotation = {0, 0, 0, 0},
-                        .scale = {0.06f, 0.03f, 0.06f}
+                        .scale = {.1f, .1f, .1f}// {0.06f, 0.03f, 0.06f}
                     }
                 );
                 _coordinator->addComponent(
@@ -51,7 +52,8 @@ namespace ECS {
                     Trajectory {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             return tls::Vec3{pos._x + 1, pos._y, pos._z};
-                        }
+                        },
+                        .oriented = true
                     }
                 );
                 _coordinator->addComponent(
@@ -108,7 +110,8 @@ namespace ECS {
                     Trajectory {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             return tls::Vec3{pos._x - speed, pos._y, pos._z};
-                        }
+                        },
+                        .oriented = true
                     }
                 );
                 _coordinator->addComponent(
@@ -168,7 +171,7 @@ namespace ECS {
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
+                            .damage = 1,
                             .speed = 0.5f
                         }
                     );
@@ -176,7 +179,8 @@ namespace ECS {
                         *_entities.rbegin(),
                         Trajectory {
                             .t = std::make_shared<float>(start[i]),
-                            .trajectory = trajectories[i]
+                            .trajectory = trajectories[i],
+                            .oriented = true
                         }
                     );
                     _coordinator->addComponent(
@@ -236,7 +240,8 @@ namespace ECS {
                         .trajectory = [](tls::Vec3 pos, std::shared_ptr<float> t) {
                             *t += 0.01f;
                             return tls::Vec3{ pos._x + 0.5f, .5 * std::sin((*t) * 10) + pos._y, pos._z };
-                        }
+                        },
+                        .oriented = true
                     }
                 );
                 _coordinator->addComponent(
@@ -303,23 +308,24 @@ namespace ECS {
                         }
                     );
                     _coordinator->addComponent(
-                            *_entities.rbegin(),
-                            ECS::Collider {
-                                    .team = 0,
-                                    .bounds = boundingBoxes[i]
-                            }
+                        *_entities.rbegin(),
+                        ECS::Collider {
+                            .team = 0,
+                            .bounds = boundingBoxes[i]
+                        }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Projectile {
-                        .damage = 1, // HERE CHANGE DAMAGE FOR SAME AS WEAPON
+                            .damage = 1,
                             .speed = 0.5f
                         }
                     );
                     _coordinator->addComponent(
                         *_entities.rbegin(),
                         Trajectory {
-                            .trajectory = trajectories[i]
+                            .trajectory = trajectories[i],
+                            .oriented = true
                         }
                     );
                     _coordinator->addComponent(

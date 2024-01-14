@@ -480,61 +480,47 @@ namespace rt {
                 .active = true
             }
         );
-        static float speed = 0.003f;
         std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
             [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    int amplitude = 14;
-                    int height = 13;
-                    int gap = 4;
-                    int randAmplitude = 5;
-                    int randHeight = 13;
-                    int randGap = 4;
-                    srand(time(0));
-                    double randomY = asin(sin((*t) * randGap)) * randAmplitude + randHeight;
+                    (*t) += 0.003f;
+                    static int amplitude = 13;
+                    static float height = 12.5;
+                    static int gap = 4;
                 return tls::Vec3{pos._x, asin(sin((*t) * gap)) * amplitude + height, pos._z};
             },
             [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    int amplitude = 14;
-                    int height = 13;
-                    int gap = 4;
-                    int randAmplitude = 5;
-                    int randHeight = 13;
-                    int randGap = 4;
-                    srand(time(0));
-                    double randomY = acos(sin((*t) * randGap)) * randAmplitude + randHeight;
-                return tls::Vec3{pos._x, acos(sin((*t) * gap)) * amplitude + height, pos._z};
+                    (*t) += 0.01f;
+                    static int centerX = pos._x;
+                    static int centerY = pos._y;
+                    static int size = 8;
+                return tls::Vec3{centerX + size * cos(*t) - (*t)*0.2, centerY + size * sin((*t) * 2), pos._z};
             },
             [](tls::Vec3 pos, std::shared_ptr<float> t) {
-                    (*t) += speed;
-                    int amplitude = 1;
-                    int height = 15;
-                    int gap = 1.0;
-                    int randAmplitude = 0.5;
-                    int randHeight = 0.1;
-                    int randGap = 0.2;
-                    srand(time(0));
-                    double randomY = atan(cos((*t) * randGap + rand() % 100)) * randAmplitude + randHeight;
-                return tls::Vec3{pos._x, atan(cos((*t) * gap)) * amplitude + height + randomY, pos._z};
+                (*t) += .003f;
+                srand(time(0));
+                static float speed = 0.1f;
+                static int direction = rand() % 2;
+                static int targetY = direction ? rand() % 35 : rand() % 18;
+                static int targetX = pos._x + (rand() % 45 + pos._x + 1);
+                if (pos._x <= targetX)
+                    targetX = pos._x + (rand() % 45 + pos._x + 1);
+                if (pos._y >= targetY) {
+                    direction = rand() % 2;
+                    targetY = direction ? rand() % 35 : rand() % 18;
+                }
+                return tls::Vec3{pos._x - speed, pos._y - targetY < 0 ? pos._y + speed : pos._y - speed, pos._z};
             },
             [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    static float speed = 0.06f;
                     (*t) += speed;
-                    static int maxY = -18 + rand() % 43 + 10;
-                    static int minY = 35 - (rand() % 43 + 10);
-                    srand(time(0));
-                    static int tmp = 0.1;
-                    if (pos._y >= maxY) {
-                        tmp = -0.1;
-                    }
-                return tls::Vec3{pos._x, pos._y, pos._z};
+                return tls::Vec3{pos._x - speed, cos((*t))*7, pos._z};
             }
         };
         _coordinator->addComponent(
             *_entities.rbegin(),
             ECS::Trajectory {
-                .t = std::make_shared<float>(rand() % 100),
-                .trajectory = trajectories[0]
+                .t = std::make_shared<float>(0.0f),
+                .trajectory = trajectories[rand() % trajectories.size()],
             }
         );
     }
@@ -649,7 +635,7 @@ namespace rt {
            ECS::Collider {
                .team = 1,
                .breakable = true,
-               .movable = false,
+               .movable = true,
                .velocity = {0.005, 0, 0},
                .bounds = bdb
            }
@@ -677,7 +663,8 @@ namespace rt {
                     static float radiusH = 10;
                     static float radiusV = 20;
                     return tls::Vec3{40 + radiusH * cos((*t) * 0.2), 7 + radiusV * sin((*t) * 0.2), pos._z};
-                }
+                },
+                .oriented = true
             }
         );
 
@@ -793,11 +780,11 @@ namespace rt {
         if (!_cameraInit) {
             _cameraInit = true;
             _initializeECSEntities();
-            // _createEnemy({50, 0, 0}, 1.0);
+            _createEnemy({50, 0, 0}, 2.0);
             // _createEnemy({50, 0, 0}, 4.5);
             // _createEnemy({55, 0, 0}, 1.2);
             // _createEnemy({35, -6, 0}, 2);
-            _createBoss({50, 0, 0}, 1.5, 20);
+            // _createBoss({50, 0, 0}, 1.5, 20);
         }
     }
 
