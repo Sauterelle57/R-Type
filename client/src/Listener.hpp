@@ -50,6 +50,13 @@ namespace RT {
                     _modelEnemy->_model->transform = matr;
                 }
                 {
+                    _modelEnemy2 = std::make_shared<RL::ZModel>("./client/resources/models/mob3.glb");
+                    Matrix matr = MatrixIdentity();
+                    matr = MatrixMultiply(matr, MatrixRotateZ(-20 * DEG2RAD));
+                    matr = MatrixMultiply(matr, MatrixRotateY(155 * DEG2RAD));
+                    _modelEnemy2->_model->transform = matr;
+                }
+                {
                     _modelFloorEnemy = std::make_shared<RL::ZModel>("./client/resources/models/mob5.glb");
                 }
                 {
@@ -462,7 +469,20 @@ namespace RT {
                                 .shader = _lightShader,
                             }
                         );
-                    } else if (type == rt::ENTITY_TYPE::FLOOR_ENEMY) {
+                    } else if (type == rt::ENTITY_TYPE::ENEMY2) {
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelEnemy2,
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
+                        );
+                    }  else if (type == rt::ENTITY_TYPE::FLOOR_ENEMY) {
                         _coordinator->addComponent(
                             *_entities->rbegin(),
                             ECS::Model{
@@ -652,6 +672,7 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _tileBMmodel;
             std::shared_ptr<RL::ZModel> _tileModel;
             std::shared_ptr<RL::ZModel> _modelEnemy;
+            std::shared_ptr<RL::ZModel> _modelEnemy2;
             std::shared_ptr<RL::ZModel> _modelFloorEnemy;
             std::shared_ptr<RL::ZModel> _modelBoss;
             std::shared_ptr<RL::ZModel> _modelChild;

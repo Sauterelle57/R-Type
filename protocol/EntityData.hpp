@@ -21,6 +21,7 @@ namespace rt
         PLAYER_NY,
 
         ENEMY,
+        ENEMY2,
         FLOOR_ENEMY,
         CAMERA,
 

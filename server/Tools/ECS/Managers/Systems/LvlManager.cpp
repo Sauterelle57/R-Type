@@ -26,11 +26,14 @@ void ECS::LvlManager::update(rt::GameController &gameController) {
                 continue;
 
             for (const auto& entity : step.entity) {
+                static tls::Random random;
                 if (entity.type == "enemy1") {
-                    gameController._createEnemy({entity.x + camera.position._x, entity.y, entity.z}, entity.shootSpeed);
+                    gameController._createEnemy({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(1.5, 3.0));
                 }
                 if (entity.type == "enemy2") {
-                    tls::Random random;
+                    gameController._createEnemy2({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(0.5, 2.0));
+                }
+                if (entity.type == "floorEnemy") {
                     gameController._createFloorEnemy({entity.x + camera.position._x, entity.y, entity.z}, random.getRandomDouble(1.0, 3.0), random.getRandomDouble(0.02, 0.07));
                 }
                 if (entity.type == "boss") {

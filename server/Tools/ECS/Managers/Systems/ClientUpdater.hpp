@@ -52,6 +52,7 @@ namespace ECS {
                         {"CAMERA", rt::ENTITY_TYPE::CAMERA},
                         {"PLAYER", rt::ENTITY_TYPE::PLAYER},
                         {"ENEMY", rt::ENTITY_TYPE::ENEMY},
+                        {"ENEMY2", rt::ENTITY_TYPE::ENEMY2},
                         {"FLOOR_ENEMY", rt::ENTITY_TYPE::FLOOR_ENEMY},
                         {"BOSS", rt::ENTITY_TYPE::BOSS},
                         {"CHILD", rt::ENTITY_TYPE::CHILD},

@@ -466,7 +466,6 @@ namespace rt {
     }
 
     void GameController::_createEnemy(tls::Vec3 pos, float clockSpeed) {
-        std::cout << "Creating enemy : " << pos._x << ", " << pos._y << ", " << pos._z << std::endl;
         _entities.insert(_entities.end(), _coordinator->createEntity());
 
         _coordinator->addComponent(
@@ -503,6 +502,117 @@ namespace rt {
             *_entities.rbegin(),
             ECS::Type {
                 .name = "ENEMY"
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::ClientUpdater {
+                ._pc = _pc,
+                .wrapper = _wrapper,
+                .clientController = _clientController
+            }
+        );
+        static float shotSpeed = 1.f;
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Weapon {
+                .damage = damage,
+                .speed = shotSpeed,
+                .durability = 1.f,
+                .autoShoot = true,
+                .shootFrequency = tls::Clock(clockSpeed),
+                .create_projectile = ECS::Shoot::basicEnemyShot
+            }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Projectile {
+                .speed = shotSpeed,
+                .active = true
+            }
+        );
+        static tls::Random random(42);
+        std::vector<std::function<tls::Vec3(tls::Vec3, std::shared_ptr<float>)>> trajectories = {
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += 0.003f;
+                    static int amplitude = 13;
+                    static float height = 12.5;
+                    static int gap = 4;
+                return tls::Vec3{pos._x, asin(sin((*t) * gap)) * amplitude + height, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    (*t) += 0.01f;
+                    static int centerX = pos._x;
+                    static int centerY = pos._y;
+                    static int size = 8;
+                return tls::Vec3{centerX + size * cos(*t) - (*t)*0.2, centerY + size * sin((*t) * 2), pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                (*t) += .003f;
+                static float speed = 0.1f;
+                static int direction = random.getRandomNumber(0, 1);
+                static int targetY = direction ? random.getRandomNumber(0, 34) : random.getRandomNumber(0, 17);
+                static int targetX = pos._x + random.getRandomNumber(0, 44) + pos._x + 1;
+                if (pos._x <= targetX)
+                    targetX = pos._x + random.getRandomNumber(0, 44) + pos._x + 1;
+                if (pos._y >= targetY) {
+                    direction = random.getRandomNumber(0, 1);
+                    targetY = direction ? random.getRandomNumber(0, 34) : random.getRandomNumber(0, 17);
+                }
+                return tls::Vec3{pos._x - speed, pos._y - targetY < 0 ? pos._y + speed : pos._y - speed, pos._z};
+            },
+            [](tls::Vec3 pos, std::shared_ptr<float> t) {
+                    static float speed = 0.06f;
+                    (*t) += speed;
+                return tls::Vec3{pos._x - speed, cos((*t))*7, pos._z};
+            }
+        };
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Trajectory {
+                .t = std::make_shared<float>(0.0f),
+                .trajectory = trajectories[random.getRandomNumber(0, trajectories.size() - 1)]
+            }
+        );
+    }
+
+    void GameController::_createEnemy2(tls::Vec3 pos, float clockSpeed) {
+        _entities.insert(_entities.end(), _coordinator->createEntity());
+
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Transform {
+                .position = pos,
+                .rotation = {0, 0, 0, 0},
+                .scale = {0.2f, 0.2f, 0.2f}
+            }
+        );
+        static tls::BoundingBox bdb = tls::loadModelAndGetBoundingBox("./client/resources/models/mob3.glb");
+        // static tls::Matrix matr = tls::MatrixIdentity();
+        static bool first = true;
+        if (first) {
+            // matr = tls::MatrixMultiply(matr, tls::MatrixRotateX(180 * DEG2RAD));
+            // bdb.applyMatrix(matr);
+            first = false;
+        }
+        static float damage = 15.0f;
+        _coordinator->addComponent(
+           *_entities.rbegin(),
+           ECS::Collider {
+               .team = 1,
+               .breakable = true,
+               .movable = true,
+               .velocity = {0.005, 0, 0},
+               .bounds = bdb,
+               .life = 50.0f,
+               .maxLife = 50.0f,
+               .damage = damage
+           }
+        );
+        _coordinator->addComponent(
+            *_entities.rbegin(),
+            ECS::Type {
+                .name = "ENEMY2"
             }
         );
         _coordinator->addComponent(
