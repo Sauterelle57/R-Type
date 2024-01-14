@@ -27,6 +27,7 @@
 #include "renderer/ISound.hpp"
 #include "renderer/IShader.hpp"
 #include "renderer/IMusic.hpp"
+#include "renderer/ModelAnimation.hpp"
 
 #include "rlights.h"
 
@@ -219,6 +220,13 @@ namespace ECS {
         std::vector<SlideBar> slideBars;
         std::vector<CheckBox> checkBoxes;
         std::vector<Button> buttons;
+    };
+
+    struct Animation {
+        int animsCount = 0;
+        unsigned int animIndex = 0;
+        int animCurrentFrame = 0;
+        std::shared_ptr<RL::ZModelAnimation> modelAnimation;
     };
 }
 

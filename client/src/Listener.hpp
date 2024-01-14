@@ -50,6 +50,12 @@ namespace RT {
                     _modelEnemy->_model->transform = matr;
                 }
                 {
+                    _modelFloorEnemy = std::make_shared<RL::ZModel>("./client/resources/models/mob5.glb");
+                }
+                {
+                    _modelFloorEnemyAnimation = std::make_shared<RL::ZModelAnimation>("./client/resources/models/mob5.glb", &_modelFloorEnemyAnimationCount);
+                }
+                {
                     _modelBoss = std::make_shared<RL::ZModel>("./client/resources/models/boss2.glb");
                 }
                 {
@@ -445,153 +451,166 @@ namespace RT {
                         );
                     } else if (type == rt::ENTITY_TYPE::ENEMY) {
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                    .model = _modelEnemy,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelEnemy,
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
                         );
-                    } else if (type == rt::ENTITY_TYPE::BOSS) {
+                    } else if (type == rt::ENTITY_TYPE::FLOOR_ENEMY) {
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                    .model = _modelBoss,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelFloorEnemy,
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
+                        );
+                    }  else if (type == rt::ENTITY_TYPE::BOSS) {
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelBoss,
+                            }
+                        );
+                        _coordinator->addComponent(
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
                         );
                     } else if (type == rt::ENTITY_TYPE::CHILD) {
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                    .model = _modelChild,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelChild,
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
                         );
                     } else if (type == rt::ENTITY_TYPE::BASIC_SHOT) {
                         std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
                         sd->setSoundVolume(0.5f);
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                        .model = _modelShot
-                                }
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelShot
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(500),
-                                        .texture = _particleTexture,
-                                        .speed = 75.0f,
-                                        .scaleOffset = {3, 3, 3},
-                                        .positionOffset = {-0.5, 0, 0},
-                                        .lifeTime = 2,
-                                        .spawnRate = 10,
-                                        .surviveChance = 5,
-                                        .initParticle = ECS::ParticleSystem::initParticleConeLeft,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                        .shader = _shaderParticles
-                                }
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(500),
+                                .texture = _particleTexture,
+                                .speed = 75.0f,
+                                .scaleOffset = {3, 3, 3},
+                                .positionOffset = {-0.5, 0, 0},
+                                .lifeTime = 2,
+                                .spawnRate = 10,
+                                .surviveChance = 5,
+                                .initParticle = ECS::ParticleSystem::initParticleConeLeft,
+                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                .shader = _shaderParticles
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
+                            *_entities->rbegin(),
+                            ECS::Velocity{}
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Sound{
-                                        .sound = sd,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Sound{
+                                .sound = sd,
+                            }
                         );
                     } else if (type == rt::ENTITY_TYPE::SIN_SHOT) {
                         std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
                         sd->setSoundVolume(0.5f);
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(500),
-                                        .texture = _particleTexture,
-                                        .speed = 500.0f,
-                                        .scaleOffset = {3.f, 3.f, 3.f},
-                                        .positionOffset = {0, 0, 0},
-                                        .lifeTime = 10,
-                                        .spawnRate = 2,
-                                        .surviveChance = 0,
-                                        .initParticle = ECS::ParticleSystem::initParticleLineLeft,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                        .shader = _shaderParticles
-                                }
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(500),
+                                .texture = _particleTexture,
+                                .speed = 500.0f,
+                                .scaleOffset = {3.f, 3.f, 3.f},
+                                .positionOffset = {0, 0, 0},
+                                .lifeTime = 10,
+                                .spawnRate = 2,
+                                .surviveChance = 0,
+                                .initParticle = ECS::ParticleSystem::initParticleLineLeft,
+                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                .shader = _shaderParticles
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
+                            *_entities->rbegin(),
+                            ECS::Velocity{}
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Sound{
-                                        .sound = sd,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Sound{
+                                .sound = sd,
+                            }
                         );
                     } else if (type == rt::BASIC_ENEMY_SHOT) {
                         std::shared_ptr<RL::ZSound> sd = std::make_shared<RL::ZSound>("./client/resources/sounds/pew.mp3");
                         sd->setSoundVolume(0.5f);
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Model{
-                                        .model = _modelEnemyShot,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Model{
+                                .model = _modelEnemyShot,
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::ShaderComponent{
-                                        .shader = _lightShader,
-                                }
+                            *_entities->rbegin(),
+                            ECS::ShaderComponent{
+                                .shader = _lightShader,
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Particles{
-                                        .particles = std::vector<ECS::Particle>(500),
-                                        .texture = _particleTexture,
-                                        .speed = 75.0f,
-                                        .scaleOffset = {3.f, 3.f, 3.f},
-                                        .positionOffset = {0.5, 0, 0},
-                                        .lifeTime = 2,
-                                        .spawnRate = 35,
-                                        .surviveChance = 5,
-                                        .initParticle = ECS::ParticleSystem::initParticleConeRight,
-                                        .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
-                                        .shader = _shaderParticles
-                                }
+                            *_entities->rbegin(),
+                            ECS::Particles{
+                                .particles = std::vector<ECS::Particle>(500),
+                                .texture = _particleTexture,
+                                .speed = 75.0f,
+                                .scaleOffset = {3.f, 3.f, 3.f},
+                                .positionOffset = {0.5, 0, 0},
+                                .lifeTime = 2,
+                                .spawnRate = 35,
+                                .surviveChance = 5,
+                                .initParticle = ECS::ParticleSystem::initParticleConeRight,
+                                .drawParticle = ECS::ParticleSystem::drawParticlesDefault,
+                                .shader = _shaderParticles
+                            }
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Velocity{}
+                            *_entities->rbegin(),
+                            ECS::Velocity{}
                         );
                         _coordinator->addComponent(
-                                *_entities->rbegin(),
-                                ECS::Sound{
-                                        .sound = sd,
-                                }
+                            *_entities->rbegin(),
+                            ECS::Sound{
+                                .sound = sd,
+                            }
                         );
                     }
                 } else {
@@ -611,14 +630,14 @@ namespace RT {
                     transform.scale._z = (signature[9] ? scale._z : transform.scale._z);
 
                     auto &bdb = _coordinator->getComponent<ECS::Bdb>(
-                            _serverToClient[ecsID]);
+                        _serverToClient[ecsID]);
 
 
                     bdb = ECS::Bdb{
-                            .bounds = {
-                                    .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
-                                    .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
-                            }
+                        .bounds = {
+                            .min = {static_cast<float>(bounds.min._x), static_cast<float>(bounds.min._y), static_cast<float>(bounds.min._z)},
+                            .max = {static_cast<float>(bounds.max._x), static_cast<float>(bounds.max._y), static_cast<float>(bounds.max._z)}
+                        }
                     };
                 }
             }
@@ -633,6 +652,7 @@ namespace RT {
             std::shared_ptr<RL::ZModel> _tileBMmodel;
             std::shared_ptr<RL::ZModel> _tileModel;
             std::shared_ptr<RL::ZModel> _modelEnemy;
+            std::shared_ptr<RL::ZModel> _modelFloorEnemy;
             std::shared_ptr<RL::ZModel> _modelBoss;
             std::shared_ptr<RL::ZModel> _modelChild;
             std::shared_ptr<RL::ZModel> _modelShot;
@@ -647,7 +667,8 @@ namespace RT {
             std::shared_ptr<RL::IShader> _shaderParticles;
             std::shared_ptr<RL::ZModel> _sphereModel;
             std::set<long long> _deletedIDAlreadyRemoved;
-;
+            std::shared_ptr<RL::ZModelAnimation> _modelFloorEnemyAnimation;
+            int _modelFloorEnemyAnimationCount = 0;
     };
 }
 
