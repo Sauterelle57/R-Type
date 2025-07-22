@@ -1,24 +1,5 @@
-```text
- ________                _________    ___    ___ ________  _______      
-|\   __  \              |\___   ___\ |\  \  /  /|\   __  \|\  ___ \     
-\ \  \|\  \  ___________\|___ \  \_| \ \  \/  / | \  \|\  \ \   __/|    
- \ \   _  _\|\____________\  \ \  \   \ \    / / \ \   ____\ \  \_|/__  
-  \ \  \\  \\|____________|   \ \  \   \/  /  /   \ \  \___|\ \  \_|\ \ 
-   \ \__\\ _\                  \ \__\__/  / /      \ \__\    \ \_______\
-    \|__|\|__|                  \|__|\___/ /        \|__|     \|_______|
-                                    \|___|/  
-```
-
-
 # R-Type
-
-1. [Introduction](#introduction)
-2. [Installation](#installation)
-    - [Cross-Platform Requirements](#cross-platform-requirements)
-    - [Prerequisites](#prerequisites)
-3. [Launch](#play)
-4. [Rtype parts](#project)
-5. [Contributors](#contributors)
+![Demo](./Demo.gif)
 
 ## Introduction
 The goal of this project is to implement a multithreaded  and a graphical  for a well-known legacy video game called R-Type, using a game engine of your own design .
@@ -108,13 +89,22 @@ Launch the client
 
 ## Contributors
 
-Axel Lievre - [Github] - axel.lievre@epitech.eu  
-Noah Gosciniak - [Github] - noah.gosciniak@epitech.eu  
 Marie Giacomel - [GitHub] - marie.giacomel@epitech.eu  
-Lucas Hoch - [GitHub] - lucas.hoch@epitech.eu  
+Noah Gosciniak - [Github] - noah.gosciniak@epitech.eu  
 Quentin Erdinger - [GitHub] - quentin.erdinger@epitech.eu  
+Lucas Hoch - [GitHub] - lucas.hoch@epitech.eu  
+Axel Lievre - [Github] - axel.lievre@epitech.eu  
 
 ### If you want to contribute to this project
 
 - [Contribute](./CONTRIBUTE.md)  
-
+```text
+ ________                _________    ___    ___ ________  _______      
+|\   __  \              |\___   ___\ |\  \  /  /|\   __  \|\  ___ \     
+\ \  \|\  \  ___________\|___ \  \_| \ \  \/  / | \  \|\  \ \   __/|    
+ \ \   _  _\|\____________\  \ \  \   \ \    / / \ \   ____\ \  \_|/__  
+  \ \  \\  \\|____________|   \ \  \   \/  /  /   \ \  \___|\ \  \_|\ \ 
+   \ \__\\ _\                  \ \__\__/  / /      \ \__\    \ \_______\
+    \|__|\|__|                  \|__|\___/ /        \|__|     \|_______|
+                                    \|___|/  
+```
